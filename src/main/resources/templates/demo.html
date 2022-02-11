@@ -669,6 +669,7 @@
                     });
                 });
             },
+
             chooseOption3: function (option) {
                 this.refreshAnswer();
                 document.getElementById('option-' + option.toUpperCase()).style.background = "#00D87E";
@@ -996,6 +997,16 @@
                                 document.getElementById('opt_part').style.display = "";
                             }
                         }else if(this.num == this.opt_choice_num){
+                            document.getElementById('opt_part').style.display = "";
+                        }else if(this.num > this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num){
+                            document.getElementById('panduanzhengwu_part').style.display = "";
+                        }else if(this.num < this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num && this.num > this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num){
+                            document.getElementById('tingyinxuanci_part').style.display = "";
+                        }else if(this.num < this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num && this.num > this.opt_choice_num + this.opt_tingyinxuanwen_num){
+                            document.getElementById('kantuxuanyin_part').style.display = "";
+                        }else if(this.num < this.opt_choice_num + this.opt_tingyinxuanwen_num && this.num > this.opt_choice_num) {
+                            document.getElementById('tingyinxuanwen_part').style.display = "";
+                        }else if(this.num < this.opt_choice_num){
                             document.getElementById('opt_part').style.display = "";
                         }
                         this.refreshAnswer();
