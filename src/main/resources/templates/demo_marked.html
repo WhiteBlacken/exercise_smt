@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <title>详情界面</title>
+    <meta http-equiv="content-type" content="text/html charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+    <link href="/css/demo_marked.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <link href="/css/index.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <script src="/js/vue@2.6.10.js"></script>
+    <script src="/js/axios@0.18.0.min.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/jquery.min.js"></script>
+</head>
+<body>
+    <div id="top_bar1"></div>
+    <div id="top_bar2"></div>
+    <div id="app">
+        <button type="button" id="back_button" v-show="finishWrong" @click="goBack"></button>
+        <div id="main">
+                <div id="header">
+                    <div id="container1">
+                        <div id="heading">
+                            <div id="heading1">Level {{ level }} Lesson {{ lesson }}</div>
+                            <div id="heading2">智能推送练习</div>
+                        </div>
+                    </div>
+                    <div id="container2">
+                        <div id="heading3">
+                            <div id="time">
+                                <p><span style="font-family: 'Microsoft YaHei';color: #2A7DE1;font-weight: bold;">完成时间：</span><span style="font-family: 'GothamRoundedMedium';color: #FF5554;">{{ time }}</span></p>
+                            </div>
+                            <div id="score">
+                                <p><span style="font-family: 'Microsoft YaHei';color: #2A7DE1;font-weight: bold;">你的得分：</span><span style="font-family: 'GothamRoundedMedium';color: #FF5554;">{{ score }} </span></p>
+                            </div>
+                            <div id="average">
+                                <p><span style="font-family: 'Microsoft YaHei';color: #2A7DE1;font-weight: bold;">本次练习平均分：</span><span style="font-family: 'GothamRoundedMedium';color: #FF5554;">{{ average }}</span></p>
+                            </div>
+                            <div id="handle">
+                                <p><span style="font-family: 'Microsoft YaHei';color: #2A7DE1;font-weight: bold;">本次练习考点的掌握程度：</span><span style="font-family: 'GothamRoundedMedium';color: #FF5554;">{{ handle }}%</span></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="container3">
+                        <div id="tag">
+                            <div v-for="num in wrong_list" :id="getBox(num)">
+                                <el-button :id="getButton(num)" style="background-color: #2A7DE1;" circle @click="jumpProblem(num)">{{ num }}</el-button>
+                                <img src="/image/wrong.png" class="num-result">
+                            </div>
+                                <div v-for="num in correct_list" :id="getBox(num)" class="correct_box" v-show="is_show === 1">
+                                    <el-button :id="getButton(num)" style="background-color: #2A7DE1;cursor: pointer;" circle @click="jumpProblem(num)">{{ num }}</el-button>
+                                    <img src="/image/correct.png" class="num-result">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="question_card">
+                    <div id="book_container">
+                        <img src="/image/book.png" id="book">
+                        <div id="question_area">
+                            <div id="question_info">
+                                <div id="container4">
+                                    <p><span>Q{{ num }}</span></p>
+                                    <p id="show_result">&nbsp;{{ is_correct }}</p>
+                                    <button style="display:none" type="button" id="check_analysis" @click="showAnalysis"></button>
+                                </div>
+                            </div>
+                            <div id="question_text">
+                                <p><span>{{ prob_text }}</span></p>
+                            </div>
+                            <div id="congrats" style="display: none;">
+                                <p><span>恭喜你，全部做对啦！</span></p>
+                            </div>
+                            <div id="opt_part">
+                                <div id="img_container">
+                                    <div id="img_size">
+                                        <img :src="imgSrc" id="image" onerror="this.src='/image/logo.png'">
+                                    </div>
+                                </div>
+                                <div id="option_A" class="option">
+                                        A. {{ options.A }}
+                                </div>
+                                <div id="option_B" class="option">
+                                        B. {{ options.B }}
+                                </div>
+                                <div id="option_C" class="option" style="display: none;">
+                                        C. {{ options.C }}
+                                </div>
+                                <div id="option_D" class="option" style="display: none;">
+                                        D. {{ options.D }}
+                                </div>
+                            </div>
+                            <div id="txt_part" style="display: none;">
+                                <div id="img_container">
+                                    <div id="img_size">
+                                        <img :src="imgSrc" id="image" onerror="this.src='/image/logo.png'">
+                                    </div>
+                                </div>
+                                <div id="input_box">
+                                    <div v-for="input in input_num" class="input_result">
+                                        <p class="submit_ans"><span style="color: #330099;font-family: 'GothamRoundedMedium';font-weight: 900;font-size: 1.5rem;">Your Answer {{ input + 1 }}: </span><span style="font-family: 'GothamRoundedMedium';font-weight: 900;font-size: 1.5rem;"> {{ txt[input] }}</span></p>
+                                        <p class="correct_ans"><span style="color: #006600;font-family: 'GothamRoundedMedium';font-weight: 900;font-size: 1.5rem;">Correct Answer {{ input + 1 }}: </span><span style="font-family: 'GothamRoundedMedium';font-weight: 900;font-size: 1.5rem;"> {{ correct_txt[input] }}</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="analysis_area">
+                            <img id="analysis_background" src="/image/background.png">
+                            <div id="analysis_text">
+                                <img id="play_button" src="/image/play.png"  @click="playAnalysis">
+                                <audio id="audio" :src="audio_src"></audio>
+                                <p style="font-family: 'Microsoft YaHei';text-align: center;font-size: 1.5rem;font-weight: 600;"><span>本题解析</span></p>
+                                <div style="position: relative;display: flex;align-items: center;z-index: inherit;margin: 0;padding: 0;width: 100%;height: 90%;"><p id="analysis_content"><span></span></p></div>
+                            </div>
+                        </div>
+                        <!--<div id="show_more" style="display: none;">
+                            <el-button id="icon_container" circle @click="showMore"><i class="el-icon-view"></i></el-button>
+                            <p id="show_more_text"><span>&nbsp;查看做对题目解析</span></p>
+                        </div>-->
+                        <button type="button" id="last_button" style="display: none;" @click="lastProblem"></button>
+                        <button type="button" id="next_button" v-show="flag" @click="nextProblem"></button>
+                        <button type="button" id="disable_button" v-show="flag === false"></button>
+                        <button type="button" id="blank_button" v-show="no_next"></button>
+                        <button type="button" id="show_more" v-show="show === 1" @click="showMore"></button>
+                    </div>
+                </div>
+                <div id="footer">
+                    <div id="container5">
+                        <button type="button" id="recomnd_button" v-show="finishWrong" @click="recomndExercise"></button>
+                    </div>
+                </div>
+        </div>
+    </div>
+</body>
+<script>
+    function setCookie(cname,cvalue) {
+        document.cookie = cname + "=" + cvalue + "; ";
+    }
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) 
+        {
+            var c = ca[i].trim();
+            if (c.indexOf(name) === 0)
+                return c.substring(name.length,c.length);
+        }
+        return "";
+    }
+
+    /*if(/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+        window.addEventListener("orientationchange",function(){
+            var deviceWidth = window.screen.width;
+            var deviceHeight = window.screen.height;
+            if(window.orientation == 0 || window.orientation == 180) {
+                if(deviceWidth >= deviceHeight) {
+                    $('#app').css("transform-origin","center top");
+                    $('#app').css("transform","scale(" + (deviceHeight / 1533) + ")");
+                    $('#top_bar1').css("transform-origin","center top");
+                    $('#top_bar1').css("transform","scaleY(" + (deviceHeight / 1533) + ")");
+                    $('#top_bar2').css("transform-origin","center top");
+                    $('#top_bar2').css("transform","scaleY(" + (deviceHeight / 1533) + ")");
+                }else {
+                    $('#app').css("transform-origin","center top");
+                    $('#app').css("transform","scale(" + (deviceWidth / 1533) + ")");
+                    $('#top_bar1').css("transform-origin","center top");
+                    $('#top_bar1').css("transform","scaleY(" + (deviceWidth / 1533) + ")");
+                    $('#top_bar2').css("transform-origin","center top");
+                    $('#top_bar2').css("transform","scaleY(" + (deviceWidth / 1533) + ")");
+                }
+            }
+            if(window.orientation == 90 || window.orientation == -90) {
+                if(deviceWidth < deviceHeight) {
+                    $('#app').css("transform-origin","center top");
+                    $('#app').css("transform","scale(" + (deviceHeight / 1533) + ")");
+                    $('#top_bar1').css("transform-origin","center top");
+                    $('#top_bar1').css("transform","scaleY(" + (deviceHeight / 1533) + ")");
+                    $('#top_bar2').css("transform-origin","center top");
+                    $('#top_bar2').css("transform","scaleY(" + (deviceHeight / 1533) + ")");
+                }else {
+                    $('#app').css("transform-origin","center top");
+                    $('#app').css("transform","scale(" + (deviceWidth / 1533) + ")");
+                    $('#top_bar1').css("transform-origin","center top");
+                    $('#top_bar1').css("transform","scaleY(" + (deviceWidth / 1533) + ")");
+                    $('#top_bar2').css("transform-origin","center top");
+                    $('#top_bar2').css("transform","scaleY(" + (deviceWidth / 1533) + ")");
+                }
+            }
+        });
+    }*/
+
+    window.addEventListener('resize', () => {
+        var deviceWidth = document.documentElement.clientWidth;
+                document.getElementById("app").style.transformOrigin = "left top";
+                document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                document.getElementById("top_bar1").style.transformOrigin = "left top";
+                document.getElementById("top_bar1").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                document.getElementById("top_bar2").style.transformOrigin = "left top";
+                document.getElementById("top_bar2").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+    }, false);
+
+    window.addEventListener("orientationchange",() => {
+        if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+            var deviceWidth = document.documentElement.clientWidth;
+            var deviceHeight = document.documentElement.clientHeight;
+            if(window.orientation == 0 || window.orientation == 180) {
+                deviceWidth = (deviceWidth < deviceHeight) ? deviceWidth : deviceHeight;
+                document.getElementById("app").style.transformOrigin = "left top";
+                document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                document.getElementById("top_bar1").style.transformOrigin = "left top";
+                document.getElementById("top_bar1").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                document.getElementById("top_bar2").style.transformOrigin = "left top";
+                document.getElementById("top_bar2").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+            }
+            if(window.orientation == 90 || window.orientation == -90) {
+                deviceWidth = (deviceWidth > deviceHeight) ? deviceWidth : deviceHeight;
+                document.getElementById("app").style.transformOrigin = "left top";
+                document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                document.getElementById("top_bar1").style.transformOrigin = "left top";
+                document.getElementById("top_bar1").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                document.getElementById("top_bar2").style.transformOrigin = "left top";
+                document.getElementById("top_bar2").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+            }
+        }
+    });
+    
+    /*window.addEventListener("onorientationchange" in window ? "orientationchange" : "resize", function() {
+        var deviceWidth = window.screen.width;
+        $('#app').css("transform-origin","0 0");
+        $('#app').css("transform","scale(" + (deviceWidth / 1549) + ")");
+        $('#top_bar1').css("transform-origin","0 0");
+        $('#top_bar1').css("transform","scaleY(" + (deviceWidth / 1549) + ")");
+        $('#top_bar2').css("transform-origin","0 0");
+        $('#top_bar2').css("transform","scaleY(" + (deviceWidth / 1549) + ")");
+    }, false);*/
+    
+    var app = new Vue({
+        el: "#app",
+        data: {
+            flag: false,
+            finishWrong: false,
+            no_next: false,
+            time: '',
+            handle: 0,
+            average: 0,
+            score: 0,
+            level: 0,
+            lesson: 0,
+            num: 0,
+            totalNum: 0,
+            opt_num: 0,
+            id: 0,    //全局的 this.id 指的是一份试卷 sheetTemp 的 id
+            is_show: 0,
+            show: 0,
+            prob_list: [],
+            opt_box: [],
+            txt_box: [],
+            src: "",
+            imgSrc: "",
+            is_correct: '',
+            audio_src: "/audio/sample.mp3",
+            prob_text: "test",
+            options_id: 0,
+            options: {A: "A", B: "B", C: "C", D: "D"},
+            formData: {
+                idx: this.num,
+                finish: 0,
+                choice: "",
+                choice_text: ""
+            },
+            setting: {
+                src: "",
+                sys: "",
+                lev: 0,
+                probNum: 0
+            },
+            options_list: [],
+            answers_list: [],
+            txt: [],
+            input_num: [],
+            ans_list: [],
+            submit_list: [],
+            results_list: [],
+            analysis_list: [],
+            point_list: [],
+            correct_txt: [],
+            wrong_list: [],
+            correct_list: [],
+            show_analysis: [],
+
+        },
+        methods: {
+            goBack: function () {
+                window.location.href = "/start";
+            },
+
+            recomndExercise: function () {
+                this.setting.src = "strengthen";
+                this.setting.sys = this.id.toString();
+                this.setting.lev = this.level;
+                this.setting.probNum = 20;//更改，这时候前端不能确定会有多少题目
+                axios.post("/postSetting",$.param(this.setting)
+                ).then((response) => {
+                    console.log("已设置参数: ", response.data);
+                });
+                sessionStorage.clear();
+                sessionStorage.setItem("level",this.level.toString());
+                sessionStorage.setItem("lesson",this.lesson.toString());
+                window.location.replace("/demo?src=strengthen");
+            },
+
+            refreshAnswer: function () {
+                document.getElementById('option_A').style.background = "#F0F0F0";
+                document.getElementById('option_A').style.color = "black";
+                document.getElementById('option_B').style.background = "#F0F0F0";
+                document.getElementById('option_B').style.color = "black";
+                document.getElementById('option_C').style.background = "#F0F0F0";
+                document.getElementById('option_C').style.color = "black";
+                document.getElementById('option_D').style.background = "#F0F0F0";
+                document.getElementById('option_D').style.color = "black";
+            },
+
+            getIndex: function (option) {
+                return "text" + (option + 1);
+            },
+
+            getId: function (option) {
+                return "answer_" + option;
+            },
+
+            getButton: function (option) {
+                return "num" + option;
+            },
+
+            getSingleResult: function (option) {
+                return "singleResult" + (option + 1);
+            },
+
+            getBox: function (option) {
+                return "box" + option;
+            },
+
+            playAnalysis: function () {
+                document.getElementById("audio").play();
+            },
+
+            showAnalysis: function () {
+                this.flag = false;
+                this.show_analysis[this.num - 1] = 1;
+                sessionStorage.setItem('showAnalysis',this.show_analysis);
+                setTimeout(() => {
+                    if(this.num === this.wrong_list[this.wrong_list.length - 1]) {
+                        this.finishWrong = true;
+                        if(this.is_show === 0) {
+                            if(this.correct_list.length !== 0) {
+                                this.show = 1;
+                            }
+                        }
+                    }else {
+                        this.flag = true;
+                    }
+                    document.getElementById("num" + this.num).style.cursor = "pointer";
+                this.store();
+                }, 4000);
+            },
+
+            showMore: function () {
+                this.show = 0;
+                this.is_show = 1;
+                if(this.wrong_list.length === 0) {
+                    document.getElementById("congrats").style.display = "none";
+                    document.getElementById("analysis_area").style.display = "";
+                    document.getElementById("question_info").style.display = "";
+                    document.getElementById("question_text").style.display = "";
+                    document.getElementById("opt_part").style.display = "";
+                }
+                sessionStorage.setItem("isShow",this.is_show);
+                this.flag = true;
+                this.jumpProblem(this.correct_list[0]);
+            },
+
+            showAlready: function () {
+                sessionStorage.setItem('showAnalysis',this.show_analysis);
+                for(var i = 1;i <= this.totalNum;i++) {
+                    if(this.show_analysis[i - 1] === 1) {
+                        document.getElementById("num" + i).style.cursor = "pointer";
+                    }
+                }
+                if(this.show_analysis[this.num - 1] === 1 && this.num !== this.wrong_list[this.wrong_list.length - 1]) {
+                    this.flag = true;
+                }
+                if(this.show_analysis[this.wrong_list[this.wrong_list.length - 1] - 1] === 1) {
+                    if(this.is_show === 0 && this.correct_list.length !== 0 && this.num === this.wrong_list[this.wrong_list.length - 1]) {
+                        this.show = 1;
+                        this.finishWrong = true;
+                    }
+                }
+                if(this.is_show === 1 && this.num !== this.correct_list[this.correct_list.length - 1]) {
+                    this.flag = true;
+                }
+                this.store();
+            },
+
+            jumpProblem: function (option) {
+                if(this.show_analysis[option - 1] === 1) {
+                    if(this.num <= this.opt_num && option > this.opt_num){
+                        document.getElementById('opt_part').style.display = "none";
+                        document.getElementById('txt_part').style.display = "";
+                    }else if(this.num <= this.opt_num && option <= this.opt_num){
+                        this.refreshAnswer();
+                    }else if(this.num > this.opt_num && option <= this.opt_num){
+                        document.getElementById('opt_part').style.display = "";
+                        document.getElementById('txt_part').style.display = "none";
+                        this.refreshAnswer();
+                    }else if(this.num > this.opt_num && option > this.opt_num){
+                    }
+                    document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                    document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                    document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                    document.getElementById("num" + option).style.color = "#2A7DE1";
+                    document.getElementById("num" + option).style.backgroundColor = "#FFFFFF";
+                    document.getElementById("num" + option).style.border = "0.125rem solid #2A7DE1";
+                    this.num = option;
+                    if(this.num === this.wrong_list[0])
+                        document.getElementById("last_button").style.display = "none";
+                    else
+                        document.getElementById("last_button").style.display = "";
+                    if(this.num === this.wrong_list[this.wrong_list.length - 1] && this.is_show === 0) {
+                        this.flag = false;
+                        this.no_next = true;
+                    }else if(this.num === this.correct_list[this.correct_list.length - 1]) {
+                        this.flag = false;
+                        this.no_next = true;
+                    }else{
+                        this.no_next = false;
+                        this.flag = true;
+                    }
+                    if(this.correct_list.length === 0 && this.num === this.wrong_list[this.wrong_list.length - 1])
+                        this.no_next = true;
+                    /*if(this.num === this.wrong_list[this.wrong_list.length - 1] && this.is_show === 0 && this.correct_list.length !== 0)
+                        this.show = 1;
+                    else {
+                        this.show = 0;
+                    }*/
+                    this.store();
+                    this.$nextTick(() => {
+                        this.fetchProblem();
+                        this.showResult();
+                        this.showAlready();
+                    });
+                }else if(this.correct_list.indexOf(option) > -1) {
+                    if(this.num <= this.opt_num && option > this.opt_num){
+                        document.getElementById('opt_part').style.display = "none";
+                        document.getElementById('txt_part').style.display = "";
+                    }else if(this.num <= this.opt_num && option <= this.opt_num){
+                        this.refreshAnswer();
+                    }else if(this.num > this.opt_num && option <= this.opt_num){
+                        document.getElementById('opt_part').style.display = "";
+                        document.getElementById('txt_part').style.display = "none";
+                        this.refreshAnswer();
+                    }else if(this.num > this.opt_num && option > this.opt_num){
+                    }
+                    document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                    document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                    document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                    document.getElementById("num" + option).style.color = "#2A7DE1";
+                    document.getElementById("num" + option).style.backgroundColor = "#FFFFFF";
+                    document.getElementById("num" + option).style.border = "0.125rem solid #2A7DE1";
+                    this.num = option;
+                    if(this.wrong_list.length === 0 && this.num === 1)
+                        document.getElementById("last_button").style.display = "none";
+                    else
+                        document.getElementById("last_button").style.display = "";
+                    if(this.num !== this.correct_list[this.correct_list.length - 1]) {
+                        this.flag = true;
+                        this.no_next = false;
+                    }else {
+                        this.no_next = true;
+                        this.flag = false;
+                    }
+                    this.store();
+                    this.$nextTick(() => {
+                        this.fetchProblem();
+                        this.showResult();
+                    });
+                }
+            },
+
+            lastProblem: function () {
+                if(this.wrong_list.indexOf(this.num) > -1) {
+                    var tempIndex = this.wrong_list.indexOf(this.num);
+                    if(this.num > this.wrong_list[0]){
+                        if(this.num > this.opt_num && this.wrong_list[tempIndex - 1] <= this.opt_num){
+                            document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                            this.num = this.wrong_list[tempIndex - 1];
+                            document.getElementById('opt_part').style.display = "";
+                            document.getElementById('txt_part').style.display = "none";
+                            document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                            this.refreshAnswer();
+                        }else if(this.num > this.opt_num) {
+                            document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                            this.num = this.wrong_list[tempIndex - 1];
+                            document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                        }else {
+                            document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                            this.num = this.wrong_list[tempIndex - 1];
+                            document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                            this.refreshAnswer();
+                        }
+                        if(this.num === this.wrong_list[0])
+                            document.getElementById("last_button").style.display = "none";
+                        this.no_next = false;
+                        /*if(this.num === this.wrong_list[this.wrong_list.length - 1] && this.is_show === 0 && this.correct_list.length !== 0)
+                            this.show = 1;
+                        else {
+                            this.show = 0;
+                        }*/
+                        this.flag = true;
+                        this.store();
+                        this.$nextTick(() => {
+                            this.fetchProblem();
+                            this.showResult();
+                            this.showAlready();
+                        });
+                    }
+                    else {
+                        this.$message({
+                            type: 'info',
+                            message: '这是第一道错题'
+                        });
+                    }
+                }else {
+                    var tempIndex = this.correct_list.indexOf(this.num);
+                    if(this.num > this.correct_list[0]){
+                        if(this.num > this.opt_num && this.correct_list[tempIndex - 1] <= this.opt_num){
+                            document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                            this.num = this.correct_list[tempIndex - 1];
+                            document.getElementById('opt_part').style.display = "";
+                            document.getElementById('txt_part').style.display = "none";
+                            document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                            this.refreshAnswer();
+                        }else if(this.num > this.opt_num) {
+                            document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                            this.num = this.correct_list[tempIndex - 1];
+                            document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                        }else {
+                            document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                            this.num = this.correct_list[tempIndex - 1];
+                            document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                            this.refreshAnswer();
+                        }
+                        this.no_next = false;
+                        this.flag = true;
+                        this.store();
+                        this.$nextTick(() => {
+                            this.fetchProblem();
+                            this.showResult();
+                            this.showAlready();
+                        });
+                    }
+                    else {
+                        this.jumpProblem(this.wrong_list[this.wrong_list.length - 1]);
+                    }
+                }
+                
+            },
+
+            nextProblem: function () {
+                if(this.wrong_list.indexOf(this.num) > -1) {
+                    var len = this.wrong_list.length - 1;
+                    var tempIndex = this.wrong_list.indexOf(this.num);
+                    document.getElementById("last_button").style.display = "";
+                    if(this.num < this.wrong_list[len]){
+                        if(this.num <= this.opt_num && this.wrong_list[tempIndex + 1] > this.opt_num){
+                            document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                            this.num = this.wrong_list[tempIndex + 1];
+                            document.getElementById('opt_part').style.display = "none";
+                            document.getElementById('txt_part').style.display = "";
+                            document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                        }else if(this.num < this.opt_num) {
+                            document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                            this.num = this.wrong_list[tempIndex + 1];
+                            document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                            this.refreshAnswer();
+                        }else {
+                            document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                            this.num = this.wrong_list[tempIndex + 1];
+                            document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                        }
+                        if(this.correct_list.length === 0 && this.num === this.wrong_list[this.wrong_list.length - 1])
+                            this.no_next = true;
+                        /*if(this.num === this.wrong_list[this.wrong_list.length - 1] && this.is_show === 0 && this.correct_list.length !== 0)
+                            this.show = 1;
+                        else {
+                            this.show = 0;
+                        }*/
+                        this.store();
+                        this.$nextTick(() => {
+                            this.fetchProblem();
+                            this.showResult();
+                        });
+                    }
+                    else {
+                        this.jumpProblem(this.correct_list[0]);
+                    }
+                }else {
+                    var len = this.correct_list.length - 1;
+                    var tempIndex = this.correct_list.indexOf(this.num);
+                    document.getElementById("last_button").style.display = "";
+                    if(this.num < this.correct_list[len]){
+                        if(this.num <= this.opt_num && this.correct_list[tempIndex + 1] > this.opt_num){
+                            document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                            this.num = this.correct_list[tempIndex + 1];
+                            document.getElementById('opt_part').style.display = "none";
+                            document.getElementById('txt_part').style.display = "";
+                            document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                        }else if(this.num < this.opt_num) {
+                            document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                            this.num = this.correct_list[tempIndex + 1];
+                            document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                            this.refreshAnswer();
+                        }else {
+                            document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                            this.num = this.correct_list[tempIndex + 1];
+                            document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                            document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                            document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                        }
+                        if(this.num === this.correct_list[len]) {
+                            this.flag = false;
+                            this.no_next = true;
+                        }else 
+                            this.no_next = false;
+                        this.store();
+                        this.$nextTick(() => {
+                            this.fetchProblem();
+                            this.showResult();
+                            this.showAlready();
+                        });
+                    }
+                    else {
+                        this.$message({
+                            type: 'info',
+                            message: '已经是最后一题了'
+                        });
+                    }
+                }
+            },
+
+            getSheet: function () {
+                return new Promise((resolve) => {
+                    axios.get("/getJudgeDetail?id=" + this.id
+                    ).then((response) => {
+                        resolve(response.data);
+                    });
+                })
+            },
+
+            setini: async function () {
+                var res = await this.getSheet();
+                this.totalNum = res.sheet_list.length;
+                if(this.show_analysis.length === 0) {
+                    this.show_analysis = new Array(this.totalNum).fill(0);
+                }
+                this.opt_num = res.opt_num;
+                for (var i = 1; i <= this.totalNum; i++) {
+                    if(i > this.opt_num){
+                        this.txt_box.push(i);
+                    }else {
+                        this.opt_box.push(i);
+                    }
+                }
+                if(this.num <= this.opt_num) {
+                    document.getElementById('opt_part').style.display = "";
+                    document.getElementById('txt_part').style.display = "none";
+                }else {
+                    document.getElementById('opt_part').style.display = "none";
+                    document.getElementById('txt_part').style.display = "";
+                }
+                if(this.is_show === 1) {
+                    this.show = 0;
+                }
+            },
+
+            getResult: function () {
+                var mode = "";
+                if(this.src === "test" || this.src === "ai") {
+                    mode = "Ai";
+                }else if(this.src === "recomnd" || this.src === "wrong" || this.src === "strengthen") {
+                    mode = "Extra";
+                }else if(this.src === "lesson") {
+                    mode = "Lesson";
+                }
+                return new Promise((resolve) => {
+                    axios.get("/getComment" + mode + "?id=" + this.id
+                    ).then((response) => {
+                        resolve(response.data);
+                    });
+                })
+            },
+            
+            setSheet: async function () {
+                this.setini();
+                var sheet = await this.getSheet();
+                var result = await this.getResult();
+                this.time = result.time;
+                if(result.hasOwnProperty('level')) {
+                    this.level = result.level;
+                }
+                if(result.hasOwnProperty('lesson')) {
+                    this.lesson = parseInt(result.lesson);
+                }
+                if(result.hasOwnProperty('score')) {
+                    this.score = result.score;
+                }
+                this.handle = result.handle_rate;
+                this.average = result.avg_score;
+                this.prob_list = sheet.num_list;
+                this.wrong_list = [];
+                this.correct_list = [];
+                for (var i = 0; i < sheet.sheet_list.length; i++) {
+                    var cur_problem = sheet.sheet_list[i];
+                    if(cur_problem.eval_res === 1) {   // 正确
+                        this.results_list.push(1);
+                            this.correct_list.push(i + 1);
+                    } else {                //未做
+                        this.results_list.push(0);
+                        //“没做”体现在答题结果上也应属于错误的一种
+                            this.wrong_list.push(i + 1);
+                    }
+                    this.ans_list.push(cur_problem.ans);
+                    this.analysis_list.push(cur_problem.analysis);
+                    this.point_list.push(cur_problem.point);
+                    if(cur_problem.choice === 'none'){
+                        this.submit_list.push(cur_problem.choice_text);
+                    }else {
+                        this.submit_list.push(cur_problem.choice);
+                    }
+                }
+                if(this.wrong_list.length === 0) {
+                    if(this.is_show === 0) {
+                        this.num = 1;
+                        document.getElementById("analysis_area").style.display = "none";
+                        document.getElementById("question_info").style.display = "none";
+                        document.getElementById("question_text").style.display = "none";
+                        document.getElementById("opt_part").style.display = "none";
+                        document.getElementById("congrats").style.display = "flex";
+                        this.show = 1;
+                        this.finishWrong = true;
+                        this.store();
+                    }else {
+                        this.fetchProblem();
+                        this.showResult();
+                        this.store();
+                        if(this.num !== 1)
+                            document.getElementById("last_button").style.display = "";
+                        else
+                            document.getElementById("last_button").style.display = "none";
+                    }
+                }else {
+                    if(this.num === 0)
+                        this.num = this.wrong_list[0];
+                    if(this.num > this.opt_num) {
+                        document.getElementById('opt_part').style.display = "none";
+                        document.getElementById('txt_part').style.display = "";
+                    }
+                    this.fetchProblem();
+                    this.showResult();
+                    this.store();
+                    if(this.num !== this.wrong_list[0])
+                        document.getElementById("last_button").style.display = "";
+                }
+            },
+
+            getImage: function (str) {
+                var img = new Image();
+                img.src = "/image/_prob/" + str + ".png";
+                if(img.complete){
+                    document.getElementById("img_size").style.width = "100%";
+                    document.getElementById("img_size").style.height = "100%";
+                    if(img.width > img.height) {
+                        document.getElementById("img_size").style.height = "auto";
+                    }else {
+                        document.getElementById("img_size").style.width = "auto";
+                    }
+                }else{
+                    img.onload = function(){
+                        document.getElementById("img_size").style.width = "100%";
+                        document.getElementById("img_size").style.height = "100%";
+                        if(img.width > img.height) {
+                            document.getElementById("img_size").style.height = "auto";
+                        }else {
+                            document.getElementById("img_size").style.width = "auto";
+                        }
+                    };
+                }
+                this.imgSrc = img.src;
+            },
+
+            fetchProblem: async function () {
+                if(this.num <= this.opt_num) {
+                    var prob = await axios.get("/getProblem?num="+this.prob_list[this.num-1].toString());
+                    this.prob_text = prob.data.prob_text;
+                    this.audio_src = "/audio/" + this.prob_list[this.num-1].toString() + ".mp3";
+                    this.options_id = prob.data.options_id;
+                    this.getImage(this.prob_list[this.num-1].toString());
+                    var option = await axios.get("/getOptions?id="+this.options_id);
+                    this.options.A = option.data.option_a;
+                    this.options.B = option.data.option_b;
+                    this.options.C = option.data.option_c;
+                    if(option.data.hasOwnProperty('option_c') && (option.data.option_c !== null && option.data.option_c !== "")) {
+                        this.options.C = option.data.option_c;
+                        document.getElementById('option_C').style.display = "";
+                    }else {
+                        this.options.C = "";
+                        document.getElementById('option_C').style.display = "none";
+                    }
+                    if(option.data.hasOwnProperty('option_d') && (option.data.option_d !== null && option.data.option_d !== "")) {
+                        this.options.D = option.data.option_d;
+                        document.getElementById('option_D').style.display = "";
+                    }else {
+                        this.options.D = "";
+                        document.getElementById('option_D').style.display = "none";
+                    }
+                    document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                    document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                    document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                }else {
+                    this.txt = [];
+                    var prob = await axios.get("/getProblem?num="+this.prob_list[this.num-1].toString());
+                    this.prob_text = prob.data.prob_text;
+                    this.getImage(this.prob_list[this.num-1].toString());
+                    for(var i = 0;i < prob.data.blank_num;i++) {//2记得改为prob.data.blank_num
+                        this.txt.push("");
+                    }
+                    this.input_num = [...Array(prob.data.blank_num).keys()];//2记得改为prob.data.blank_num
+                    this.prob_text = prob.data.prob_text;
+                    document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                    document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                    document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                }
+            },
+
+            showResult: function () {
+                if(this.num <= this.opt_num) {
+                    this.refreshAnswer();
+                    if(this.results_list[this.num - 1] === 1) {
+                        this.is_correct = 'Correct';
+                        document.getElementById('check_analysis').style.backgroundImage = "url(/image/check_correct.png)";
+                        document.getElementById('show_result').style.color = "#2A7DE1";
+                        document.getElementById('option_' + this.ans_list[this.num - 1].toUpperCase()).style.background = "#00D87E";
+                        document.getElementById('option_' + this.ans_list[this.num - 1].toUpperCase()).style.color = "white";
+                    }
+                    else {
+                        document.getElementById('check_analysis').style.backgroundImage = "url(/image/check_wrong.png)";
+                        var subChoice = this.submit_list[this.num - 1];
+                        if(subChoice !== null){
+                            this.is_correct = 'Wrong';
+                            document.getElementById('option_' + subChoice.toUpperCase()).style.background = "#FF5554";
+                            document.getElementById('option_' + subChoice.toUpperCase()).style.color = "white";
+                        }
+                        else this.is_correct = 'Not Finished';
+                        document.getElementById('show_result').style.color = "#FF5554";
+                        document.getElementById('option_' + this.ans_list[this.num - 1].toUpperCase()).style.background = "#00D87E";
+                        document.getElementById('option_' + this.ans_list[this.num - 1].toUpperCase()).style.color = "white";
+                    }
+                }else {
+                    var subText = this.submit_list[this.num - 1];
+                    this.correct_txt = this.ans_list[this.num - 1].split("\n");
+                    //this.correct_txt.shift();
+                    if(subText === null){
+                        this.is_correct = 'Not Finished';
+                        document.getElementById('check_analysis').style.backgroundImage = "url(/image/check_wrong.png)";
+                        document.getElementById('show_result').style.color = "#FF5554";
+                    } else {
+                        this.txt = subText.split("$");
+                        if(this.results_list[this.num - 1] === 1) {
+                            this.is_correct = 'Correct';
+                            document.getElementById('check_analysis').style.backgroundImage = "url(/image/check_correct.png)";
+                            document.getElementById('show_result').style.color = "#2A7DE1";
+                        }
+                        else {
+                            this.is_correct = 'Wrong';
+                            document.getElementById('check_analysis').style.backgroundImage = "url(/image/check_wrong.png)";
+                            document.getElementById('show_result').style.color = "#FF5554";
+                        }
+                    }
+                }
+                var analysisText = this.analysis_list[this.num - 1].split("\n");
+                var tempString = "";
+                for(var j = 0;j < analysisText.length;j++) {
+                    tempString += (analysisText[j] + "<br />");
+                }
+                document.getElementById("analysis_content").innerHTML = tempString;
+                if(this.wrong_list.indexOf(this.num) > -1 && this.show_analysis[this.num - 1] !== 1) {
+                    this.showAnalysis();
+                }else if(this.show_analysis[this.num - 1] === 1 || this.correct_list.indexOf(this.num) > -1) {
+                    this.showAlready();
+                }
+            },
+
+            store: function () {
+                sessionStorage.setItem('first',"no");
+                sessionStorage.setItem('noNext',this.no_next.toString());
+                sessionStorage.setItem('questionId',this.num.toString());
+                sessionStorage.setItem('total',this.totalNum.toString());
+                sessionStorage.setItem('opt',this.opt_num.toString());
+                sessionStorage.setItem('optlist',this.opt_box.toString());
+                sessionStorage.setItem('txtlist',this.txt_box.toString());
+                sessionStorage.setItem('problist',this.prob_list.toString());
+                sessionStorage.setItem('src',this.src);
+                sessionStorage.setItem('id',this.id);
+                sessionStorage.setItem('showAnalysis',this.show_analysis);
+                sessionStorage.setItem('isShow',this.is_show);
+                sessionStorage.setItem('show',this.show);
+                sessionStorage.setItem('wronglist',this.wrong_list);
+                sessionStorage.setItem('correctlist',this.correct_list);
+                sessionStorage.setItem('flag',this.flag.toString());
+                sessionStorage.setItem('finishWrong',this.finishWrong.toString());
+                sessionStorage.setItem('audioSrc',this.audio_src);
+            },
+        },
+
+        created() {
+            if(getCookie('user_id') !== null) { 
+                if(getCookie('user_id') === "") { 
+                    localStorage.clear();
+                    window.location.href = '/login';
+                }
+            }else {
+                window.location.href = '/login';
+            }
+            if(/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+                var deviceWidth = document.documentElement.clientWidth;
+                var deviceHeight = document.documentElement.clientHeight;
+                if(window.orientation == 0 || window.orientation == 180) {
+                    deviceWidth = (deviceWidth < deviceHeight) ? deviceWidth : deviceHeight;
+                    document.getElementById("app").style.transformOrigin = "left top";
+                    document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                    document.getElementById("top_bar1").style.transformOrigin = "left top";
+                    document.getElementById("top_bar1").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                    document.getElementById("top_bar2").style.transformOrigin = "left top";
+                    document.getElementById("top_bar2").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                }
+                if(window.orientation == 90 || window.orientation == -90) {
+                    deviceWidth = (deviceWidth > deviceHeight) ? deviceWidth : deviceHeight;
+                    document.getElementById("app").style.transformOrigin = "left top";
+                    document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                    document.getElementById("top_bar1").style.transformOrigin = "left top";
+                    document.getElementById("top_bar1").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                    document.getElementById("top_bar2").style.transformOrigin = "left top";
+                    document.getElementById("top_bar2").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                }
+            }else {
+                var deviceWidth = document.documentElement.clientWidth;
+                document.getElementById("app").style.transformOrigin = "left top";
+                document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                document.getElementById("top_bar1").style.transformOrigin = "left top";
+                document.getElementById("top_bar1").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                document.getElementById("top_bar2").style.transformOrigin = "left top";
+                document.getElementById("top_bar2").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+            }
+        },
+
+        mounted() {
+            if(window.location.search.indexOf('strengthen') > -1) {
+                document.getElementById('recomnd_button').style.display = "none";
+                document.getElementById('score').style.display = "none";
+                document.getElementById('average').style.display = "none";
+            }else if(window.location.search.indexOf('wrong') > -1) {
+                document.getElementById('recomnd_button').style.display = "none";
+                document.getElementById('score').style.display = "none";
+                document.getElementById('average').style.display = "none";
+            }else if(window.location.search.indexOf('lesson') > -1) {
+            }
+            if(sessionStorage.getItem('first') !== null) {
+                this.num = parseInt(sessionStorage.getItem('questionId'));
+                this.flag = sessionStorage.getItem('flag') === "true" ? true : false;
+                this.no_next = sessionStorage.getItem('noNext') === "true" ? true : false;
+                this.finishWrong = sessionStorage.getItem('finishWrong') === "true" ? true : false;
+                if(sessionStorage.getItem('showAnalysis') !== "") {
+                    this.show_analysis = sessionStorage.getItem('showAnalysis').split(',').map(Number);
+                }
+                if(sessionStorage.getItem('wronglist') !== "") {
+                    this.wrong_list = sessionStorage.getItem('wronglist').split(',').map(Number);
+                }
+                if(sessionStorage.getItem('correctlist') !== "") {
+                    this.correct_list = sessionStorage.getItem('correctlist').split(',').map(Number);
+                }
+                this.is_show = parseInt(sessionStorage.getItem("isShow"));
+                this.show = parseInt(sessionStorage.getItem("show"));
+                this.audio_src = sessionStorage.getItem('audioSrc');
+                this.showAlready();
+            }
+            this.src = window.location.search.substring(5,window.location.search.indexOf('&'));
+            if(this.src === "wrong")
+                document.getElementById("heading").innerHTML = "错题练习";
+            this.id = parseInt(window.location.search.substr(window.location.search.indexOf('id')+3));
+            this.setSheet();
+        },
+    })
+</script>

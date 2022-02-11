@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>第一次公测分析</title>
+    <meta http-equiv="content-type"
+          content="text/html charset=utf-8"/>
+    <link href="/css/index.css" type="text/css" rel="stylesheet"
+          charset="utf-8">
+    <script src="/js/vue@2.6.10.js"></script>
+    <script src="/js/axios@0.18.0.min.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.cookie.js"></script>
+    <script src="/js/rules.js"></script>
+    <script src="/js/echarts.min.js"></script>
+</head>
+<body>
+<el-container>
+    <div id="app">
+        <el-header style="margin-bottom: 100px">
+            <h2>第一次公测分析</h2>
+            <el-form ef="form" :model="form">
+                <el-form-item label="输入题号可以预览题目详情">
+                    <el-input v-model="form.name"
+                              style="width: 200px"></el-input>
+                </el-form-item>
+                <el-button type="primary" @click="onSubmit">查看题目
+                </el-button>
+            </el-form>
+        </el-header>
+        <el-main>
+
+            <!-- 显示题目表格开始 -->
+            <template>
+                <el-table :data="tableData" stripe border
+                          style="width: 100%"
+                          :default-sort="{prop: 'end_time', order: 'descending'}">
+                    <!--                    <el-table-column prop="index" label="id"-->
+                    <!--                                     width="70"-->
+                    <!--                                     sortable></el-table-column>-->
+                    <el-table-column prop="uid"
+                                     label="用户名"
+                                     width="200"></el-table-column>
+                    <el-table-column prop="avg" label="平均分"
+                                     width="70"
+                                     sortable></el-table-column>
+                    <el-table-column prop="score_list"
+                                     label="各次得分(顺序时间)"
+                                     width=""></el-table-column>
+<!--                    <el-table-column label="得分趋势" align="center">-->
+<!--                        <template slot-scope="scope">-->
+<!--                            <div :ref="'chart' + scope.$index" style="width: 600px;height:400px;"></div>-->
+<!--                        </template>-->
+<!--                    </el-table-column>-->
+                    <el-table-column prop="prob_list" label="用户错题"
+                                     width=""></el-table-column>
+                </el-table>
+            </template>
+            <!-- 显示题目表格结束 -->
+            <h3>高频错题（有 2 个以上的孩子做错）: </h3>
+            <el-button plain @click="preview(10282)">10282</el-button>
+            <el-button plain @click="preview(10844)">10844</el-button>
+            <el-button plain @click="preview(10847)">10847</el-button>
+        </el-main>
+    </div>
+</el-container>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            form: {name: ''},
+            tableData: [{
+                'prob_list': '[10015,10282,11137,10074,11283,10750]',
+                'eval_list': '[1615730718794,1615730718876,1615985535265,1615985535326,1615985955074,1615985955096]',
+                'uid': '15821931597',
+                'prob_title_list': ['(\t\t) Do you want some __________?', 'You, he and I are in the same class.\t(否定句)', '(\t\t) Between you and __________, he is not a real friend.', '(\t) He is a pilot. He flies __________ airplane.', 'My birthday’s on the ________ (二月四号)', ' (\t) Look __________ the map __________ China __________ the wall, please.'],
+                'score_list': '90 90 90 90 90 90 90 90 90 90',
+                'avg': 90
+            }, {
+                'prob_list': '[10844,10848]',
+                'eval_list': '[1615942054700,1616032830198]',
+                'uid': '18964788211 Hyde',
+                'prob_title_list': ['Her mother is getting __________ (fat) and __________ (fat).', 'Tom is as __________ (fat) as Jim.'],
+                'score_list': '60 5 5 45',
+                'avg': 29
+            }, {
+                'prob_list': '[10025,10132,10274,10169,10271,10078]',
+                'eval_list': '[1615899052993,1615899053044,1615899053067,1615899053108,1616037528714,1616037528752]',
+                'uid': '13818565016 Wing',
+                'prob_title_list': ['(\t ) I have a pair of __________ and a __________ of water.', '(  \t) I have a big brother. __________ is Paul.', '(\t\t) Grace and Cindy __________ playing computer games now. They are doing their homework now.', '(\t\t) Here __________ some orange juice.', '(\t\t) Here __________ a pair of scissors.', '(  \t) I buy __________ ice cream.'],
+                'score_list': '45 45 85 85',
+                'avg': 65
+            }, {
+                'prob_list': '[11291,10220,10064,10281,10282,10575,10572,10843,10200,10225,10063,10777,10569,10775,10571,10088,10847,10023,11015,10205,10779,10175,10120,10759,10038,10101,10787,10097,10245,10772]',
+                'eval_list': '[1615986257942,1615986257971,1616075427085,1616076083205,1616076083234,1616235534735,1616235534771,1616236313146,1616236313177,1616506618284,1616506618296,1616506618332,1616507168244,1616507168276,1616594569488,1616594569579,1617107851618,1617107851637,1617108029106,1617108303140,1617108303173,1617108445679,1617108448934,1617108538970,1617108539046,1617108542731,1617108542780,1617108547722,1617108682287,1617108682310]',
+                'uid': '13661570043 Fiona(教学)',
+                'prob_title_list': ['ride a bike ___________', '(\t\t) What color __________ your clock?', '(\t) Mary is __________ honest girl. We all love her.', 'The capital letter in “China” is “W”.\t(否定句) ', 'You, he and I are in the same class.\t(否定句)', '(\t\t) __________ is really hard __________ me to drive.', '(\t\t) Elsa finally found __________ exciting to have conversations with friends in Chinese.', 'My room is not as __________ (big) as my brothers.', '(\t\t) Our home __________ near the school.', '(\t\t) There __________ chocolate left. We finished it yesterday.', '(\t)There is __________ “h” and __________ “l” in the word “heal”.', '(\t) When you are __________ trouble, please ask us __________ help.', '(\t\t) – What time is __________? - __________ ‘s eight o’clock a.m.', '(\t) Lucy sits __________ the third row, __________ Jim’s left.', '(\t\t) I find __________ very necessary to study English well.', '(\t) Can you find __________ interesting place?', 'The __________ (much), the __________ (good).', '(\t ) We can hear __________ , but we can’t hear a bus.', '(\t\t) – Can you __________ and answer my questions?\n- Yes, sir.', '(\t\t) I __________ a girl.', '(\t   ) Tom sits __________ the classroom while John sits __________ the room.', '(\t\t) There __________ a beautiful rainbow in the sky.', '(  \t) -What is __________ doing? -He’s cooking.', '(\t) This kind of VCD is made __________ China.', '(\t) My father is __________ teacher.', '(  \t) Let __________ clean the fish bowl!', '(  \t) Any man __________ eyes __________ his head can see that he’s exactly like his grandfather.', '(  \t) Can you tell __________ about the US?', '(\t\t) It comes to ￡50 if my mathematics __________ correct.', '(\t) We all agree __________ you. Let’s start __________ once.'],
+                'score_list': '100 100 70 70 20 20 80 80 80 80 80 80 80 80 80 80 80 80 70 70 40 40 30 30 50 50 40 40 60 60 90 90 10 10 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 30 70 70',
+                'avg': 51
+            }, {
+                'prob_list': '[10810,10847,10649,10763,10445,10747,10765,10751,10151,10002,10797,10778,11107]',
+                'eval_list': '[1615900724152,1615983796614,1616070045833,1616417301618,1616417301622,1616417301630,1616417567436,1616417567451,1616503418899,1616503418907,1616591736298,1616591736307,1616676013424]',
+                'uid': '13817223198 Fiona(财务)',
+                'prob_title_list': ['Sue is a little __________ (beautiful) than her sister.', 'The __________ (much), the __________ (good).', '(\t\t) Let’s go to the Green Park __________.', '(\t) Don’t laugh __________ him, he only made a small mistake.', '(\t) Don’t read __________.', '(\t) There is __________ house __________ the picture.', '(\t) The boat is passing __________ the bridge.', '(\t  ) He puts up a map __________ the back wall because there was a hole __________ it.', '(  \t) Can they talk to __________ tonight?', '(\t) We’ll come to your house __________ half __________ hour.', '(\t) Can you find New York __________ this map of America.', '(\t   ) Many sportsmen are getting ready __________ the 2008 Beijing Olympic Games.', '墙上没有画。\nThere __________ __________ pictures on the wall.\n'],
+                'score_list': '55 65 55 85 60 70 65 75',
+                'avg': 66
+            }, {
+                'prob_list': '[10844,11290,11284]',
+                'eval_list': '[1616054936808,1616055129196,1616055129239]',
+                'uid': '18616970889 Cindy',
+                'prob_title_list': ['Her mother is getting __________ (fat) and __________ (fat).', 'sing the song ____________', 'traffic light ____________'],
+                'score_list': '10 10 25 25 15 15',
+                'avg': 17
+            }],
+
+        },
+        methods: {
+            onSubmit: function () {
+                $.cookie('prob_id', this.form.name);
+                window.open('https://interface.smartreelearners.com:8442/preview');
+            },
+
+            preview: function (id) {
+                $.cookie('prob_id', id);
+                window.open('https://interface.smartreelearners.com:8442/preview');
+            },
+
+            drawEcharts: function (points, idx) {
+                var myChart = echarts.init(document.getElementById(idx));
+
+                // 指定图表的配置项和数据
+                var option = option = {
+                    xAxis: {
+                        type: 'category'
+                    },
+                    yAxis: {
+                        type: 'value'
+                    },
+                    series: [{
+                        data: [820, 932, 901, 934, 1290, 1330, 1320],
+                        type: 'line',
+                        smooth: true
+                    }]
+                };
+
+                // 使用刚指定的配置项和数据显示图表。
+                myChart.setOption(option);
+            }
+
+        },
+        created: function () {
+        }
+        ,
+
+        mounted: function () {
+            // this.$refs.chart0
+        },
+    })
+</script>
+</html>

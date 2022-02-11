@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>用户注册</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link href="/css/index.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <link href="/css/register.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <script src="/js/vue@2.6.10.js"></script>
+    <script src="/js/axios@0.18.0.min.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/jquery.min.js"></script>
+</head>
+<body>
+<div id="app">
+    <div id="box">
+        <el-button type="primary" round class="back" @click="goBack">返回</el-button>
+        <el-form ref="form" :model="form">
+            <el-row type="flex" class="row-bg" justify="center">
+                <el-col :span="8">
+                    <p class="heading"><span>用户注册</span></p>
+                </el-col>
+            </el-row>
+            <el-row type="flex" class="row-bg" justify="center">
+                <el-col :span="8">
+                    <p class="tips"><span>用户名/邮箱(Username/E-mail)</span></p>
+                </el-col>
+            </el-row>
+            <el-row type="flex" class="row-bg" justify="center">
+                <el-col :span="8">
+                    <el-input placeholder="请输入用户名" v-model="form.username" clearable></el-input>
+                </el-col>
+            </el-row>
+            <el-row type="flex" class="row-bg" justify="center">
+                <el-col :span="8">
+                    <p class="tips"><span>密码(Password)</span></p>
+                </el-col>
+            </el-row>
+            <el-row type="flex" class="row-bg" justify="center">
+                <el-col :span="8">
+                    <el-input placeholder="请输入密码" v-model="form.password" show-password></el-input>
+                </el-col>
+            </el-row>
+            <el-row type="flex" class="row-bg" justify="center">
+                <el-col :span="8">
+                    <p class="tips"><span>确认密码(Retype Password)</span></p>
+                </el-col>
+            </el-row>
+            <el-row type="flex" class="row-bg" justify="center">
+                <el-col :span="8">
+                    <el-input placeholder="请确认密码" v-model="form.re_password" show-password></el-input>
+                </el-col>
+            </el-row>
+            <el-row type="flex" class="row-bg" justify="center">
+                <el-col :span="8">
+                    <el-button type="warning" round @click="onSubmit"><p class="button_text">注册</p></el-button>
+                </el-col>
+            </el-row>
+        </el-form>
+    </div>
+</div>
+</body>
+<script>
+    new Vue({
+        el: "#app",
+        data: {
+            form: {
+                username: "",
+                password: "",
+                re_password: ""
+            }
+        },
+        methods: {
+            goBack: function () {
+                window.location.href = "/welcome";
+            },
+
+            onSubmit: function () {
+                if (this.form.username.length === 0 || this.form.password.length === 0) {
+                    this.$message({
+                        type: 'error',
+                        message: '用户名/密码不能为空'
+                    });
+                    return;
+                }
+
+                if (this.form.password !== this.form.re_password) {
+                    this.$message({
+                        type: 'error',
+                        message: '重复输入的密码不一致'
+                    });
+                    return;
+                }
+
+                axios.post("/postRegister", $.param(this.form)
+                ).then(response => {
+                    if (response.data === "Exist") {
+                        this.$message({
+                            type: 'error',
+                            message: '用户名已被注册'
+                        });
+                    } else {
+                        this.$message({
+                            type: 'success',
+                            message: '注册成功' + response.data
+                        });
+                        setTimeout("window.location.href = '/login'", 1000);
+                    }
+                });
+            }
+        }
+    });
+</script>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <title>${title?default('-')}</title>
+    <style>
+        body {
+            font-family: SimHei;
+        }
+
+        input {
+            -webkit-appearance: checkbox;
+        }
+        table {
+            font-size: 20px;
+            color: #333333;
+            width: 100%;
+            border-width: 1px;
+            border-color: #729ea5;
+            border-collapse: collapse;
+        }
+
+        th {
+            font-size: 8px;
+            background-color: #acc8cc;
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #729ea5;
+            text-align: center;
+        }
+
+        tr {
+            background-color: #d4e3e5;
+        }
+
+        td {
+            font-size: 20px;
+            border-width: 1px;
+            padding: 8px;
+            border-style: solid;
+            border-color: #729ea5;
+            text-align: center;
+        }
+
+        #div-head {
+            line-height: 50px;
+            text-align: center
+        }
+    </style>
+</head>
+<body>
+<div class="color pos">
+    <div id="div-head">
+        <b style="font-size: 25px;">${title?default('-')}</b>
+    </div>
+    <#list paper.paperQuestionTypes as item>
+    <div style="margin: 0;padding: 0">
+        <div style="margin: 3px;padding: 0;display: inherit;float: left"><b>题型：${item.type_text?default('-')}</b>
+        </div>
+        <div style="margin: 3px;padding: 0;display: inherit;float: right;"><b>分值：${item.prob_num_per_type*20?default('0')}</b>
+        </div>
+        <#if item.paperProbs??>
+        <#list item.paperProbs as prob>
+        <table style="margin-top: 6px">
+            <tr>
+                <td colspan="4">${prob.prob_text?default('-')}</td>
+            </tr>
+	<#if item.type_text !="填空题">
+            <tr>
+                <#if prob.option_a??&&(prob.option_a?length>0)>
+                <td>A: ${prob.option_a?default('-')}</td>
+                <#else>
+                <td>暂无</td>
+                </#if>
+                <#if prob.option_b??&&(prob.option_b?length>0)>
+                <td>B: ${prob.option_b?default('-')}</td>
+                <#else>
+                <td>暂无</td>
+                </#if>
+                <#if prob.option_c??&&(prob.option_c?length>0)>
+                <td>C: ${prob.option_c?default('-')}</td>
+                <#else>
+                <td>暂无</td>
+                </#if>
+                <#if prob.option_d??&&(prob.option_d?length>0)>
+                <td>D: ${prob.option_d?default('-')}</td>
+                <#else>
+                <td>暂无</td>
+                </#if>
+            </tr>
+	</#if>
+        </table>
+        </#list>
+        </#if>
+    </div>
+    </#list>
+
+</div>
+</body>
+</html>

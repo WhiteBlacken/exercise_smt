@@ -1,0 +1,1644 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <title>答题界面</title>
+    <meta http-equiv="content-type" content="text/html charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+    <link href="/css/demo.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <link href="/css/index.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <script src="/js/vue@2.6.10.js"></script>
+    <script src="/js/axios@0.18.0.min.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/jquery.min.js"></script>
+</head>
+<body onload="pauseMusic()">
+        <div id="pop_container">
+            <img id="popBox" src="/image/pop_box.png"></img>
+            <div id="pop_msg">
+                <p style="padding: 4px 0px;"><span style="color: #DCDCDC;">你还有 </span><span id="remain_text" style="color: #FF8900;"></span><span style="color: #DCDCDC;"> 未完成，是否交卷？</span></p>
+            </div>
+            <button type="button" id="handIn_confirm" onclick="handInConfirm()"></button>
+            <button type="button" id="handIn_cancel" onclick="handInCancel()"></button>
+        </div>
+        <div id="whole">
+            <div id="top_bar"></div>
+            <div id="app">
+                <div id="musicBox">
+                    <audio id="stem_music" onended="musicEnd(0)"></audio>
+
+                    <audio id="option_a_music" onended="musicEnd(1)"></audio>
+                    <audio id="option_b_music" onended="musicEnd(2)"></audio>
+                    <audio id="option_c_music" onended="musicEnd(3)"></audio>
+                    <audio id="option_d_music" onended="musicEnd(4)"></audio>
+
+                </div>
+                <button type="button" id="back_button" @click="goBack"></button>
+                <div id="main">
+                    <div id="header">
+                        <div id="container1">
+                            <div id="heading">
+                                <div id="heading1">Level {{ level }} Lesson {{ lesson }}</div>
+                                <div id="heading2">智能推送练习</div>
+                            </div>
+                        </div>
+                        <div id="container2">
+                            <div id="heading3">
+                                <div id="line"></div>
+                                <ul class="time">
+                                    <li v-for="activity in activities">
+                                        <img :src="activity.src" :id="getId(activity.index)">
+                                        <p :id="getNum(activity.index)"><span>{{ activity.content }}</span></p>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <img id="link_left" src="/image/link1.png">
+                    <img id="link_right" src="/image/link1.png">
+                    <div id="question_card">
+                        <div id="book_container">
+                            <img src="/image/book.png" id="book">
+                            <div id="question_area">
+                                <div id="image_container" style="display: none">
+                                    <img src="/image/logo.png" id="image">
+                                </div>
+                                <div id="question_info">
+                                    <p style="font-family: 'GothamRoundedMedium';color: #2A7DE1;font-size: 2.5rem;"><span>Q{{ num }}</span></p>
+                                    <div style="border-radius: 40px;background-color: #2A7DE1;font-family: 'Microsoft YaHei';color: white;font-weight: bold;font-size: 1.25rem;margin-left: 0.6rem;padding-left: 0.25rem;padding-right: 0.25rem;">
+                                        <p><span>{{ prob_attr }}</span></p>
+                                    </div>
+                                </div>
+                                <div id="question_text">
+
+                                    <p><span style="line-height: 55px">{{ prob_text }}</span><img v-if="stem_aud && stem_aud != ''" id="stem_audio" src="/image/audio-unchecked.png" @click="playAudio('stem')"></p>
+
+                                </div>
+                                <div id="opt_part">
+                                <div id="option_A" class="option" @click="chooseOption('a')">
+                                    <div id="question_a_text">A. {{ options.A }}</div>
+                                </div>
+                                <div id="option_B" class="option" @click="chooseOption('b')">
+                                    <div id="question_b_text">B. {{ options.B }}</div>
+                                </div>
+                                <div id="option_C" class="option" style="display: none;" @click="chooseOption('c')">
+                                    <div id="question_c_text">C. {{ options.C }}</div>
+                                </div>
+                                <div id="option_D" class="option" style="display: none;" @click="chooseOption('d')">
+                                    <div id="question_d_text">D. {{ options.D }}</div>
+                                </div>
+                                <button type="button" id="last_button" @click="lastProblem"></button>
+                                <button type="button" id="next_button" @click="nextProblem"></button>
+                            </div>
+                                <div id="tingyinxuanwen_part" style="display: none">
+
+                                    <div id="option-A" class="option_1" @click="chooseOption4('a')">
+                                        <div id="question_a_text">A. {{ options.A }}</div>
+                                    </div>
+                                    <div id="option-B" class="option_1" @click="chooseOption4('b')">
+                                        <div id="question_b_text">B. {{ options.B }}</div>
+                                    </div>
+                                    <div id="option-C" class="option_1" style="display: none;" @click="chooseOption4('c')">
+                                        <div id="question_c_text">C. {{ options.C }}</div>
+                                    </div>
+                                    <div id="option-D" class="option_1" style="display: none;" @click="chooseOption4('d')">
+
+                                        <div id="question_d_text">D. {{ options.D }}</div>
+                                    </div>
+                                    <button type="button" id="last_button" @click="lastProblem"></button>
+                                    <button type="button" id="next_button" @click="nextProblem"></button>
+                                </div>
+                                <div id="kantuxuanyin_part" style="display: none">
+                                    <div class="option_2" >
+
+                                        <div class="optionBox" id="option_A" style="float:left"><span>A.</span><img src="/image/audio-unselected.png" class="option_audio" id="option_a_audio" @click="playAudio('A')"></div>
+                                        <div class="optionBox" id="option_B" style="float:left"><span>B.</span><img src="/image/audio-unselected.png" class="option_audio" id="option_b_audio" @click="playAudio('B')"></div>
+                                    </div>
+                                    <div class="option_2">
+                                        <div class="optionBox" id="option_C" style="float:left;display: none"><span v-if="option_c_aud != ''">C.</span><img  src="/image/audio-unselected.png" id="option_c_audio" class="option_audio" @click="playAudio('C')"></div>
+                                        <div class="optionBox" id="option_D" style="float:left;display: none"><span v-if="option_d_aud != ''">D.</span><img  src="/image/audio-unselected.png" id="option_d_audio" class="option_audio" @click="playAudio('D')"></div>
+
+                                    </div>
+                                    <button type="button" id="last_button" @click="lastProblem"></button>
+                                    <button type="button" id="next_button" @click="nextProblem"></button>
+                                </div>
+                                <div id="tingyinxuanci_part" style="display: none">
+                                    <div id="option_A" class="option_3" @click="chooseOption3('a')">
+
+                                        <div class="option_img_container" v-if="option_a_img&&option_a_img != ''">
+
+                                            <img class="option_img" id="option_a_img" :src=option_a_img onerror="defaultImg('option_a_img')">
+                                        </div>
+                                        <div id="problem_a_text">A. {{ options.A }}</div>
+                                    </div>
+                                    <div id="option_B" class="option_3" @click="chooseOption3('b')">
+
+                                        <div class="option_img_container" v-if="option_b_img&&option_b_img != ''">
+
+                                            <img class="option_img" id="option_b_img" :src=option_b_img onerror="defaultImg('option_b_img')">
+                                        </div>
+                                        <div id="problem_b_text">B. {{ options.B }}</div>
+                                    </div>
+                                    <div id="option_C" class="option_3" style="display: none;" @click="chooseOption3('c')">
+
+                                        <div class="option_img_container" v-if="option_c_img && option_c_img != ''">
+                                            <img class="option_img" id="option_c_img" :src=option_c_img onerror="defaultImg('option_c_img')">
+                                        </div>
+                                        <div id="problem_c_text">C. {{ options.C }}</div>
+                                    </div>
+                                    <div id="option_D" class="option_3" style="display: none;" @click="chooseOption3('d')">
+                                        <div class="option_img_container" v-if="option_d_img && option_d_img != ''">
+                                            <img class="option_img" id="option_d_img" :src=option_d_img onerror="defaultImg('option_d_img')">
+                                        </div>
+                                        <div id="problem_d_text">D. {{ options.D }}</div>
+                                    </div>
+                                    <button type="button" id="last_button" @click="lastProblem"></button>
+                                    <button type="button" id="next_button" @click="nextProblem"></button>
+                                </div>
+                                <div id="panduanzhengwu_part" style="display: none">
+                                    <div class="option_2">
+                                        <div class="optionBox" id="option_A" style="float:left"><span>A.</span><img src="/image/true-unselected.png" class="option_judge" id="option_a_judge" @click="judge('A')"></div>
+                                        <div class="optionBox" id="option_B" style="float:left"><span>B.</span><img src="/image/false-unselected.png" class="option_judge" id="option_b_judge" @click="judge('B')"></div>
+                                    </div>
+
+                                    <button type="button" id="last_button" @click="lastProblem"></button>
+                                    <button type="button" id="next_button" @click="nextProblem"></button>
+                                </div>
+                                <div id="txt_part" style="display: none;">
+                                    <div id="input_box">
+                                        <div v-for="input in input_num">
+                                            <el-input v-model=txt[input] :id="getIndex(input)" :disabled="false" prefix-icon="" class="input_bar"></el-input>
+                                        </div>
+                                    </div>
+                                    <button type="button" id="last_button" @click="lastProblem"></button>
+                                    <button type="button" id="next_button" @click="nextProblem"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="footer">
+                        <div id="container3">
+                            <button type="button" id="finish_button" @click="handIn"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+</body>
+<script>
+    function pauseMusic () {
+        document.getElementById('stem_music').pause();
+        document.getElementById('option_a_music').pause();
+        document.getElementById('option_b_music').pause();
+        document.getElementById('option_c_music').pause();
+        document.getElementById('option_d_music').pause();
+    }
+
+    function audioFlicker (el) {
+        let tmp = el.src.split('/');
+        if (tmp[tmp.length - 1] == 'audio-unchecked.png') {
+            el.src = "/image/audio-checked.png";
+        } else {
+            el.src = "/image/audio-unchecked.png";
+        };
+    }
+    function setCookie(cname,cvalue) {
+        document.cookie = cname + "=" + cvalue + "; ";
+    }
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++)
+        {
+            var c = ca[i].trim();
+            if (c.indexOf(name) === 0)
+                return c.substring(name.length,c.length);
+        }
+        return "";
+    }
+
+    function handInConfirm() {
+        sessionStorage.clear();
+        window.location.replace("/demo_marked?src=" + app.src + "&mode=finish&id=" + app.id);
+    };
+
+    function handInCancel() {
+        document.getElementById("whole").style.filter = "brightness(1)";
+        document.getElementById("pop_container").style.zIndex = "0";
+    };
+
+    /*if(/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+        window.addEventListener("orientationchange",function(){
+            var deviceWidth = window.screen.width;
+            var deviceHeight = window.screen.height;
+            if(window.orientation == 0 || window.orientation == 180) {
+                if(deviceWidth >= deviceHeight) {
+                    $('#app').css("transform-origin","center top");
+                    $('#app').css("transform","scale(" + (deviceHeight / 1533) + ")");
+                    $('#pop_container').css("transform-origin","center top");
+                    $('#pop_container').css("transform","scale(" + (deviceHeight / 1533) + ")");
+                    $('#top_bar').css("transform-origin","center top");
+                    $('#top_bar').css("transform","scaleY(" + (deviceHeight / 1533) + ")");
+                }else {
+                    $('#app').css("transform-origin","center top");
+                    $('#app').css("transform","scale(" + (deviceWidth / 1533) + ")");
+                    $('#pop_container').css("transform-origin","center top");
+                    $('#pop_container').css("transform","scale(" + (deviceWidth / 1533) + ")");
+                    $('#top_bar').css("transform-origin","center top");
+                    $('#top_bar').css("transform","scaleY(" + (deviceWidth / 1533) + ")");
+                }
+            }
+            if(window.orientation == 90 || window.orientation == -90) {
+                if(deviceWidth < deviceHeight) {
+                    $('#app').css("transform-origin","center top");
+                    $('#app').css("transform","scale(" + (deviceHeight / 1533) + ")");
+                    $('#pop_container').css("transform-origin","center top");
+                    $('#pop_container').css("transform","scale(" + (deviceHeight / 1533) + ")");
+                    $('#top_bar').css("transform-origin","center top");
+                    $('#top_bar').css("transform","scaleY(" + (deviceHeight / 1533) + ")");
+                }else {
+                    $('#app').css("transform-origin","center top");
+                    $('#app').css("transform","scale(" + (deviceWidth / 1533) + ")");
+                    $('#pop_container').css("transform-origin","center top");
+                    $('#pop_container').css("transform","scale(" + (deviceWidth / 1533) + ")");
+                    $('#top_bar').css("transform-origin","center top");
+                    $('#top_bar').css("transform","scaleY(" + (deviceWidth / 1533) + ")");
+                }
+            }
+        });
+    }*/
+
+    window.addEventListener('resize', () => {
+        var deviceWidth = document.documentElement.clientWidth;
+        document.getElementById("app").style.transformOrigin = "left top";
+        document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+        document.getElementById("pop_container").style.transformOrigin = "left top";
+        document.getElementById("pop_container").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+        document.getElementById("top_bar").style.transformOrigin = "left top";
+        document.getElementById("top_bar").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+    }, false);
+
+    window.addEventListener("orientationchange",() => {
+        if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+            var deviceWidth = document.documentElement.clientWidth;
+            var deviceHeight = document.documentElement.clientHeight;
+            if(window.orientation == 0 || window.orientation == 180) {
+                deviceWidth = (deviceWidth < deviceHeight) ? deviceWidth : deviceHeight;
+                document.getElementById("app").style.transformOrigin = "left top";
+                document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                document.getElementById("pop_container").style.transformOrigin = "left top";
+                document.getElementById("pop_container").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                document.getElementById("top_bar").style.transformOrigin = "left top";
+                document.getElementById("top_bar").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+            }
+            if(window.orientation == 90 || window.orientation == -90) {
+                deviceWidth = (deviceWidth > deviceHeight) ? deviceWidth : deviceHeight;
+                document.getElementById("app").style.transformOrigin = "left top";
+                document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                document.getElementById("pop_container").style.transformOrigin = "left top";
+                document.getElementById("pop_container").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                document.getElementById("top_bar").style.transformOrigin = "left top";
+                document.getElementById("top_bar").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+            }
+        }
+    });
+
+    /*window.addEventListener("onorientationchange" in window ? "orientationchange" : "resize", function() {
+        var deviceWidth = window.screen.width;
+        $('#app').css("transform-origin","0 0");
+        $('#app').css("transform","scale(" + (deviceWidth / 1549) + ")");
+        $('#pop_container').css("transform-origin","0 0");
+        $('#pop_container').css("transform","scale(" + (deviceWidth / 1549) + ")");
+        $('#top_bar').css("transform-origin","0 0");
+        $('#top_bar').css("transform","scaleY(" + (deviceWidth / 1549) + ")");
+    }, false);*/
+    
+    var app = new Vue({
+        el: "#app",
+        data: {
+            handin: false,
+            num: 1,
+            totalNum: 0,
+            opt_num: 0,
+            opt_choice_num: 0,
+            opt_tingyinxuanwen_num: 0,
+            opt_kantuxuanyin_num: 0,
+            opt_tingyinxuanci_num: 0,
+            opt_panduanzhengwu_num: 0,
+            remain: -1,
+            id: 0,    //全局的 this.id 指的是一份试卷 sheetTemp 的 id
+            level: 0,
+            lesson: 0,
+            prob_list: [],
+            done_list: [],
+            opt_box: [],
+            opt_choice_box: [],
+            opt_tingyinxuanwen_box: [],
+            opt_kantuxuanyin_box: [],
+            opt_tingyinxuanci_box: [],
+            opt_panduanzhengwu_box: [],
+            txt_box: [],
+            src: "",
+            imgSrc: "",
+            prob_text: "test",
+            prob_attr: "",
+            options_id: 0,
+            options: {A: "A", B: "B", C: "C", D: "D"},
+            formData: {
+                idx: 0,
+                finish: 0,
+                choice: "",
+                choice_text: ""
+            },
+            setting: {
+                src: "",
+                sys: "",
+                lev: 0,
+                probNum: 0
+            },
+            options_list: [],
+            answers_list: [],
+            txt: [], //文本题的输入
+            input_num: [],
+            activities: [],
+            intervals: [0,0,0,0,0],
+            stem_img: "",
+            option_a_img: "",
+            option_b_img: "",
+            option_c_img: "",
+            option_d_img: "",
+            stem_aud: "",
+            option_a_aud: "",
+            option_b_aud: "",
+            option_c_aud: "",
+            option_d_aud: "",
+        },
+        methods: {
+
+            musicEnd: function (num) {
+                switch(num){
+                    case 0: {
+                        clearInterval(this.intervals[0]);
+                        document.getElementById('stem_audio').src= "/image/audio-unchecked.png";
+                        break;
+                    }
+                    case 1: {
+                        clearInterval(this.intervals[1]);
+
+                        document.getElementById('option_a_audio').src= "/image/audio-checked.png";
+
+                        break;
+                    }
+                    case 2: {
+                        clearInterval(this.intervals[2]);
+
+                        document.getElementById('option_b_audio').src= "/image/audio-checked.png";
+
+                        break;
+                    }
+                    case 3: {
+                        clearInterval(this.intervals[3]);
+
+                        document.getElementById('option_c_audio').src= "/image/audio-checked.png";
+
+                        break;
+                    }
+                    case 4: {
+                        clearInterval(this.intervals[4]);
+
+                        document.getElementById('option_d_audio').src= "/image/audio-checked.png";
+
+                        break;
+                    }
+                }
+            },
+            defaultImg: function (e) {
+                let el = document.getElementById(e);
+                el.src='/image/logo.png';
+                if(e == 'image') {
+                    el = document.getElementById(e + '_container');
+                    el.style.borderRadius = "0";
+                    el.style.borderWidth = "0";
+                }
+            },
+
+            playAudio: function (problem) {
+
+                if(problem == 'stem') {
+                    let el = document.getElementById('stem_audio');
+                    let music = document.getElementById('stem_music');
+                    if (music.paused) {
+                        pauseMusic();
+                        for(let i = 0; i < this.intervals.length; i++){
+                            if(this.intervals[i] != 0){
+                                if(i == 1)
+                                    document.getElementById('option_a_audio').src = "/image/audio-checked.png";
+                                else if(i == 2)
+                                    document.getElementById('option_b_audio').src = "/image/audio-checked.png";
+                                else if(i == 3)
+                                    document.getElementById('option_c_audio').src = "/image/audio-checked.png";
+                                else if(i == 4)
+                                    document.getElementById('option_d_audio').src = "/image/audio-checked.png";
+                                clearInterval(this.intervals[i]);
+                                this.intervals[i] = 0;
+                            }
+                        }
+
+                        music.src = this.stem_aud;
+
+                        music.play();
+                        this.intervals[0] = setInterval(function () {
+                            audioFlicker(el);
+                        },500);
+                    }else{
+                        music.pause();
+                        music.currentTime = 0;
+                        clearInterval(this.intervals[0]);
+                        this.intervals[0] = 0;
+                        el.src = "/image/audio-unchecked.png";
+                    }
+                }else if(problem == 'A'){
+
+                    if(document.getElementById('stem_audio'))
+                        document.getElementById('stem_audio').src = "/image/audio-unchecked.png";
+                    document.getElementById('option_a_audio').src = "/image/audio-unselected.png";
+                    document.getElementById('option_b_audio').src = "/image/audio-unselected.png";
+                    if(document.getElementById('option_c_audio'))
+                        document.getElementById('option_c_audio').src = "/image/audio-unselected.png";
+                    if(document.getElementById('option_d_audio'))
+
+                    document.getElementById('option_d_audio').src = "/image/audio-unselected.png";
+                    let el = document.getElementById('option_a_audio');
+                    let music = document.getElementById('option_a_music');
+                    if (music.paused) {
+                        pauseMusic();
+                        for(let i = 0; i < this.intervals.length; i++){
+                            clearInterval(this.intervals[i]);
+                            this.intervals[i] = 0;
+                        }
+
+                        music.src = this.option_a_aud;
+
+                        music.play();
+                        this.intervals[1] = setInterval(function () {
+                            audioFlicker(el);
+                        },500);
+                        this.chooseOption2('A');
+                    }else{
+                        music.pause();
+                        music.currentTime = 0;
+                        clearInterval(this.intervals[1]);
+                        this.intervals[0] = 0;
+                        el.src = "/image/audio-checked.png";
+                    }
+                }else if(problem == 'B'){
+
+                    if(document.getElementById('stem_audio'))
+                        document.getElementById('stem_audio').src = "/image/audio-unchecked.png";
+                    document.getElementById('option_a_audio').src = "/image/audio-unselected.png";
+                    document.getElementById('option_b_audio').src = "/image/audio-unselected.png";
+                    if(document.getElementById('option_c_audio'))
+                        document.getElementById('option_c_audio').src = "/image/audio-unselected.png";
+                    if(document.getElementById('option_d_audio'))
+                        document.getElementById('option_d_audio').src = "/image/audio-unselected.png";
+
+                    let el = document.getElementById('option_b_audio');
+                    let music = document.getElementById('option_b_music');
+                    if (music.paused) {
+                        pauseMusic();
+                        for(let i = 0; i < this.intervals.length; i++){
+                            clearInterval(this.intervals[i]);
+                            this.intervals[i] = 0;
+                        }
+
+                        music.src = this.option_b_aud;
+
+                        music.play();
+                        this.intervals[2] = setInterval(function () {
+                            audioFlicker(el);
+                        },500);
+                        this.chooseOption2('B');
+                    }else{
+                        music.pause();
+                        music.currentTime = 0;
+                        clearInterval(this.intervals[2]);
+                        this.intervals[2] = 0;
+                        el.src = "/image/audio-checked.png";
+                    }
+                }else if(problem == 'C'){
+
+                    if(document.getElementById('stem_audio'))
+                        document.getElementById('stem_audio').src = "/image/audio-unchecked.png";
+                    document.getElementById('option_a_audio').src = "/image/audio-unselected.png";
+                    document.getElementById('option_b_audio').src = "/image/audio-unselected.png";
+                    if(document.getElementById('option_c_audio'))
+                        document.getElementById('option_c_audio').src = "/image/audio-unselected.png";
+                    if(document.getElementById('option_d_audio'))
+                        document.getElementById('option_d_audio').src = "/image/audio-unselected.png";
+
+                    let el = document.getElementById('option_c_audio');
+                    let music = document.getElementById('option_c_music');
+                    if (music.paused) {
+                        pauseMusic();
+                        for(let i = 0; i < this.intervals.length; i++){
+                            clearInterval(this.intervals[i]);
+                            this.intervals[i] = 0;
+                        }
+
+                        music.src = this.option_c_aud;
+
+                        music.play();
+                        this.intervals[3] = setInterval(function () {
+                            audioFlicker(el);
+                        },500);
+                        this.chooseOption2('C');
+                    }else{
+                        music.pause();
+                        music.currentTime = 0;
+                        clearInterval(this.intervals[3]);
+                        this.intervals[3] = 0;
+                        el.src = "/image/audio-checked.png";
+                    }
+                }else if(problem == 'D'){
+
+                    if(document.getElementById('stem_audio'))
+                        document.getElementById('stem_audio').src = "/image/audio-unchecked.png";
+                    document.getElementById('option_a_audio').src = "/image/audio-unselected.png";
+                    document.getElementById('option_b_audio').src = "/image/audio-unselected.png";
+                    if(document.getElementById('option_c_audio'))
+                        document.getElementById('option_c_audio').src = "/image/audio-unselected.png";
+                    if(document.getElementById('option_d_audio'))
+                        document.getElementById('option_d_audio').src = "/image/audio-unselected.png";
+
+                    let el = document.getElementById('option_d_audio');
+                    let music = document.getElementById('option_d_music');
+                    if (music.paused) {
+                        pauseMusic();
+                        for(let i = 0; i < this.intervals.length; i++){
+                            clearInterval(this.intervals[i]);
+                            this.intervals[i] = 0;
+                        }
+
+                        music.src = this.option_d_aud;
+
+                        music.play();
+                        this.intervals[4] = setInterval(function () {
+                            audioFlicker(el);
+                        },500);
+                        this.chooseOption2('D');
+                    }else{
+                        music.pause();
+                        music.currentTime = 0;
+                        clearInterval(this.intervals[4]);
+                        this.intervals[4] = 0;
+                        el.src = "/image/audio-checked.png";
+                    }
+                }
+            },
+
+            judge: function (option) {
+                option = option.toUpperCase();
+                let el = document.getElementById('option_a_judge');
+                el.src = 'image/true-unselected.png';
+                el = document.getElementById('option_b_judge');
+                el.src = 'image/false-unselected.png';
+                this.formData.choice = option;
+                if(option == 'A'){
+                    el = document.getElementById('option_a_judge');
+                    el.src = '/image/true-selected.png';
+                }else if(option == 'B'){
+                    el = document.getElementById('option_b_judge');
+                    el.src = '/image/false-selected.png';
+                }
+                if(this.done_list.indexOf(this.num) === -1) {
+                    this.remain = this.totalNum-(this.done_list.push(this.num));
+                }
+                this.formData.idx = this.prob_list[this.num - 1];
+                this.formData.finish = 1;
+                axios.post("/postSheet", $.param(this.formData)  //引入jQuery的作用
+                ).then((response) => {
+                    this.$nextTick(() => {
+                        this.setSheet();
+                    });
+                });
+            },
+
+            goBack: function () {
+                sessionStorage.clear();
+                window.location.replace("https://www.smartreelearners.com/#/home");
+            },
+
+            chooseOption2: function (option) {
+                this.formData.choice = option.toLowerCase();
+                if(this.done_list.indexOf(this.num) === -1) {
+                    this.remain = this.totalNum-(this.done_list.push(this.num));
+                }
+                this.formData.idx = this.prob_list[this.num - 1];
+                this.formData.finish = 1;
+                axios.post("/postSheet", $.param(this.formData)  //引入jQuery的作用
+                ).then((response) => {
+                    this.$nextTick(() => {
+                        this.setSheet();
+                    });
+                });
+            },
+
+            chooseOption: function (option) {
+                this.refreshAnswer();
+                document.getElementById('option_' + option.toUpperCase()).style.background = "#00D87E";
+                document.getElementById('option_' + option.toUpperCase()).style.color = "white";
+                this.formData.choice = option;
+                if (option === 'a') {
+                    this.formData.choice_text = this.options.A;
+                } else if (option === 'b') {
+                    this.formData.choice_text = this.options.B;
+                } else if (option === 'c') {
+                    this.formData.choice_text = this.options.C;
+                } else if (option === 'd') {
+                    this.formData.choice_text = this.options.D;
+                }
+                if(this.done_list.indexOf(this.num) === -1) {
+                    this.remain = this.totalNum-(this.done_list.push(this.num));
+                }
+                this.formData.idx = this.prob_list[this.num - 1];
+                this.formData.finish = 1;
+                axios.post("/postSheet", $.param(this.formData)  //引入jQuery的作用
+                ).then((response) => {
+                    this.$nextTick(() => {
+                        this.setSheet();
+                    });
+                });
+            },
+            chooseOption3: function (option) {
+                this.refreshAnswer();
+                document.getElementById('option-' + option.toUpperCase()).style.background = "#00D87E";
+                document.getElementById('option-' + option.toUpperCase()).style.color = "white";
+                this.formData.choice = option;
+                if (option === 'a') {
+                    this.formData.choice_text = this.options.A;
+                } else if (option === 'b') {
+                    this.formData.choice_text = this.options.B;
+                } else if (option === 'c') {
+                    this.formData.choice_text = this.options.C;
+                } else if (option === 'd') {
+                    this.formData.choice_text = this.options.D;
+                }
+                if(this.done_list.indexOf(this.num) === -1) {
+                    this.remain = this.totalNum-(this.done_list.push(this.num));
+                }
+                this.formData.idx = this.prob_list[this.num - 1];
+                this.formData.finish = 1;
+                axios.post("/postSheet", $.param(this.formData)  //引入jQuery的作用
+                ).then((response) => {
+                    this.$nextTick(() => {
+                        this.setSheet();
+                    });
+                });
+            },
+
+            chooseOption3: function (option) {
+                this.refreshAnswer2();
+                document.getElementById('problem_' + option + '_text').style.background = "#00D87E";
+                document.getElementById('problem_' + option + '_text').style.color = "white";
+                this.formData.choice = option;
+                if (option === 'a') {
+                    this.formData.choice_text = this.options.A;
+                } else if (option === 'b') {
+                    this.formData.choice_text = this.options.B;
+                } else if (option === 'c') {
+                    this.formData.choice_text = this.options.C;
+                } else if (option === 'd') {
+                    this.formData.choice_text = this.options.D;
+                }
+                if(this.done_list.indexOf(this.num) === -1) {
+                    this.remain = this.totalNum-(this.done_list.push(this.num));
+                }
+                this.formData.idx = this.prob_list[this.num - 1];
+                this.formData.finish = 1;
+                axios.post("/postSheet", $.param(this.formData)  //引入jQuery的作用
+                ).then((response) => {
+                    this.$nextTick(() => {
+                        this.setSheet();
+                    });
+                });
+            },
+
+            chooseOption3: function (option) {
+                this.refreshAnswer2();
+                document.getElementById('problem_' + option + '_text').style.background = "#00D87E";
+                document.getElementById('problem_' + option + '_text').style.color = "white";
+                this.formData.choice = option;
+                if (option === 'a') {
+                    this.formData.choice_text = this.options.A;
+                } else if (option === 'b') {
+                    this.formData.choice_text = this.options.B;
+                } else if (option === 'c') {
+                    this.formData.choice_text = this.options.C;
+                } else if (option === 'd') {
+                    this.formData.choice_text = this.options.D;
+                }
+                if(this.done_list.indexOf(this.num) === -1) {
+                    this.remain = this.totalNum-(this.done_list.push(this.num));
+                }
+                this.formData.idx = this.prob_list[this.num - 1];
+                this.formData.finish = 1;
+                axios.post("/postSheet", $.param(this.formData)  //引入jQuery的作用
+                ).then((response) => {
+                    this.$nextTick(() => {
+                        this.setSheet();
+                    });
+                });
+            },
+
+            chooseOption4: function (option) {
+                this.refreshAnswer1();
+                document.getElementById('option-' + option.toUpperCase()).style.background = "#00D87E";
+                document.getElementById('option-' + option.toUpperCase()).style.color = "white";
+                this.formData.choice = option;
+                if (option === 'a') {
+                    this.formData.choice_text = this.options.A;
+                } else if (option === 'b') {
+                    this.formData.choice_text = this.options.B;
+                } else if (option === 'c') {
+                    this.formData.choice_text = this.options.C;
+                } else if (option === 'd') {
+                    this.formData.choice_text = this.options.D;
+                }
+                if(this.done_list.indexOf(this.num) === -1) {
+                    this.remain = this.totalNum-(this.done_list.push(this.num));
+                }
+                this.formData.idx = this.prob_list[this.num - 1];
+                this.formData.finish = 1;
+                axios.post("/postSheet", $.param(this.formData)  //引入jQuery的作用
+                ).then((response) => {
+                    this.$nextTick(() => {
+                        this.setSheet();
+                    });
+                });
+            },
+
+            chooseOption3: function (option) {
+                this.refreshAnswer2();
+                document.getElementById('problem_' + option + '_text').style.background = "#00D87E";
+                document.getElementById('problem_' + option + '_text').style.color = "white";
+                this.formData.choice = option;
+                if (option === 'a') {
+                    this.formData.choice_text = this.options.A;
+                } else if (option === 'b') {
+                    this.formData.choice_text = this.options.B;
+                } else if (option === 'c') {
+                    this.formData.choice_text = this.options.C;
+                } else if (option === 'd') {
+                    this.formData.choice_text = this.options.D;
+                }
+                if(this.done_list.indexOf(this.num) === -1) {
+                    this.remain = this.totalNum-(this.done_list.push(this.num));
+                }
+                this.formData.idx = this.prob_list[this.num - 1];
+                this.formData.finish = 1;
+                axios.post("/postSheet", $.param(this.formData)  //引入jQuery的作用
+                ).then((response) => {
+                    this.$nextTick(() => {
+                        this.setSheet();
+                    });
+                });
+            },
+
+            refreshAnswer: function () {
+                document.getElementById('option_A').style.background = "#F0F0F0";
+                document.getElementById('option_A').style.color = "black";
+                document.getElementById('option_B').style.background = "#F0F0F0";
+                document.getElementById('option_B').style.color = "black";
+                document.getElementById('option_C').style.background = "#F0F0F0";
+                document.getElementById('option_C').style.color = "black";
+                document.getElementById('option_D').style.background = "#F0F0F0";
+                document.getElementById('option_D').style.color = "black";
+            },
+
+
+            refreshAnswer1: function () {
+                document.getElementById('option-A').style.background = "#F0F0F0";
+                document.getElementById('option-A').style.color = "black";
+                document.getElementById('option-B').style.background = "#F0F0F0";
+                document.getElementById('option-B').style.color = "black";
+                document.getElementById('option-C').style.background = "#F0F0F0";
+                document.getElementById('option-C').style.color = "black";
+                document.getElementById('option-D').style.background = "#F0F0F0";
+                document.getElementById('option-D').style.color = "black";
+            },
+
+            refreshAnswer2: function () {
+                document.getElementById('problem_a_text').style.background = "#F0F0F0";
+                document.getElementById('problem_a_text').style.color = "black";
+                document.getElementById('problem_b_text').style.background = "#F0F0F0";
+                document.getElementById('problem_b_text').style.color = "black";
+                document.getElementById('problem_c_text').style.background = "#F0F0F0";
+                document.getElementById('problem_c_text').style.color = "black";
+                document.getElementById('problem_d_text').style.background = "#F0F0F0";
+                document.getElementById('problem_d_text').style.color = "black";
+            },
+
+            getIndex: function (option) {
+                return "text" + (option + 1);
+            },
+
+            getId: function (option) {
+                return "icon_" + option;
+            },
+
+            getNum: function (option) {
+                return "num_" + option;
+            },
+
+            confirm: function() {
+                this.formData.idx = this.prob_list[this.num - 1];
+                this.formData.choice = "none";
+                this.formData.finish = 1;
+                this.formData.choice_text = this.txt.join("$");
+                if(this.done_list.indexOf(this.num) === -1) {
+                    this.remain = this.totalNum-(this.done_list.push(this.num));
+                }
+                axios.post("/postSheet", $.param(this.formData)
+                ).then((response) => {
+                    this.$nextTick(() => {
+                        this.setSheet();
+                    });
+                });
+            },
+
+            jumpProblem: function (option) {
+                if(this.num <= this.opt_num && option > this.opt_num){
+                    document.getElementById('opt_part').style.display = "none";
+                    document.getElementById('txt_part').style.display = "";
+                    this.rememberTxt(option);
+                }else if(this.num <= this.opt_num && option <= this.opt_num){
+                    this.refreshAnswer();
+                    this.refreshAnswer2();
+                    this.rememberOpt(option);
+                }else if(this.num > this.opt_num && option > this.opt_num){
+                    for(var i = 0;i < this.txt.length;i++) {
+                        if(this.txt[i] !== "") {
+                            this.confirm();
+                            break;
+                        }
+                    }
+                    this.rememberTxt(option);
+                }else if(this.num > this.opt_num && option <= this.opt_num){
+                    for(var i = 0;i < this.txt.length;i++) {
+                        if(this.txt[i] !== "") {
+                            this.confirm();
+                            break;
+                        }
+                    }
+                    document.getElementById('opt_part').style.display = "";
+                    document.getElementById('txt_part').style.display = "none";
+                    this.refreshAnswer();
+                    this.rememberOpt(option);
+                }
+                this.num = option;
+                this.store();
+                this.$nextTick(() => {
+                    this.fetchProblem();
+                });
+            },
+
+            lastProblem: function () {
+                pauseMusic();
+                for(let i = 0 ;i < 5; i++){
+                    if(this.intervals[i] != 0){
+                        clearInterval(this.intervals[i]);
+                        this.intervals[i] = 0;
+                    }
+                }
+                if(this.num > 1){
+                    if(this.num === (this.opt_num + 1)){
+                        for(var i = 0;i < this.txt.length;i++) {
+                            if(this.txt[i] !== "") {
+                                this.confirm();
+                                break;
+                            }
+                        }
+                        this.num -= 1;
+
+                        document.getElementById('kantuxuanyin_part').style.display = "none";
+                        document.getElementById('tingyinxuanci_part').style.display = "none";
+                        document.getElementById('tingyinxuanwen_part').style.display = "none";
+                        document.getElementById('panduanzhengwu_part').style.display = "none";
+                        document.getElementById('opt_part').style.display = "none";
+
+                        document.getElementById('txt_part').style.display = "none";
+                        if(this.num == this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num + this.opt_panduanzhengwu_num) {
+                            document.getElementById('panduanzhengwu_part').style.display = "";
+                        }
+                        if(this.num == this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num) {
+                            document.getElementById('tingyinxuanci_part').style.display = "";
+                            document.getElementById('panduanzhengwu_part').style.display = "none";
+                        }
+                        if(this.num == this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num) {
+                            document.getElementById('kantuxuanyin_part').style.display = "";
+                            document.getElementById('tingyinxuanci_part').style.display = "none";
+                        }
+                        if(this.num == this.opt_choice_num + this.opt_tingyinxuanwen_num) {
+                            document.getElementById('tingyinxuanwen_part').style.display = "";
+                            document.getElementById('kantuxuanyin_part').style.display = "none";
+                        }
+                        if(this.num == this.opt_choice_num) {
+                            document.getElementById('opt_part').style.display = "";
+                            document.getElementById('tingyinxuanwen_part').style.display = "none";
+                        }
+                        this.refreshAnswer();
+                        this.refreshAnswer2();
+                        this.rememberOpt(this.num);
+                    }else if(this.num > this.opt_num) {
+                        for(var i = 0;i < this.txt.length;i++) {
+                            if(this.txt[i] !== "") {
+                                this.confirm();
+                                break;
+                            }
+                        }
+                        this.num -= 1;
+                        this.rememberTxt(this.num);
+                    }else {
+                        this.num -= 1;
+                        document.getElementById('tingyinxuanci_part').style.display = "none";
+                        document.getElementById('kantuxuanyin_part').style.display = "none";
+                        document.getElementById('tingyinxuanwen_part').style.display = "none";
+                        document.getElementById('panduanzhengwu_part').style.display = "none";
+                        document.getElementById('opt_part').style.display = "none";
+                        if(this.num == this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num){
+                            document.getElementById('tingyinxuanci_part').style.display = "";
+                            if(this.num == this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num) {
+                                document.getElementById('tingyinxuanci_part').style.display = "none";
+                                document.getElementById('kantuxuanyin_part').style.display = "";
+                            }
+                            if(this.num == this.opt_choice_num + this.opt_tingyinxuanwen_num) {
+                                document.getElementById('kantuxuanyin_part').style.display = "none";
+                                document.getElementById('tingyinxuanwen_part').style.display = "";
+                            }
+                            if(this.num == this.opt_choice_num) {
+                                document.getElementById('tingyinxuanwen_part').style.display = "none";
+                                document.getElementById('opt_part').style.display = "";
+                            }
+                        }else if(this.num == this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num){
+                            document.getElementById('kantuxuanyin_part').style.display = "";
+                            if(this.num == this.opt_choice_num + this.opt_tingyinxuanwen_num) {
+                                document.getElementById('kantuxuanyin_part').style.display = "none";
+                                document.getElementById('tingyinxuanwen_part').style.display = "";
+                            }
+                            if(this.num == this.opt_choice_num) {
+                                document.getElementById('tingyinxuanwen_part').style.display = "none";
+                                document.getElementById('opt_part').style.display = "";
+                            }
+                        }else if(this.num == this.opt_choice_num + this.opt_tingyinxuanwen_num) {
+                            document.getElementById('tingyinxuanwen_part').style.display = "";
+                            if(this.num == this.opt_choice_num) {
+                                document.getElementById('tingyinxuanwen_part').style.display = "none";
+                                document.getElementById('opt_part').style.display = "";
+                            }
+                        }else if(this.num == this.opt_choice_num){
+                            document.getElementById('opt_part').style.display = "";
+                        }
+                        this.refreshAnswer();
+                        this.refreshAnswer2 ();
+
+                        this.rememberOpt(this.num);
+                    }
+                    this.store();
+                    this.$nextTick(() => {
+                        this.fetchProblem();
+                    });
+                }
+                else {
+                    this.$message({
+                        type: 'info',
+                        message: '这是第一题'
+                    });
+                }
+            },
+
+            nextProblem: function () {
+                pauseMusic();
+                for(let i = 0 ;i < 5; i++){
+                    if(this.intervals[i] != 0){
+                        clearInterval(this.intervals[i]);
+                        this.intervals[i] = 0;
+                    }
+                }
+                if(this.num < this.totalNum){
+                    if(this.num === this.opt_num){
+                        this.num += 1;
+                        document.getElementById('tingyinxuanci_part').style.display = "none";
+                        document.getElementById('kantuxuanyin_part').style.display = "none";
+                        document.getElementById('tingyinxuanwen_part').style.display = "none";
+                        document.getElementById('panduanzhengwu_part').style.display = "none";
+                        document.getElementById('opt_part').style.display = "none";
+                        document.getElementById('txt_part').style.display = "";
+                        this.rememberTxt(this.num);
+                    }else if(this.num < this.opt_num) {
+                        if(this.num === this.opt_choice_num) {
+                            document.getElementById('opt_part').style.display = "none";
+                            document.getElementById('tingyinxuanwen_part').style.display = "";
+                        }
+                        if(this.num === this.opt_choice_num + this.opt_tingyinxuanwen_num){
+                            document.getElementById('tingyinxuanwen_part').style.display = "none";
+                            document.getElementById('kantuxuanyin_part').style.display = "";
+                        }
+                        if(this.num === this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num){
+                            document.getElementById('kantuxuanyin_part').style.display = "none";
+                            document.getElementById('tingyinxuanci_part').style.display = "";
+                        }
+                        if(this.num === this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num){
+                            document.getElementById('tingyinxuanci_part').style.display = "none";
+                            document.getElementById('panduanzhengwu_part').style.display = "";
+                        }
+                        this.num += 1;
+                        this.refreshAnswer();
+                        this.refreshAnswer2();
+                        this.rememberOpt(this.num);
+                    }else {
+                        for(var i = 0;i < this.txt.length;i++) {
+                            if(this.txt[i] !== "") {
+                                this.confirm();
+                                break;
+                            }
+                        }
+                        this.num += 1;
+                        this.rememberTxt(this.num);
+                    }
+                    this.store();
+                    this.$nextTick(() => {
+                        this.fetchProblem();
+                    });
+                }
+                else {
+                    for(var i = 0;i < this.txt.length;i++) {
+                        if(this.txt[i] !== "") {
+                            this.confirm();
+                            break;
+                        }
+                    }
+                    this.$message({
+                        type: 'info',
+                        message: '已经是最后一题了'
+                    });
+                }
+            },
+
+            handIn: function () {
+                if(this.num > this.opt_num) {
+                    for(var i = 0;i < this.txt.length;i++) {
+                        if(this.txt[i] !== "") {
+                            this.confirm();
+                            break;
+                        }
+                    }
+                }
+                if(this.remain > 0){
+                    this.handin = true;
+                    document.getElementById("whole").style.filter = "brightness(0.85)";
+                    document.getElementById("pop_container").style.zIndex = "1";
+                    document.getElementById("remain_text").innerHTML = this.remain + "道题";
+                }else {
+                    //var url = sessionStorage.getItem('lastUrl');
+                    //history.replaceState(null,null,url);
+                    sessionStorage.clear();
+                    window.location.replace("/demo_marked?src=" + this.src + "&mode=finish&id=" + this.id);
+                }
+            },
+
+            getSheet: function () {
+                return new Promise(resolve => {
+                    axios.get("/getSheet"
+                    ).then((response) => {
+                        this.options_list = response.data.sheet_list;
+                        resolve(response.data.sheet_list);
+                    });
+                })
+            },
+
+            setSheet: async function () {
+                this.options_list = await this.getSheet();
+                for (var i = 0; i < this.options_list.length; i++) {
+                    ans = this.options_list[i];
+                    console.log(ans);
+                    if(ans.finish === 1) {
+                        var index = this.prob_list.indexOf(ans["idx"]);
+                        this.activities[index]["src"] = "/image/yellow-star.png";
+                        document.getElementById("num_" + (index + 1)).style.color = "#2A7DE1";
+                    }
+                }
+                
+                this.store();
+            },
+
+            getInitPaper: function () {
+                return new Promise(resolve => {
+                    axios.get("/initPaper"
+                    ).then((response) => {
+                        resolve(response.data);
+                    });
+                })
+            },
+
+            setInitPaper: async function () {
+                if(this.remain === -1) {
+                    var res = await this.getInitPaper();
+                    this.totalNum = res.sheet_list.length;
+                    if(this.totalNum === 0){
+                        this.$alert('这个页面目前还没有题目，请点击返回主界面', '提示', {
+                            confirmButtonText: '确定',
+                            callback: action => {
+                                window.location.replace("/start");
+                            }
+                        });
+                    }
+
+                    this.prob_list = res.num_list;   //直接获取题号序列
+                    this.opt_num = res.opt_num;
+                    this.opt_choice_num = res.opt_choice_num;
+                    this.opt_tingyinxuanwen_num = res.opt_tingyinxuanwen_num;
+                    this.opt_kantuxuanyin_num = res.opt_kantuxuanyin_num;
+                    this.opt_tingyinxuanci_num = res.opt_tingyinxuanci_num;
+                    this.opt_panduanzhengwu_num = res.opt_panduanzhengwu_num;
+                    this.id = res.id;
+                    this.remain = this.totalNum;
+                    this.opt_box = [];
+                    this.txt_box = [];
+                    this.opt_choice_box = [];
+                    this.opt_tingyinxuanwen_box = [];
+                    this.opt_kantuxuanyin_box = [];
+                    this.opt_tingyinxuanci_box = [];
+                    this.opt_panduanzhengwu_box = [];
+                    for(var j = 1;j <= this.totalNum;j++) {
+                        var activityTemp = {};
+                        activityTemp.content = 'Q' + j.toString();
+                        activityTemp.index = j;
+                        activityTemp.src = '/image/grey-star.png';
+                        this.activities.push(activityTemp);
+                        if(j <= this.opt_choice_num) {
+                            this.opt_choice_box.push(j);
+
+                            this.opt_box.push(j);
+                        }else if(j <= this.opt_choice_num + this.opt_tingyinxuanwen_num){
+                            this.opt_tingyinxuanwen_box.push(j);
+                            this.opt_box.push(j);
+                        }else if(j <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num){
+                            this.opt_kantuxuanyin_box.push(j);
+
+                            this.opt_box.push(j);
+                        }else if(j <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num){
+                            this.opt_tingyinxuanci_box.push(j);
+                            this.opt_box.push(j);
+
+                        }else if(j <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num + this.opt_panduanzhengwu_num){
+                            this.opt_panduanzhengwu_box.push(j);
+                            this.opt_box.push(j);
+                        }else{
+                            this.txt_box.push(j);
+                        }
+                    }
+                }
+                if(this.num <= this.opt_choice_num) {
+                    this.openView('opt');
+                }else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num){
+                    this.openView('tingyinxuanwen');
+                }else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num){
+                    this.openView('kantuxuanyin');
+                }else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num){
+                    this.openView('tingyinxuanci');
+                }else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num + this.opt_panduanzhengwu_num){
+                    this.openView('panduanzhengwu');
+                }else{
+                    this.openView('txt');
+                }
+                this.fetchProblem();
+            },
+
+            openView: function (part) {
+                document.getElementById('opt_part').style.display = "none";
+                document.getElementById('tingyinxuanwen_part').style.display = "none";
+                document.getElementById('kantuxuanyin_part').style.display = "none";
+                document.getElementById('tingyinxuanci_part').style.display = "none";
+                document.getElementById('panduanzhengwu_part').style.display = "none";
+                document.getElementById('txt_part').style.display = "none";
+                document.getElementById(part + '_part').style.display = "";
+            },
+
+            getImage: function (str) {
+                var img = new Image();
+                img.src = "/image/_prob/" + str + ".png";
+                if(img.complete){
+                    document.getElementById("img_size").style.width = "100%";
+                    document.getElementById("img_size").style.height = "100%";
+                    if(img.width > img.height) {
+                        document.getElementById("img_size").style.height = "auto";
+                    }else {
+                        document.getElementById("img_size").style.width = "auto";
+                    }
+                }else{
+                    img.onload = function(){
+                        document.getElementById("img_size").style.width = "100%";
+                        document.getElementById("img_size").style.height = "100%";
+                        if(img.width > img.height) {
+                            document.getElementById("img_size").style.height = "auto";
+                        }else {
+                            document.getElementById("img_size").style.width = "auto";
+                        }
+                    };
+                }
+                this.imgSrc = img.src;
+            },
+
+            fetchProblem: async function () {
+                console.log("opt_choice_num:" + this.opt_choice_num)
+                console.log("opt_tingyinxuanwen_num:" + this.opt_tingyinxuanwen_num)
+                console.log("opt_kantuxuanyin_num:" + this.opt_kantuxuanyin_num)
+                console.log("opt_tingyinxuanci_num:" + this.opt_tingyinxuanci_num)
+                console.log("opt_panduanzhengwu_num:" + this.opt_panduanzhengwu_num)
+                console.log("opt_num:" + this.opt_num)
+                this.stem_img = "";
+                this.option_a_img = "";
+                this.option_b_img = "";
+                this.option_c_img = "";
+                this.option_d_img = "";
+                this.stem_aud = "";
+                this.option_a_aud = "";
+                this.option_b_aud = "";
+                this.option_c_aud = "";
+                this.option_d_aud = "";
+                if (this.num <= this.opt_num) {
+                    var prob = await axios.get("/getProblem?num=" + this.prob_list[this.num - 1].toString());
+                    this.prob_text = prob.data.prob_text;
+                    if(prob.data.resource_flag == 2 || prob.data.resource_flag == 4)
+                        this.stem_img = prob.data.image_url;
+                    if(prob.data.resource_flag == 3 || prob.data.resource_flag == 4)
+                    this.stem_aud = prob.data.audio_url;
+
+                    document.getElementById('image_container').style.display = "none";
+                    if(this.num <= this.opt_choice_num) {
+                        this.prob_attr = "选择题";
+                        let tmp = document.getElementById('image_container');
+                        tmp.style.display = "";
+                        if(this.stem_img == ""||!this.stem_img){
+                            tmp = document.getElementById('image');
+                            tmp.style.width = "100%";
+                            tmp.style.height = "100%";
+                            tmp.style.borderRadius = "0";
+                            tmp.src = "/image/logo.png";
+                            tmp = document.getElementById('image_container');
+                            tmp.style.backgroundImage = "none";
+                        }else {
+                            document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
+                            document.getElementById('image').src = this.stem_img;
+                            document.getElementById('image').style.borderRadius = "16px";
+                            document.getElementById('image').style.width = "93.9%";
+                            document.getElementById('image').style.height = "93.2%";
+                        }
+                    }
+                    else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num)
+                        this.prob_attr = "听音选文";
+                    else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num) {
+                        this.prob_attr = "看图选音";
+                        let tmp = document.getElementById('image_container');
+                        tmp.style.display = "";
+                        if(this.stem_img == ""||!this.stem_img){
+                            tmp = document.getElementById('image');
+                            tmp.style.borderRadius = "0";
+                            tmp.style.width = "100%";
+                            tmp.style.height = "100%";
+                            tmp.style.borderRadius = "0";
+                            tmp.src = "/image/logo.png";
+                            tmp = document.getElementById('image_container');
+                            tmp.style.backgroundImage = "none";
+                        }else {
+                            document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
+                            document.getElementById('image').src = this.stem_img;
+                            document.getElementById('image').style.borderRadius = "16px";
+                            document.getElementById('image').style.width = "93.9%";
+                            document.getElementById('image').style.height = "93.2%";
+                        }
+                    }
+                    else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num)
+                        this.prob_attr = "听音选词";
+                    else
+                        this.prob_attr = "判断正误";
+                    this.options_id = prob.data.options_id;
+                    var option = await axios.get("/getOptions?id=" + this.options_id);
+                    console.log(option)
+                    if(option.data.resource_flag == 1 || option.data.resource_flag == 4){
+                        this.options.A = option.data.option_a;
+                        this.options.B = option.data.option_b;
+                        if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null) && (option.data.option_c.length > 0)) {
+                            this.options.C = option.data.option_c;
+                            document.getElementById('option_C').style.display = "";
+                        } else {
+                            this.options.C = "";
+                            document.getElementById('option_C').style.display = "none";
+                        }
+                        if (option.data.hasOwnProperty('option_d') && (option.data.option_d !== null) && (option.data.option_d.length > 0)) {
+                            this.options.D = option.data.option_d;
+                            document.getElementById('option_D').style.display = "";
+                        } else {
+                            this.options.D = "";
+                            document.getElementById('option_D').style.display = "none";
+                        }
+                    }
+                    if(option.data.resource_flag == 2||option.data.resource_flag == 4){
+                        this.option_a_img = option.data.a_image_url;
+                        this.option_b_img = option.data.b_image_url;
+                        if (option.data.hasOwnProperty('c_image_url') && (option.data.c_image_url !== null) && (option.data.c_image_url.length > 0)) {
+                            this.option_c_img = option.data.c_image_url;
+                            document.getElementById('option_C').style.display = "";
+                        } else {
+                            this.options.C = "";
+                            this.option_c_img = "";
+                            document.getElementById('option_C').style.display = "none";
+                        }
+                        if (option.data.hasOwnProperty('d_image_url') && (option.data.d_image_url !== null) && (option.data.d_image_url.length > 0)) {
+                            this.option_d_img = option.data.d_image_url;
+                            document.getElementById('option_D').style.display = "";
+                        } else {
+                            this.options.D = "";
+                            this.option_d_img = "";
+                            document.getElementById('option_D').style.display = "none";
+                        }
+                    }
+                    if(option.data.resource_flag == 3){
+                        this.option_a_aud = option.data.a_audio_url;
+                        this.option_b_aud = option.data.b_audio_url;
+                        if (option.data.hasOwnProperty('c_audio_url') && (option.data.c_audio_url !== null) && (option.data.c_audio_url.length > 0)) {
+                            this.option_c_aud = option.data.c_audio_url;
+                            document.getElementById('option_C').style.display = "";
+                        } else {
+                            this.options.C = "";
+                            this.option_c_aud = "";
+                            document.getElementById('option_C').style.display = "none";
+                        }
+                        if (option.data.hasOwnProperty('d_audio_url') && (option.data.d_audio_url !== null) && (option.data.d_audio_url.length > 0)) {
+                            this.option_d_aud = option.data.d_audio_url;
+                            document.getElementById('option_D').style.display = "";
+                        } else {
+                            this.options.D = "";
+                            this.option_d_aud = "";
+                            document.getElementById('option_D').style.display = "none";
+                        }
+                    }
+                }else {
+                    this.txt = [];
+                    var prob = await axios.get("/getProblem?num="+this.prob_list[this.num-1].toString());
+                    this.prob_text = prob.data.prob_text;
+                    if(prob.data.resource_flag == 2 || prob.data.resource_flag == 4)
+                        this.stem_img = prob.data.image_url;
+                    if(prob.data.resource_flag == 3 || prob.data.resource_flag == 4)
+                        this.stem_aud = prob.data.audio_url;
+                    if(prob.data.prob_attr === "Correct") {
+                        this.prob_attr = "改错题";
+                    }else if(prob.data.prob_attr === "Fill") {
+                        this.prob_attr = "填空题";
+                    }else if(prob.data.prob_attr === "Rewrite") {
+                        this.prob_attr = "改写题";
+                    }else if(prob.data.prob_attr === "Translation") {
+                        this.prob_attr = "翻译题";
+                    }
+                    for(var i = 0;i < prob.data.blank_num;i++) {//2记得改为prob.data.blank_num
+                        this.txt.push("");
+                    }
+                    this.input_num = [...Array(prob.data.blank_num).keys()];//2记得改为prob.data.blank_num
+                    this.prob_text = prob.data.prob_text;
+                }
+                for (var j = 1; j <= this.totalNum; j++) {
+                    if(j === this.num) {
+                        document.getElementById("icon_" + j).style.width = "47.4%";
+                        document.getElementById("icon_" + j).style.height = "46.9%";
+                        document.getElementById("icon_" + j).style.margin = "0";
+                        document.getElementById("num_" + j).style.fontSize = "1.25rem";
+                    }else {
+                        document.getElementById("icon_" + j).style.width = "33.1%";
+                        document.getElementById("icon_" + j).style.height = "32.9%";
+                        document.getElementById("icon_" + j).style.margin = "5% 0 0 0"
+                        document.getElementById("num_" + j).style.fontSize = "1rem";
+                    }
+                }
+            },
+
+            rememberOpt: function (option) {
+                axios.get("/getSheet").then((response) => {
+                    for (var i=0; i<response.data.sheet_list.length; i++) {
+                        if(((this.prob_list.indexOf(response.data.sheet_list[i].idx) + 1) === option) && (response.data.sheet_list[i].finish === 1)) {
+                            if(option <= this.opt_choice_num){
+                                document.getElementById('option_'+response.data.sheet_list[i].choice.toUpperCase()).style.background = "#00D87E";
+                                document.getElementById('option_'+response.data.sheet_list[i].choice.toUpperCase()).style.color = "white";
+                            }else if(option <= this.opt_choice_num + this.opt_tingyinxuanwen_num){
+                                document.getElementById('option-'+response.data.sheet_list[i].choice.toUpperCase()).style.background = "#00D87E";
+                                document.getElementById('option-'+response.data.sheet_list[i].choice.toUpperCase()).style.color = "white";
+                            }else if(option <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num){
+                                console.log('option_'+response.data.sheet_list[i].choice.toLowerCase()+"_audio")
+                                document.getElementById('option_'+response.data.sheet_list[i].choice.toLowerCase()+"_audio").src = "/image/audio-checked.png";
+                            }else if(option <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num){
+                                document.getElementById('problem_'+response.data.sheet_list[i].choice.toLowerCase()+"_text").style.background = "#00D87E";
+                                document.getElementById('problem_'+response.data.sheet_list[i].choice.toLowerCase()+"_text").style.color = "white";
+                            }else{
+                                if(response.data.sheet_list[i].choice.toLowerCase() == 'a')
+                                    document.getElementById('option_a_judge').src = "/image/true-selected.png";
+                                else
+                                    document.getElementById('option_b_judge').src = "/image/false-selected.png";
+                            }
+                            break;
+                        }
+                    }
+                });
+            },
+
+            rememberTxt: function (option) {
+                axios.get("/getSheet").then((response) => {
+                    var sl = response.data.sheet_list;
+                    for (var i = 0; i < sl.length; i++) {
+                        if((this.prob_list.indexOf(sl[i].idx) + 1) === option) {
+                            if(sl[i].choice_text !== null){
+                                this.txt = sl[i].choice_text.split("$");
+                                break;
+                            }
+                        }
+                    }
+                });
+            },
+
+            store: function () {
+                sessionStorage.setItem('questionId',this.num.toString());
+                sessionStorage.setItem('remainNum',this.remain.toString());
+                sessionStorage.setItem('total',this.totalNum.toString());
+                sessionStorage.setItem('opt',this.opt_num.toString());
+                sessionStorage.setItem('opt_choice',this.opt_choice_num.toString());
+                sessionStorage.setItem('opt_tingyinxuanwen',this.opt_tingyinxuanwen_num.toString());
+                sessionStorage.setItem('opt_kantuxuanyin',this.opt_kantuxuanyin_num.toString());
+                sessionStorage.setItem('opt_tingyinxuanci',this.opt_tingyinxuanci_num.toString());
+                sessionStorage.setItem('opt_panduanzhengwu',this.opt_panduanzhengwu_num.toString());
+                sessionStorage.setItem('list',this.done_list.toString());
+                sessionStorage.setItem('optlist',this.opt_box.toString());
+                sessionStorage.setItem('choicelist',this.opt_choice_box.toString());
+                sessionStorage.setItem('tingyinxuanwenlist',this.opt_tingyinxuanwen_box.toString());
+                sessionStorage.setItem('kantuxuanyinlist',this.opt_kantuxuanyin_box.toString());
+                sessionStorage.setItem('tingyinxuancilist',this.opt_tingyinxuanci_box.toString());
+                sessionStorage.setItem('panduanzhengwulist',this.opt_panduanzhengwu_box.toString());
+                sessionStorage.setItem('txtlist',this.txt_box.toString());
+                sessionStorage.setItem('problist',this.prob_list.toString());
+                sessionStorage.setItem('src',this.src);
+                sessionStorage.setItem('id',this.id);
+                sessionStorage.setItem('level',this.level);
+                sessionStorage.setItem('lesson',this.lesson);
+                sessionStorage.setItem('activities',JSON.stringify(this.activities));
+            },
+        },
+
+        created() {
+            if(getCookie('user_id') !== null) {
+                if(getCookie('user_id') === "") {
+                    localStorage.clear();
+                    window.location.replace('/login');
+                }
+            }else {
+                window.location.replace('/login');
+            }
+            if(sessionStorage.getItem('questionId') !== null) {  // 如果已经进入刷题状态了，就读取 session
+                console.log("已有 sessionStorage", sessionStorage.getItem('questionId'));
+                this.num = parseInt(sessionStorage.getItem('questionId'));
+                this.remain = parseInt(sessionStorage.getItem('remainNum'));
+                this.totalNum = parseInt(sessionStorage.getItem('total'));
+                this.opt_num = parseInt(sessionStorage.getItem('opt'));
+                this.opt_choice_num = parseInt(sessionStorage.getItem('opt_choice'));
+                this.opt_tingyinxuanwen_num = parseInt(sessionStorage.getItem('opt_tingyinxuanwen'));
+                this.opt_kantuxuanyin_num = parseInt(sessionStorage.getItem('opt_kantuxuanyin'));
+                this.opt_tingyinxuanci_num = parseInt(sessionStorage.getItem('opt_tingyinxuanci'));
+                this.opt_panduanzhengwu_num = parseInt(sessionStorage.getItem('opt_panduanzhengwu'));
+                this.src = sessionStorage.getItem('src');
+                if(sessionStorage.getItem('optlist') !== "") {
+                    this.opt_box = sessionStorage.getItem('optlist').split(',').map(Number);
+                }
+                if(sessionStorage.getItem('choicelist') !== "") {
+                    this.opt_choice_box = sessionStorage.getItem('choicelist').split(',').map(Number);
+                }
+                if(sessionStorage.getItem('tingyinxuanwenlist') !== "") {
+                    this.opt_tingyinxuanwen_box = sessionStorage.getItem('tingyinxuanwenlist').split(',').map(Number);
+                }
+                if(sessionStorage.getItem('kantuxuanyinlist') !== "") {
+                    this.opt_kantuxuanyin_box = sessionStorage.getItem('kantuxuanyinlist').split(',').map(Number);
+                }
+                if(sessionStorage.getItem('tingyinxuancilist') !== "") {
+                    this.opt_tingyinxuanci_box = sessionStorage.getItem('tingyinxuancilist').split(',').map(Number);
+                }
+                if(sessionStorage.getItem('panduanzhengwulist') !== "") {
+                    this.opt_panduanzhengwu_box = sessionStorage.getItem('panduanzhengwulist').split(',').map(Number);
+                }
+                if(sessionStorage.getItem('txtlist') !== "") {
+                    this.txt_box = sessionStorage.getItem('txtlist').split(',').map(Number);
+                }
+                if(sessionStorage.getItem('problist') !== "") {
+                    this.prob_list = sessionStorage.getItem('problist').split(',').map(Number);
+                }
+                this.id = parseInt(sessionStorage.getItem('id'));
+                this.level = parseInt(sessionStorage.getItem('level'));
+                this.lesson = parseInt(sessionStorage.getItem('lesson'));
+                if(sessionStorage.getItem('list') !== "") {
+                    this.done_list = sessionStorage.getItem('list').split(',').map(Number);
+                }
+                this.activities = JSON.parse(sessionStorage.getItem('activities'));
+            }else {   // 未在刷题状态，设置新的 param
+                console.log("未在刷题状态，设置新的 param");
+                if(window.location.search.indexOf("lesson") > -1) {
+                    this.src = "lesson";
+                    this.level = parseInt(sessionStorage.getItem("level"));
+                    this.lesson = parseInt(sessionStorage.getItem("lesson"));
+                }else if(window.location.search.indexOf("strengthen") > -1) {
+                    this.src = "strengthen";
+                    this.level = parseInt(sessionStorage.getItem("level"));
+                    this.lesson = parseInt(sessionStorage.getItem("lesson"));
+                    document.getElementById("heading2").innerHTML = "推荐练习";
+                }else if(window.location.search.indexOf("wrong") > -1) {
+                    this.src = "wrong";
+                    document.getElementById("heading1").innerHTML = "错题练习";
+                    document.getElementById("heading2").style.display = "none";
+                }
+            }
+            this.setSheet();
+            this.setInitPaper();
+            window.onbeforeunload = function (event) {
+                var url = sessionStorage.getItem('lastUrl');
+                history.replaceState('change',null,url);
+            }
+            if(/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+                var deviceWidth = document.documentElement.clientWidth;
+                var deviceHeight = document.documentElement.clientHeight;
+                if(window.orientation == 0 || window.orientation == 180) {
+                    deviceWidth = (deviceWidth < deviceHeight) ? deviceWidth : deviceHeight;
+                    document.getElementById("app").style.transformOrigin = "left top";
+                    document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                    document.getElementById("pop_container").style.transformOrigin = "left top";
+                    document.getElementById("pop_container").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                    document.getElementById("top_bar").style.transformOrigin = "left top";
+                    document.getElementById("top_bar").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                }
+                if(window.orientation == 90 || window.orientation == -90) {
+                    deviceWidth = (deviceWidth > deviceHeight) ? deviceWidth : deviceHeight;
+                    document.getElementById("app").style.transformOrigin = "left top";
+                    document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                    document.getElementById("pop_container").style.transformOrigin = "left top";
+                    document.getElementById("pop_container").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                    document.getElementById("top_bar").style.transformOrigin = "left top";
+                    document.getElementById("top_bar").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                }
+            }else {
+                var deviceWidth = document.documentElement.clientWidth;
+                document.getElementById("app").style.transformOrigin = "left top";
+                document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                document.getElementById("pop_container").style.transformOrigin = "left top";
+                document.getElementById("pop_container").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                document.getElementById("top_bar").style.transformOrigin = "left top";
+                document.getElementById("top_bar").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+            }
+        },
+
+        mounted() {
+            if(this.num <= this.opt_num) {
+                this.rememberOpt(this.num);
+                if(this.num <= this.opt_choice_num)
+                    this.openView('opt');
+                else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num)
+                    this.openView('tingyinxuanwen');
+                else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num)
+                    this.openView('kantuxuanyin');
+                else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num)
+                    this.openView('tingyinxuanci');
+                else
+                    this.openView('panduanzhengwu');
+            }else {
+                this.rememberTxt(this.num);
+                this.openView('txt');
+            }
+        },
+
+        async mounted() {
+            window["defaultImg"] = () => {
+                this.defaultImg();
+            };
+            window["musicEnd"] = (num) => {
+                this.musicEnd(num);
+            }
+        },
+
+        async mounted() {
+            window["defaultImg"] = () => {
+                this.defaultImg();
+            };
+            window["musicEnd"] = (num) => {
+                this.musicEnd(num);
+
+            }
+        },
+
+        async mounted() {
+            window["defaultImg"] = () => {
+                this.defaultImg();
+            };
+        },
+    })
+</script>

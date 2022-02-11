@@ -1,0 +1,149 @@
+html,body {
+    height: 100%;
+    width: 100%;
+}
+
+body {
+    margin: 0;
+    background-color: #FDD668;
+}
+
+#app {
+    padding: 0;
+    position: relative;
+    width: 1533px;
+    height: 745px;
+    background-color: #FDD668;
+}
+
+#background {
+    position: absolute;
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+}
+
+#ribbon {
+    display: block;
+    position: relative;
+    margin: 0 auto;
+    top: 25%;
+    height: 10%;
+    width: 23%;
+    z-index: 2;
+}
+
+#level_box {
+    display: flex;
+    margin: 0 auto;
+    top: 25.5%;
+    flex-wrap: nowrap;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    height: 20%;
+    width: 92%;
+    z-index: 2;
+}
+
+.star_container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90%;
+    width: 9.5%;
+    margin: 0;
+    padding: 0;
+}
+
+.star {
+    height: 90%;
+    width: 90%;
+    margin: 0;
+    cursor: pointer;
+}
+
+#level {
+    position: absolute;
+    height: 6.83%;
+    width: 8%;
+    top: 2.63%;
+    right: 1.3%;
+    z-index: 2;
+}
+
+#level_info {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    color: #FF8D09;
+    margin: 0;
+    padding: 0;
+    font-weight: bold;
+    font-size: 1.25rem;
+    font-family: 'Microsoft YaHei';
+    height: 5.4%;
+    width: 6%;
+    top: 3.15%;
+    right: 2.19%;
+    z-index: 2;
+}
+
+#back_button {
+    position: absolute;
+    height: 6.57%;
+    width: 3%;
+    left: 1.93%;
+    top: 2.63%;
+    border: none;
+    background-image: url(/image/back.png);
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: center;
+    background-color: transparent;
+    background-size: 100% 100%;
+    cursor: pointer;
+    outline: none;
+    z-index: 2;
+}
+
+#home_button {
+    position: absolute;
+    height: 6.57%;
+    width: 3%;
+    left: 6%;
+    top: 2.63%;
+    border: none;
+    background-image: url(/image/home.png);
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: center;
+    background-color: transparent;
+    background-size: 100% 100%;
+    cursor: pointer;
+    outline: none;
+    z-index: 2;
+}
+
+#start_button {
+    display: block;
+    top: 45%;
+    position: relative;
+    margin: 0 auto;
+    height: 8.54%;
+    width: 10.33%;
+    border: none;
+    background-image: url(/image/start_button.png);
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: center;
+    background-color: transparent;
+    background-size: 100% 100%;
+    border-radius: 30px;
+    cursor: pointer;
+    outline: none;
+    z-index: 2;
+}

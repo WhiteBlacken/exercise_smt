@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <title>双周测</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link href="/css/week_test.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <link href="/css/index.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <script src="/js/vue@2.6.10.js"></script>
+    <script src="/js/axios@0.18.0.min.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="http://mockjs.com/dist/mock.js"></script>
+</head>
+<body>
+<div th:replace="include::sidebar"></div>
+<div id="app">
+    <div id="mod_name" class="module_name">
+        <p><span>双周测</span></p>
+    </div>
+    <div id="lev_info" class="level_info">
+        <p><span>当前等级</span><br><span>SMT Lev.{{ level }}</span></p>
+    </div>
+    <div id="information" class="">
+        <p><span>当前双周：No.{{ week_start }} - No.{{ week_end }} 周</span></p>
+        <p id="tip"><span></span></p>
+        <el-button type="primary" :disabled="disable" @click="start_test">开始测试</el-button>
+    </div>
+    <div id="test_history" class="table">
+        <template>
+            <el-table :data="tableData" height="300" stripe border style="width: 100%">
+                <el-table-column prop="name" label="练习" width="150"></el-table-column>
+                <el-table-column prop="date" label="开放时间" width="280"></el-table-column>
+                <el-table-column prop="score" label="分数"></el-table-column>
+                <el-table-column fixed="right" label="操作" width="100">
+                    <template slot-scope="scope">
+                        <el-button @click="Click(scope.row)" type="text" size="small">详情</el-button>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </template>
+    </div>
+</div>
+</body>
+<script>
+    function setCookie(cname,cvalue) {
+        document.cookie = cname + "=" + cvalue + "; ";
+    }
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) 
+        {
+            var c = ca[i].trim();
+            if (c.indexOf(name)==0) 
+                return c.substring(name.length,c.length);
+        }
+        return "";
+    }
+    
+    Mock.mock('/getTest',{
+        "tableList|8": [{
+            "name":"test",
+            "date":"@datetime",
+            "score|60-100":100,
+            "id":11111
+        }]
+    })
+
+    Mock.mock('/testInitial',{
+        "level|1-6":1,
+        "week":"7-8",
+        "done|1":true,
+        "allow_test|1":true
+    })
+
+    var app = new Vue({
+        el: "#app",
+        data: {
+            tableData: [],
+            level: 0,
+            week_start: "",
+            week_end: "",
+            done: true,
+            allow_test: true,
+            disable:true
+        },
+
+        methods: {
+            Click: function (row) {
+                window.location.href = '/prob_opt_marked?src=lesson&mode=detail&id=' + row.id;
+            },
+
+            start_test: function () {
+                sessionStorage.setItem('lastUrl',window.location.href);
+                window.location.href = "/exercise_opt?src=test&week="+this.week_start+"-"+this.week_end;
+            },
+
+            getSheet: function () {
+                return new Promise(resolve => {
+                    axios.get('/getTest').then((response) => {
+                        resolve(response.data);
+                    });
+                })
+            },
+
+            initial: function () {
+                return new Promise(resolve => {
+                    axios.get('/testInitial').then((response) => {
+                        resolve(response.data);
+                    });
+                })
+            },
+
+            setSheet: async function () {
+                var res1 = await this.initial();
+                var res2 = await this.getSheet();
+                this.tableData = res2.tableList;
+                this.level = res1.level;
+                this.done = res1.done;
+                this.allow_test = res1.allow_test;
+                this.week_start = res1.week.substr(0,1);
+                this.week_end = res1.week.substr(2);
+                if(this.done == false && this.allow_test == true) {
+                    this.disable = false;
+                }else if(this.done == true) {
+                    this.disable = true;
+                    document.getElementById("tip").innerHTML = "你已经完成了这次测试！";
+                }else {
+                    this.disable = true;
+                    document.getElementById("tip").innerHTML = "本次测试还未开放！";
+                }
+            }
+        },
+
+        created: function () {
+            if(localStorage.getItem('SMTusername') !== null) {
+                if(getCookie(localStorage.getItem('SMTusername')) === "") {
+                    localStorage.clear();
+                    window.location.href = '/login';
+                }
+            }else {
+                window.location.href = '/login';
+            }
+        },
+
+        mounted: function () {
+            this.$nextTick(() => {
+                this.setSheet();
+            });
+            sessionStorage.clear();
+        }
+    })
+</script>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>测试</title>
+    <meta http-equiv="content-type" content="text/html charset=utf-8"/>
+    <link href="/css/index.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <script src="/js/vue@2.6.10.js"></script>
+    <script src="/js/axios@0.18.0.min.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.cookie.js"></script>
+    <script src="/js/rules.js"></script>
+</head>
+<body>
+<div id="app">
+    test
+</div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {},
+        created() {
+            // 本地测试：
+            axios({url: "/setCookie",method: 'post',
+                    data: JSON.stringify({'user_seq': '533', 'user_id': '19811111111', 'level': '3', token: 'jikQWQxsad'}),
+                    headers: {'Content-Type': 'application/json'}}
+            // axios.post("https://interface.smartreelearners.com:8442/setCookie", $.param({'user_seq': '533', 'user_id': '19811111111', 'level': '3', token: 'jikQWQxsad'}) //引入jQuery的作用
+            ).then((response) => {
+                if (response.data === "OK") {
+                    this.$message({
+                        type: 'success',
+                        message: 'OK'
+                    });
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: "出错"
+                    });
+                }
+            });
+        }
+    })
+</script>
+</html>

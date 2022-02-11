@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>错题集</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link href="/css/wrong.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <link href="/css/index.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <script src="/js/vue@2.6.10.js"></script>
+    <script src="/js/axios@0.18.0.min.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="http://mockjs.com/dist/mock.js"></script>
+</head>
+<body>
+<div th:replace="include::sidebar"></div>
+<div id="app">
+    <div id="mod_name" class="module_name">
+        <p><span>错题集</span></p>
+    </div>
+    <div id="lev_info" class="level_info">
+        <p><span>当前等级</span><br><span>SMT Lev.{{ level }}</span></p>
+    </div>
+    <div id="wrong_probs" class="">
+        <el-button type="primary" @click="start_wrong">进入错题练习</el-button>
+        <div v-for="prob in prob_list" class="question">
+            <p><span class="highlight">{{ prob.type }}</span></p>
+            <p>{{ prob.prob_text }}<br>选项 A B C D</p>
+            <p>你的答案：{{ prob.choice_text }}</p>
+            <p>正确答案：{{ prob.ans }}</p>
+            <p>解析：{{ prob.analysis }}</p>
+            <p><span class="highlight">知识点：{{ prob.point }}</span>
+            </p>
+        </div>
+        <div class="pagination">
+            <span><el-pagination background layout="total, prev, pager, next" :current-page="page" :total="totalNum" :page-size="10" @current-change="handleCurrentChange"></el-pagination></span>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    function setCookie(cname,cvalue) {
+        document.cookie = cname + "=" + cvalue + "; ";
+    }
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) 
+        {
+            var c = ca[i].trim();
+            if (c.indexOf(name)==0) 
+                return c.substring(name.length,c.length);
+        }
+        return "";
+    }
+
+    // Mock.mock('/wrongInitial',{
+    //     "level|1-6":1,
+    // })
+    var app = new Vue({
+        el: "#app",
+        data: {
+            level: 1,
+            totalNum: 0,
+            totalpage: 0,
+            prob_list: [],  //prob_list 中的内容就是 ProblemEvaluation 的列表
+            page: 1,
+        },
+
+        methods: {
+            handleCurrentChange(val) {
+                this.page = val;
+                this.setSheet();
+            },
+
+            start_wrong: function () {
+                sessionStorage.setItem('lastUrl',window.location.href);
+                window.location.href = "/exercise_opt?src=wrong";
+            },
+
+            initial: function () {
+                return new Promise(resolve => {
+                    axios.get('/wrongInitial').then((response) => {
+                        resolve(response.data);
+                    });
+                })
+            },
+
+            getWrongList: function () {
+                return new Promise(resolve => {
+                    axios.get('/getWrong').then((response) => {
+                        resolve(response.data);
+                    });
+                })
+            },
+
+            setSheet: async function () {
+                var wrong_list = await this.getWrongList();
+                // var rs = await this.initial();
+                // this.level = rs.level;
+                this.totalNum = wrong_list.length;
+                this.totalpage = Math.ceil(wrong_list.length/10);
+                this.prob_list = [];
+                for(var i = 0;i < 10;i++) {
+                    if(wrong_list[(this.page - 1) * 10 + i] !== undefined)
+                        this.prob_list.push(wrong_list[(this.page - 1) * 10 + i]);
+                }
+            }
+        },
+
+        created: function () {
+            if(localStorage.getItem('SMTusername') !== null) {
+                if(getCookie(localStorage.getItem('SMTusername')) === "") {
+                    localStorage.clear();
+                    window.location.href = '/login';
+                }
+            }else {
+                window.location.href = '/login';
+            }
+        },
+
+        mounted: function () {
+            this.$nextTick(() => {
+                this.setSheet();
+            })
+            sessionStorage.clear();
+        }
+    })
+</script>
+</html>

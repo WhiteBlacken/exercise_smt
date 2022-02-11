@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>题库上传页面</title>
+    <meta http-equiv="content-type" content="text/html charset=utf-8"/>
+    <link href="/css/index.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <script src="/js/vue@2.6.10.js"></script>
+    <script src="/js/axios@0.18.0.min.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.cookie.js"></script>
+    <script src="/js/rules.js"></script>
+
+    <style>
+        .el-main {
+            text-decoration: none;
+            color: #333;
+            margin-left: 100px;
+        }
+
+        body {
+            width: 800px;
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .tip {
+            font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, SimSun, sans-serif;
+            font-weight: 400;
+            font-size: 14px;
+            color: #8c939d;
+            -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
+            padding: 8px 16px;
+            background-color: #ecf8ff;
+            border-radius: 4px;
+            border-left: 5px solid #50bfff;
+            margin: 20px 0;
+        }
+
+        .tip span {
+            color: #f56c6c;
+        }
+    </style>
+</head>
+
+<body>
+
+<el-container>
+    <div id="app">
+        <el-header style="margin-bottom: 120px">
+            <h1>{{ mode }}题目</h1>
+            <el-button type="primary" plain @click="back">← 返回题目列表</el-button>
+            <div class="tip">
+                <div v-if="mode === '编辑'">
+                    <p>当前 Level <span>{{ level }}</span>，当前 Lesson <span>{{ lesson_id }}</span></p>
+                </div>
+
+                <div v-if="mode === '新增'">
+                    <p>请选择 level 和 lesson</span></p>
+                </div>
+            </div>
+        </el-header>
+
+        <el-main>
+            <!-- 添加题目表单开始 -->
+            <template>
+                <el-form ref="form" :model="formData" label-width="100px" :rules="rules">
+
+                    <div v-if="mode === '新增'" style="display: inline-block">
+                        <h3>level</h3>
+                        <el-select v-model="formData.prob_level" width="80">
+                            <el-option v-for="item in levels" :label="item" :value="item">
+                            </el-option>
+                        </el-select>
+
+                        <h3>lesson</h3>
+                        <el-select v-model="formData.lesson_id" width="80">
+                            <el-option v-for="item in lessons" :label="item" :value="item">
+                            </el-option>
+                        </el-select>
+                    </div>
+
+                    <h3>类型：prob_attr</h3>
+                    <el-form-item>
+                        <el-radio-group v-model="radioType">
+                            <el-radio label="Choice">选择题</el-radio>
+                            <el-radio label="txt">文本题</el-radio>
+                        </el-radio-group>
+                    </el-form-item>
+
+                    <h3>难度：prob_diff</h3>
+                    <el-form-item prop="account">
+                        <el-select v-model="formData.prob_diff" placeholder="选择难度">
+                            <el-option label="Easy" value="Easy"></el-option>
+                            <el-option label="Medium" value="Medium"></el-option>
+                            <el-option label="Hard" value="Hard"></el-option>
+                        </el-select>
+                    </el-form-item>
+
+                    <div v-if="radioType === 'txt'">
+                        <h3>文本题类型：txt_type</h3>
+                        <el-form-item prop="txt_type">
+                            <el-select v-model="formData.txt_type" placeholder="文本题类型">
+                                <el-option label="Rewrite 改写" value="Rewrite"></el-option>
+                                <el-option label="Fill 填空" value="Fill"></el-option>
+                                <el-option label="Correct 改错" value="Correct"></el-option>
+                                <el-option label="Translation 翻译" value="Translation"></el-option>
+                            </el-select>
+                        </el-form-item>
+                    </div>
+
+                    <h3>题干：prob_text</h3>
+                    <el-form-item label="" prop="prob_text">
+                    <h4>文字部分（可不填）</h4>
+                        <el-input label-width="800px" type="textarea" :rows="3" v-model="formData.prob_text"></el-input>
+                    </el-form-item>
+                    <el-form-item label="">
+                    <h4>图片部分（可不填）</h4>
+                    <el-upload
+                            class="upload-demo"
+                            drag
+                            action="fileUpload1"
+                            :limit="1"
+                            :on-success="uploadImgAfter"
+                            :data="{fileType:'image',info:'stem'}"
+                            >
+                        <i class="el-icon-upload"></i>
+                        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+                        <div class="el-upload__tip" slot="tip">只能上传单个jpg/png文件</div>
+                    </el-upload>
+                    </el-form-item>
+                    <el-form-item label="">
+                    <h4>音频部分（可不填）</h4>
+                    <el-upload
+                            class="upload-demo"
+                            action="fileUpload1"
+                            :on-success="uploadAudioAfter"
+                            multiple
+                            :limit="1"
+                            :data="{fileType:'audio',info:'stem'}"
+                            >
+                        <el-button size="small" type="primary">点击上传</el-button>
+                    </el-upload>
+                    </el-form-item>
+
+                    <div v-if="radioType === 'Choice'" style="width: 600px">
+                        <h3>选项：options</h3>
+                        <h4>A.</h4>
+                        <el-form-item label="文字部分">
+                            <el-input v-model="formData.optionA"></el-input>
+                        </el-form-item>
+                        <el-form-item label="图片部分">
+                            <el-upload
+                                    class="upload-demo"
+                                    action="fileUpload1"
+                                    :on-success="uploadImgAfter"
+                                    multiple
+                                    :limit="1"
+                                    :data="{fileType:'image',info:'option',option:'A'}"
+                            >
+                                <el-button size="small" type="primary">点击上传</el-button>
+                            </el-upload>
+                        </el-form-item>
+                        <el-form-item label="音频部分">
+                            <el-upload
+                                    class="upload-demo"
+                                    action="fileUpload1"
+                                    :on-success="uploadAudioAfter"
+                                    multiple
+                                    :limit="1"
+                                    :data="{fileType:'audio',info:'option',option:'A'}"
+                            >
+                                <el-button size="small" type="primary">点击上传</el-button>
+                            </el-upload>
+                        </el-form-item>
+
+                        <h4>B.</h4>
+                        <el-form-item label="文字部分">
+                            <el-input v-model="formData.optionB"></el-input>
+                        </el-form-item>
+                        <el-form-item label="图片部分">
+                            <el-upload
+                                    class="upload-demo"
+                                    action="fileUpload1"
+                                    :on-success="uploadImgAfter"
+                                    multiple
+                                    :limit="1"
+                                    :data="{fileType:'image',info:'option',option:'B'}"
+                            >
+                                <el-button size="small" type="primary">点击上传</el-button>
+                            </el-upload>
+                        </el-form-item>
+                        <el-form-item label="音频部分">
+                            <el-upload
+                                    class="upload-demo"
+                                    action="fileUpload1"
+                                    :on-success="uploadAudioAfter"
+                                    multiple
+                                    :limit="1"
+                                    :data="{fileType:'audio',info:'option',option:'B'}"
+                            >
+                                <el-button size="small" type="primary">点击上传</el-button>
+                            </el-upload>
+                        </el-form-item>
+
+                        <h4>C.</h4>
+                        <el-form-item label="文字部分" >
+                            <el-input v-model="formData.optionC" placeholder="无 C 选项可不填"></el-input>
+                        </el-form-item>
+                        <el-form-item label="图片部分">
+                            <el-upload
+                                    class="upload-demo"
+                                    action="fileUpload1"
+                                    :on-success="uploadImgAfter"
+                                    multiple
+                                    :limit="1"
+                                    :data="{fileType:'image',info:'option',option:'C'}"
+                            >
+                                <el-button size="small" type="primary">点击上传</el-button>
+                            </el-upload>
+                        </el-form-item>
+                        <el-form-item label="音频部分">
+                            <el-upload
+                                    class="upload-demo"
+                                    action="fileUpload1"
+                                    :on-success="uploadImgAfter"
+                                    multiple
+                                    :limit="1"
+                                    :data="{fileType:'audio',info:'option',option:'D'}"
+                            >
+                                <el-button size="small" type="primary">点击上传</el-button>
+                            </el-upload>
+                        </el-form-item>
+
+                        <h4>D.</h4>
+                        <el-form-item label="文字部分">
+                            <el-input v-model="formData.optionD" placeholder="无 D 选项可不填"></el-input>
+                        </el-form-item>
+                        <el-form-item label="图片部分">
+                            <el-upload
+                                    class="upload-demo"
+                                    action="fileUpload1"
+                                    :on-success="uploadImgAfter"
+                                    multiple
+                                    :limit="1"
+                                    :data="{fileType:'image',info:'option',option:'D'}"
+                            >
+                                <el-button size="small" type="primary">点击上传</el-button>
+                            </el-upload>
+                        </el-form-item>
+                        <el-form-item label="音频部分">
+                            <el-upload
+                                    class="upload-demo"
+                                    action="fileUpload1"
+                                    :on-success="uploadAudioAfter"
+                                    multiple
+                                    :limit="1"
+                                    :data="{fileType:'audio',info:'option',option:'D'}"
+                            >
+                                <el-button size="small" type="primary">点击上传</el-button>
+                            </el-upload>
+                        </el-form-item>
+
+                        <h4>正确答案</h4>
+                        <el-form-item label="" prop="answer">
+                            <el-select v-model="formData.answer" placeholder="选择选项">
+                                <el-option label="A" value="A"></el-option>
+                                <el-option label="B" value="B"></el-option>
+                                <el-option label="C" value="C"></el-option>
+                                <el-option label="D" value="D"></el-option>
+                            </el-select>
+                        </el-form-item>
+
+                    </div>
+
+                    <div v-if="radioType === 'txt'">
+                        <h3>作答的空行数量：blank_num</h3>
+                        <el-input-number style="margin-left: 100px" v-model="formData.blank_num" @change="handleChange"
+                                         :min="0" :max="5"></el-input-number>
+
+                        <h3>正确答案: answer</h3>
+                        <v-for>
+                            <el-form-item label="" prop="answer">
+                                <el-input label-width="800px" type="textarea" :rows="2"
+                                          v-model="formData.answer"></el-input>
+                            </el-form-item>
+                        </v-for>
+                    </div>
+
+                    <h3>解析: analysis</h3>
+                    <el-form-item label="" prop="analysis">
+                        <el-input label-width="800px" type="textarea" :rows="4" v-model="formData.analysis"></el-input>
+                    </el-form-item>
+
+                    <h3 id="point">考点: {{ view_point_text }}</h3>
+                    <el-button size="mini" @click="addPoint" round style="margin: 10px 0">+ 添加新考点</el-button>
+                    <div style="margin-bottom: 70px" id="pointList">
+                        <template>
+                            <el-table
+                                    ref="multipleTable"
+                                    :data="pointTableData"
+                                    tooltip-effect="dark"
+                                    style="width: 100%"
+                                    max-height="290"
+                                    @selection-change="handleSelectionChange">
+
+<!--                                <el-table-column-->
+<!--                                        type="selection"-->
+<!--                                        width="55">-->
+<!--                                </el-table-column>-->
+                                <el-table-column
+                                        prop="point_text"
+                                        label="考点内容"
+                                        width="300">
+                                    <template slot-scope="scope">{{ scope.row.point_text }}</template>
+                                </el-table-column>
+                                <el-table-column
+                                        prop="point_id"
+                                        label="考点 ID"
+                                        width="120">
+                                </el-table-column>
+                                <el-table-column
+                                        align="right">
+                                    <template slot="header" slot-scope="scope">
+                                        <el-input
+                                                @input="searchChange"
+                                                v-model="search"
+                                                size="mini"
+                                                placeholder="🔍 搜索考点"/>
+                                    </template>
+                                    <template slot-scope="scope">
+                                        <el-button
+                                                size="mini"
+                                                @click="editPoint(scope.row.point_id, scope.row.point_text)">Edit
+                                        </el-button>
+                                        <el-button
+                                                size="mini"
+                                                @click="selectPoint(scope.row.point_id, scope.row.point_text)">✅ 选择
+                                        </el-button>
+                                    </template>
+                                </el-table-column>
+                            </el-table>
+                        </template>
+                        <el-button size="mini" @click="addPoint" round style="margin-top: 10px">+ 添加新考点</el-button>
+
+                    </div>
+
+
+                    <el-form-item>
+                        <el-button type="primary" plain @click="back">← 返回列表</el-button>
+                        <el-button type="primary" @click="addProb">提交</el-button>
+                    </el-form-item>
+                </el-form>
+            </template>
+            <div class="tip" style="margin-top: 50px">
+                <p>提示:</p>
+                <p>若题目有多个考点，则选择最主要的一个即可</p>
+                <p>系统中已包含近 100 个考点，可先搜索查看；如果未搜到可以自行添加新考点</p>
+                <p>若答案包括多行，则注意换行</p>
+            </div>
+            <!-- 添加题目表单结束 -->
+        </el-main>
+    </div>
+</el-container>
+</body>
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        mixins: [rules],
+        data: {
+            mode: '新增',
+            radioType: 'Choice',
+            levels: ['1', '2', '3', '4', '5', '6'],
+            lessons: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            formData: {
+                optionA: '',
+                optionB: '',
+                optionC: '',
+                optionD: '',
+                prob_attr: '',
+                prob_text: '',
+                prob_diff: '',
+                prob_level: '',
+                lesson_id: 0,
+                point_id: -1,
+                prob_id: 0,
+                answer: '',
+                analysis: '',
+                blank_num: 0,
+                txt_type: '',
+                mode: 1,
+                stem_image: '',
+                stem_audio: '',
+                stem_flag:0,
+                option_a_image: '',
+                option_b_image: '',
+                option_c_image: '',
+                option_d_image: '',
+                option_a_audio: '',
+                option_b_audio: '',
+                option_c_audio: '',
+                option_d_audio: '',
+                option_flag: 0,
+            },
+            level: '0',
+            lesson_id: 0,
+            grammar: 'Example: is/am/are',
+            rules: {
+                prob_text: [{
+                    required: true,
+                    message: '请输入题干内容',
+                    trigger: 'blur'
+                }, {
+                    min: 2,
+                    max: 400,
+                    message: '长度在 2 到 400 个字符',
+                    trigger: 'blur'
+                }],
+                answer: [{
+                    required: true,
+                    message: '答案不能为空',
+                    trigger: 'blur'
+                },],
+            },
+            problem: {},
+            search: '',
+            searchFlag: false,
+            pointTableData: [],
+            originArr: [],
+            multipleSelection: [],
+            view_point_text: '',
+            imageData: {
+                prob_id: 0
+            },
+            audioData: {
+                file: '',
+                fileType: 'audio',
+                info: '',
+                option: '',
+            }
+        },
+
+        methods: {
+            handleChange: function (value) {
+                this.formData.blank_num = value;
+            },
+
+            chooseFlag: function (type) {
+                if(type == 'stem'){
+                    if(this.formData.stem_image != ''){
+                        this.formData.stem_flag = 2;
+                        if(this.formData.stem_audio != ''){
+                            this.formData.stem_flag = 4;
+                        }
+                    }else if(this.formData.stem_audio != ''){
+                        this.formData.stem_flag = 3;
+                    }else{
+                        this.formData.stem_flag = 1;
+                    }
+                }else if(type == 'option'){
+                    if(this.formData.option_a_image != ''){
+                        this.formData.option_flag = 2;
+                        if(this.formData.option_a_audio != ''){
+                            this.formData.option_flag = 4;
+                        }
+                    }else if(this.formData.option_a_audio != ''){
+                        this.formData.option_flag = 3;
+                    }else{
+                        this.formData.option_flag = 1;
+                    }
+                }
+            },
+
+            uploadImgAfter(res){
+                if(res['info'] == 'stem'){
+                    this.formData.stem_image = res['url'];
+                    this.chooseFlag('stem');
+                }
+                else if(res['info'] == 'option'){
+                    switch(res['option']){
+                        case 'A': this.formData.option_a_image = res['url'];break;
+                        case 'B': this.formData.option_b_image = res['url'];break;
+                        case 'C': this.formData.option_c_image = res['url'];break;
+                        case 'D': this.formData.option_d_image = res['url'];break;
+                    }
+                    this.chooseFlag('option');
+                }
+                console.log(this.formData)
+            },
+
+            uploadAudioAfter(res){
+                if(res['info'] == 'stem'){
+                    this.formData.stem_audio = res['url'];
+                    this.chooseFlag('stem');
+                }
+                else if(res['info'] == 'option'){
+                    switch(res['option']){
+                        case 'A': this.formData.option_a_audio = res['url'];break;
+                        case 'B': this.formData.option_b_audio = res['url'];break;
+                        case 'C': this.formData.option_c_audio = res['url'];break;
+                        case 'D': this.formData.option_d_audio = res['url'];break;
+                    }
+                    this.chooseFlag('option');
+                }
+                console.log(this.formData)
+            },
+
+
+            back: function () {
+                window.location.replace("/upload_list");
+            },
+
+            addProb: function () {
+                if (this.mode === "编辑") {
+                    this.formData["prob_level"] = this.level;
+                    this.formData["lesson_id"] = this.lesson_id;
+                }
+
+                if (this.formData["prob_level"].length === 0 || this.formData["lesson_id"] === 0 ||
+                    this.formData["prob_text"].length === 0 || this.formData["answer"].length === 0)
+                    this.$message({
+                        type: 'error',
+                        message: '请检查 lesson、level、题目、答案是否完整'
+                    });
+
+                else {
+                    this.formData["prob_attr"] = this.radioType;
+                    if (this.formData["prob_attr"] !== "Choice") {
+                        this.formData["prob_attr"] = this.formData["txt_type"];
+                    }
+                    console.log("submit:", this.formData);
+                    $.cookie("prob_id", null);
+                    $.cookie("level", this.formData["prob_level"]);
+                    $.cookie("lesson_id", this.formData["lesson_id"]);
+
+                    axios.post("/postProblem1", $.param(this.formData) //引入jQuery的作用
+                    ).then((response) => {
+                        if (response.data === "OK") {
+                            if (this.mode === "编辑")
+                                this.$message({
+                                    type: 'success',
+                                    message: '题目编号' + this.formData["prob_id"].toString() + ' 修改成功！'
+                                });
+                            else
+                                this.$confirm('新增题目成功！请选择操作', '提示', {
+                                    confirmButtonText: '继续新增 →',
+                                    cancelButtonText: '← 返回列表',
+                                    type: 'warning'
+                                }).then(() => {
+                                    window.location.replace("/upload");
+                                }).catch(() => {
+                                    window.location.replace("/upload_list");
+                                });
+                        } else if (response.data === "Fail") {
+                            this.$message({
+                                type: 'error',
+                                message: '修改失败,请联系管理员'
+                            });
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                message: response.data
+                            });
+                        }
+                    });
+                }
+            },
+
+            addPoint: function () {
+                //新添加的考点要置于最上方
+                //考点太多，只显示最近 8 个，但是仍然能全部搜索
+                var grammar_id = parseInt(this.level) * 10 + this.lesson_id;
+                console.log(grammar_id);
+                this.$prompt('请输入考点内容', '新增考点', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消'
+                }).then(({ value }) => {
+                    axios.post("/addPoint", $.param({'grammar_id': grammar_id, 'point_text': value}) //引入jQuery的作用
+                    ).then((response) => {
+                        if (response.data === "OK") {
+                            this.setPointList();
+                            this.$message({
+                                type: 'success',
+                                message: '已新增考点: ' + value
+                            });
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                message: "出错，报错信息如下: " + response.data
+                            });
+                        }
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消'
+                    });
+                });
+            },
+
+            editPoint: async function (point_id, point_text) {
+                console.log(point_id, point_text);
+                this.$prompt('请输入考点内容', '编辑考点', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    inputValue: point_text
+                }).then(({ value }) => {
+                    axios.post("/editPoint", $.param({'point_id': point_id, 'point_text': value}) //引入jQuery的作用
+                    ).then((response) => {
+                        if (response.data === "OK") {
+                            this.setPointList();
+                            this.$message({
+                                type: 'success',
+                                message: '考点编辑成功: ' + value
+                            });
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                message: "出错，报错信息如下: " + response.data
+                            });
+                        }
+                    });
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消'
+                    });
+                });
+            },
+
+            selectPoint: function (point_id, point_text) {
+                this.formData["point_id"] = point_id;
+                document.getElementById("point").innerText =  "考点: " + point_text;
+            },
+
+            getProblemDetail: function (prob_id) {
+                return new Promise(resolve => {
+                    axios.get("/getProblemDetail?prob_id=" + prob_id).then((response) => {
+                        resolve(response.data);
+                    });
+                })
+            },
+
+            setProblemDetail: async function () {
+                if ($.cookie("prob_id") !== null && $.cookie("prob_id").toString() !== "null") {
+                    console.log($.cookie("prob_id").toString());
+                    this.mode = "编辑";
+                    this.formData["mode"] = 0;
+
+                    var prob_id = $.cookie("prob_id");
+                    this.formData["prob_id"] = prob_id;
+                    this.problem = await this.getProblemDetail(prob_id);
+                    if (this.problem["prob_attr"] === "Choice")
+                        this.radioType = "Choice";
+                    else {
+                        this.radioType = "txt";
+                        this.formData["txt_type"] = this.problem["prob_attr"];
+                    }
+                    this.formData["prob_diff"] = this.problem["prob_diff"];
+                    this.formData["prob_text"] = this.problem["prob_text"];
+                    this.formData["answer"] = this.problem["answer_text"];
+                    this.formData["analysis"] = this.problem["analysis"];
+                    if (this.problem["blank_num"] !== null)
+                        this.formData["blank_num"] = this.problem["blank_num"];
+                    this.lesson_id = this.problem["lesson_id"];
+                    this.level = this.problem["prob_level"];
+
+                    this.view_point_text = this.problem["point_text"];
+                    this.formData["point_id"] = this.problem["point_id"];
+
+                    this.formData["optionA"] = this.problem["options"].split("【A】")[1].split("【B】")[0];
+                    this.formData["optionB"] = this.problem["options"].split("【B】")[1].split("【C】")[0];
+                    if (this.problem["options"].indexOf("【D】") > 0) {
+                        this.formData["optionC"] = this.problem["options"].split("【C】")[1].split("【D】")[0];
+                        this.formData["optionD"] = this.problem["options"].split("【D】")[1];
+                    } else this.formData["optionC"] = this.problem["options"].split("【C】")[1];
+                }
+            },
+
+            handleSelectionChange(val) {
+                console.log('改变：', this.searchFlag)
+                if(val.length > 0){
+                    val.reverse();
+                    val = val.slice(0, 1);
+                }
+                console.log('val', val)
+                if (this.searchFlag) { // 手动选中过程中不予响应
+                    return;
+                }
+                this.pointTableData.forEach(item => {
+                    item.checked = false;
+                })
+                val.forEach(row => {
+                    row.checked = true;
+                })
+            },
+
+            searchChange() {
+                if(this.search.length === 0){
+                    this.setPointList();
+                    return;
+                }
+                var arr = this.originArr.filter(data => !this.search || data.point_text.toLowerCase().includes(this.search.toLowerCase()));
+                this.pointTableData.splice(0, this.pointTableData.length);
+                Array.prototype.push.apply(this.pointTableData, arr); // 不改变pointTableData 数组的引用地址。保持其响应式。
+
+                this.$nextTick(() => {
+                    this.searchFlag = true // 手动选中前 禁止多选事件响应
+                    this.pointTableData.forEach(item => {
+                        if (item.checked)
+                            this.$refs.multipleTable.toggleRowSelection(item, true);
+                    })
+                    this.searchFlag = false; // 放开多选事件响应
+                })
+            },
+
+            getPointList: function() {
+                return new Promise(resolve => {
+                    axios.get("/listAllPoint"
+                    ).then((response) => {
+                        var point_list = response.data;
+                        point_list.reverse();
+                        for (let i = 0; i < point_list.length; i++) {
+                            if(i < 100)
+                                this.pointTableData.push({point_text: point_list[i]["point_text"], point_id: point_list[i]["point_id"]});
+                            this.originArr.push({point_text: point_list[i]["point_text"], point_id: point_list[i]["point_id"]});
+                        }
+                        resolve(response.data);
+                    });
+                })
+            },
+
+            setPointList: async function() {
+                this.pointTableData = [];
+                this.originArr = [];
+                await this.getPointList();
+            },
+
+
+        },
+
+        created() {
+            this.lesson_id = $.cookie("lesson_id");
+            this.level = $.cookie("level");
+            this.setProblemDetail();
+            this.setPointList();
+
+        }
+    });
+    window.app = app;
+</script>

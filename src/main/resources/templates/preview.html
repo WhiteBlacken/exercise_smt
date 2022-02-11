@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <title>预览界面</title>
+    <meta http-equiv="content-type" content="text/html charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;"/>
+    <link href="/css/demo_marked.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <link href="/css/index.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <script src="/js/vue@2.6.10.js"></script>
+    <script src="/js/axios@0.18.0.min.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.cookie.js"></script>
+</head>
+<body>
+<div id="app">
+    <div id="layer" v-show="handin"></div>
+    <img id="popBox" v-show="handin" src="/image/pop_box.png"></img>
+    <div id="pop_msg" v-show="handin">
+        <p><span style="color: #DCDCDC;">你还有 </span><span style="color: #FF8900;">{{ remain }}道题</span><span style="color: #DCDCDC;"> 未完成，是否交卷？</span></p>
+    </div>
+    <button type="button" id="handIn_confirm" v-show="handin" ></button>
+    <button type="button" id="handIn_cancel" v-show="handin" ></button>
+    <div id="main">
+        <div id="header">
+            <div id="container1">
+                <div id="heading">
+                    <p id="heading1"><span>Level {{ level }} Lesson {{ lesson }}</span></p>
+                    <p id="heading2"><span>智能推送练习</span></p>
+                </div>
+            </div>
+            <div id="container2">
+                <div id="heading3">
+                    <ul class="time">
+                        <el-divider id="line"></el-divider>
+                        <li v-for="activity in activities">
+                            <img :src="activity.src" :id="getId(activity.index)"></i>
+                            <p :id="getNum(activity.index)"><span>{{ activity.content }}</span></p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <img id="link_left" src="/image/link.png">
+        <img id="link_right" src="/image/link.png">
+        <div id="question_card">
+            <div id="book_container">
+                <img src="/image/book.png" id="book">
+                <div id="question_area">
+                    <div id="question_info">
+                        <p style="font-family: 'GothamRoundedMedium';color: #2A7DE1;font-size: 42px;"><span>Q{{ num }}</span></p>
+                        <div style="border-radius: 40px;background-color: #2A7DE1;font-family: 'Microsoft YaHei';color: white;font-weight: bold;font-size: 20px;margin-left: 10px;padding-left: 5px;padding-right: 5px;">
+                            <p><span>{{ prob_attr }}题</span></p>
+                        </div>
+                    </div>
+                    <div id="question_text">
+                        <p><span>{{ prob_text }}</span></p>
+                    </div>
+                    <div id="opt_part">
+                        <div id="img_container">
+                            <img :src="imgSrc" id="image" onerror="this.src='/image/logo.png'">
+                        </div>
+                        <div id="option_A" class="option" @click="chooseOption('a')">
+                            <div id="question_a_text">
+                                <p class="choice"><span>A. {{ options.A }}</span></p>
+                            </div>
+                        </div>
+                        <div id="option_B" class="option" @click="chooseOption('b')">
+                            <div id="question_b_text">
+                                <p class="choice"><span>B. {{ options.B }}</span></p>
+                            </div>
+                        </div>
+                        <div id="option_C" class="option" @click="chooseOption('c')">
+                            <div id="question_c_text">
+                                <p class="choice"><span>C. {{ options.C }}</span></p>
+                            </div>
+                        </div>
+                        <div id="option_D" class="option" style="display: none;" @click="chooseOption('d')">
+                            <div id="question_d_text">
+                                <p class="choice"><span>D. {{ options.D }}</span></p>
+                            </div>
+                        </div>
+                        <button type="button" id="last_button" ></button>
+                        <button type="button" id="next_button" ></button>
+                    </div>
+                    <div id="txt_part" style="display: none;">
+                        <div id="img_container">
+                            <img :src="imgSrc" id="image" onerror="this.src='/image/logo.png'">
+                        </div>
+                        <div id="input_box">
+                            <div v-for="input in input_num">
+                                <el-input v-model=txt[input] :id="getIndex(input)" :disabled="false" prefix-icon="" class="input_bar"></el-input>
+                            </div>
+                        </div>
+                        <button type="button" id="last_button" ></button>
+                        <button type="button" id="next_button" ></button>
+                    </div>
+                </div>
+                <div id="analysis_area">
+                    <img id="analysis_background" src="/image/background.png">
+                    <div id="analysis_text">
+                        <p style="font-family: 'Microsoft YaHei';text-align: center;font-size: 1.5rem;font-weight: 600;"><span>本题解析</span></p>
+                        <div style="position: relative;display: flex;align-items: center;z-index: inherit;margin: 0;padding: 0;width: 100%;height: 90%;"><p id="analysis_content"><span></span></p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    var app = new Vue({
+        el: "#app",
+        data: {
+            imgSrc: "",
+            handin: false,
+            num: 1,
+            totalNum: 0,
+            opt_num: 0,
+            remain: -1,
+            id: 0,    //全局的 this.id 指的是一份试卷 sheetTemp 的 id
+            level: 0,
+            lesson: 0,
+            prob_list: [],
+            done_list: [],
+            opt_box: [],
+            txt_box: [],
+            src: "",
+            prob_text: "test",
+            prob_attr: "",
+            options_id: 0,
+            options: {A: "A", B: "B", C: "C", D: "D"},
+            analysis: '',
+            formData: {
+                idx: 0,
+                finish: 0,
+                choice: "",
+                choice_text: ""
+            },
+            setting: {
+                src: "",
+                sys: "",
+                lev: 0,
+                probNum: 0
+            },
+            options_list: [],
+            answers_list: [],
+            txt: [],
+            input_num: [],
+            activities: [],
+        },
+        methods: {
+            chooseOption: function (option) {
+                this.refreshAnswer();
+                document.getElementById('option_' + option.toUpperCase()).style.background = "#00D87E";
+                document.getElementById('option_' + option.toUpperCase()).style.color = "white";
+                this.formData.choice = option;
+                if (option === 'a') {
+                    this.formData.choice_text = this.options.A;
+                } else if (option === 'b') {
+                    this.formData.choice_text = this.options.B;
+                } else if (option === 'c') {
+                    this.formData.choice_text = this.options.C;
+                } else if (option === 'd') {
+                    this.formData.choice_text = this.options.D;
+                }
+                if(this.done_list.indexOf(this.num) === -1) {
+                    this.remain = this.totalNum-(this.done_list.push(this.num));
+                }
+                this.formData.idx = this.prob_list[this.num - 1];
+                this.formData.finish = 1;
+            },
+
+            refreshAnswer: function () {
+                document.getElementById('option_A').style.background = "#F0F0F0";
+                document.getElementById('option_A').style.color = "black";
+                document.getElementById('option_B').style.background = "#F0F0F0";
+                document.getElementById('option_B').style.color = "black";
+                document.getElementById('option_C').style.background = "#F0F0F0";
+                document.getElementById('option_C').style.color = "black";
+                document.getElementById('option_D').style.background = "#F0F0F0";
+                document.getElementById('option_D').style.color = "black";
+            },
+
+            getIndex: function (option) {
+                return "text" + (option + 1);
+            },
+
+            getId: function (option) {
+                return "icon_" + option;
+            },
+
+            getNum: function (option) {
+                return "num_" + option;
+            },
+
+            getImage: function (str) {
+                var img = new Image();
+                img.src = "/image/_prob/" + str + ".png";
+                if(img.complete){
+                    if(img.width > img.height)
+                        document.getElementById("image").style.width = "100%";
+                    else
+                        document.getElementById("image").style.height = "100%";
+                }else{
+                    img.onload = function(){
+                        if(img.width > img.height)
+                            document.getElementById("image").style.width = "100%";
+                        else
+                            document.getElementById("image").style.height = "100%";
+                    };
+                }
+                this.imgSrc = img.src;
+            },
+
+            fetchAnalysis: async function () {
+                var analysisText = this.analysis_list[this.num - 1].split("\n");
+                var tempString = "";
+                for(var j = 0;j < analysisText.length;j++) {
+                    tempString += (analysisText[j] + "<br />");
+                }
+                document.getElementById("analysis_content").innerHTML = tempString;
+            },
+
+            fetchProblem: async function () {
+                var prob_id = $.cookie("prob_id");
+                var prob = await axios.get("/getProblem?num="+prob_id.toString());
+                console.log(prob.data);
+                this.level = prob.data.prob_level;
+                this.lesson = prob.data.lesson_id;
+                this.prob_text = prob.data.prob_text;
+                var answer = await axios.get("/getAnswer?id="+prob_id.toString());
+                this.analysis = answer.data.analysis_text;
+                var analysisText = answer.data.analysis_text.split("\n");
+                var tempString = "";
+                for(var j = 0;j < analysisText.length;j++) {
+                    tempString += (analysisText[j] + "<br />");
+                }
+                document.getElementById("analysis_content").innerHTML = tempString;
+                if(prob.data.prob_attr === "Choice") {
+                    this.prob_attr = "选择";
+                    try {
+                        this.getImage(this.prob_list[this.num - 1].toString());
+                    } catch (e) {
+                        //
+                    }
+                    this.options_id = prob.data.options_id;
+                    var option = await axios.get("/getOptions?id="+this.options_id);
+                    this.options.A = option.data.option_a;
+                    this.options.B = option.data.option_b;
+                    this.options.C = option.data.option_c;
+                    if(option.data.hasOwnProperty('option_d') && (option.data.option_d !== null) && (option.data.option_d.length > 0)) {
+                        this.options.D = option.data.option_d;
+                        document.getElementById('option_D').style.display = "";
+                    }else {
+                        this.options.D = "";
+                        document.getElementById('option_D').style.display = "none";
+                    }
+                }else {
+                    this.txt = [];
+                    document.getElementById('opt_part').style.display = "none";
+                    document.getElementById('txt_part').style.display = "block";
+                    this.prob_attr = "改写";
+                    try {
+                        this.getImage(this.prob_list[this.num - 1].toString());
+                    } catch (e) {
+                        //
+                    }
+                    for(var i = 0;i < prob.data.blank_num;i++) {//2记得改为prob.data.blank_num
+                        this.txt.push("");
+                    }
+                    this.input_num = [...Array(prob.data.blank_num).keys()];//2记得改为prob.data.blank_num
+                    this.prob_text = prob.data.prob_text;
+                    if(this.prob_text.toLowerCase().indexOf("question") > -1) {
+                        if(this.prob_text.toLowerCase().indexOf("positive") > -1) {
+                            document.getElementById("prob_tip").innerHTML = "改写句子：改写成疑问句+肯定回答";
+                        }else if(this.prob_text.toLowerCase().indexOf("negative") > -1) {
+                            document.getElementById("prob_tip").innerHTML = "改写句子：改写成疑问句+否定回答";
+                        }
+                    }else if(this.prob_text.toLowerCase().indexOf("sentence") > -1) {
+                        if(this.prob_text.toLowerCase().indexOf("positive") > -1) {
+                            document.getElementById("prob_tip").innerHTML = "改写句子：改写成肯定句";
+                        }else if(this.prob_text.toLowerCase().indexOf("negative") > -1) {
+                            document.getElementById("prob_tip").innerHTML = "改写句子：改写成否定句";
+                        }
+                    }else if(this.prob_text.toLowerCase().indexOf("answer") > -1) {
+                        if(this.prob_text.toLowerCase().indexOf("positive") > -1) {
+                            document.getElementById("prob_tip").innerHTML = "回答问题：用肯定句回答";
+                        }else if(this.prob_text.toLowerCase().indexOf("negative") > -1) {
+                            document.getElementById("prob_tip").innerHTML = "回答问题：用否定句回答";
+                        }
+                    }
+                }
+                for (var j = 1; j <= this.totalNum; j++) {
+                    if(j === this.num) {
+                        document.getElementById("icon_" + j).style.width = "30px";
+                        document.getElementById("icon_" + j).style.height = "30px";
+                        document.getElementById("icon_" + j).style.margin = "0px 0px 0px 0px";
+                        document.getElementById("num_" + j).style.fontSize = "20px";
+                    }else {
+                        document.getElementById("icon_" + j).style.width = "21px";
+                        document.getElementById("icon_" + j).style.height = "21px";
+                        document.getElementById("icon_" + j).style.margin = "4px 0px 0px 0px"
+                        document.getElementById("num_" + j).style.fontSize = "16px";
+                    }
+                }
+            },
+        },
+
+        created() {
+            this.fetchProblem();
+        },
+    })
+</script>

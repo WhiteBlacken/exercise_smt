@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>题目列表</title>
+    <meta http-equiv="content-type" content="text/html charset=utf-8"/>
+    <link href="/css/index.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <script src="/js/vue@2.6.10.js"></script>
+    <script src="/js/axios@0.18.0.min.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/jquery.cookie.js"></script>
+    <script src="/js/rules.js"></script>
+</head>
+<body>
+<el-container>
+    <div id="app">
+        <el-header style="margin-bottom: 130px">
+            <h2>已添加题目列表</h2>
+
+            <el-button type="primary" round @click="newProb()">+ 新增题目</el-button>
+
+            <div style="display: inline-block; width: 70%">
+            <el-input v-model="input" style="width: 40%; margin-left: 80px" id="search_box" placeholder="搜索所有题目"></el-input>
+                <el-select v-model="search_mode" width="30">
+                    <el-option v-for="item in search_modes" :label="item" :value="item">
+                    </el-option>
+                </el-select>
+                <el-button type="primary" plain @click="search()">搜索</el-button>
+                <el-button type="danger" plain @click="clearSearch()">清空搜索</el-button>
+            </div>
+
+            <h3>请选择：</h3>
+            <template style="display: inline-block">
+                level
+                <el-select v-model="level" width="80">
+                    <el-option v-for="item in levels" :label="item" :value="item">
+                    </el-option>
+                </el-select>
+
+                lesson
+                <el-select v-model="lesson_id" width="80">
+                    <el-option v-for="item in lessons" :label="item" :value="item">
+                    </el-option>
+                </el-select>
+
+                <el-button type="primary" plain @click="select()">筛选</el-button>
+            </template>
+        </el-header>
+
+        <el-main>
+            <!-- 显示题目表格开始 -->
+            <template>
+                <el-table :data="tableData" stripe border style="width: 100%"
+                          :default-sort="{prop: 'end_time', order: 'descending'}"
+                          v-loading="loading"
+                          element-loading-text="拼命加载中"
+                          element-loading-spinner="el-icon-loading"
+                          element-loading-background="rgba(0, 0, 0, 0.8)">
+                    <el-table-column prop="index" label="id" width="70" sortable></el-table-column>
+                    <el-table-column prop="prob_text" label="题干"></el-table-column>
+                    <el-table-column prop="level_lesson" label="level_lesson" width="70"></el-table-column>
+                    <el-table-column prop="options" label="选项 or 空行" width="185"></el-table-column>
+                    <el-table-column prop="answer_text" label="正确答案" width="150"></el-table-column>
+                    <el-table-column prop="prob_attr" label="属性" width="85"></el-table-column>
+                    <el-table-column prop="prob_diff" label="难度" width="80"></el-table-column>
+                    <el-table-column prop="point_text" label="考点" width="110"></el-table-column>
+                    <el-table-column prop="analysis" label="解析"></el-table-column>
+                    <el-table-column label="操作" width="280">
+                        <template slot-scope="scope">
+                            <el-button size="mini" @click="editProb(scope.row.index)" type="primary" plain>
+                                <i class="el-icon-document"></i>编辑
+                            </el-button>
+                            <el-button size="mini" @click="deleteProb(scope.row.index)" type="danger" plain>
+                                <i class="el-icon-document"></i>删除
+                            </el-button>
+                            <el-button size="mini" @click="preview(scope.row.index)" type="success" plain>
+                                <i class="el-icon-document"></i>预览
+                            </el-button>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </template>
+            <!-- 显示题目表格结束 -->
+            <el-button type="primary" style="width: 100px; margin: 30px 40%" plain @click="select()">返回</el-button>
+        </el-main>
+
+    </div>
+</el-container>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            level: '0',
+            lesson_id: 0,
+            levels: ['1', '2', '3', '4', '5', '6'],
+            lessons: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            search_modes: ['题干', '考点'],
+            search_mode: '',
+            tableData: [],
+            input: '',
+            loading: true
+        },
+        methods: {
+            newProb: function () {
+                $.cookie("prob_id", null);
+                $.cookie("scrollTop", 0);
+                window.location.replace("/upload");
+            },
+
+            clearSearch: function () {
+                this.search_mode = '';
+                this.input = '';
+                $.cookie("input", '');
+                $.cookie("search_mode", '');
+                this.select();
+            },
+
+            search: function () {
+                $.cookie("input", this.input);
+                $.cookie("search_mode", this.search_mode);
+                this.lesson_id = 0;
+                this.level = '';
+                axios.get("/searchProb?text=" + this.input + "&mode=" + this.search_mode
+                ).then((response) => {
+                    var prob_list = response.data;
+                    if(prob_list.length === 0){
+                        this.$message({
+                            type: 'error',
+                            message: '没有检索到题目~'
+                        });
+                        return;
+                    }
+                    this.tableData = [];
+                    for (let i = 0; i < prob_list.length; i++) {
+                        if(prob_list[i]['prob_text'].indexOf('【题目已被删除】') === -1)
+                            this.tableData.push({
+                                'index': prob_list[i]['prob_id'],
+                                'options': prob_list[i]['options'],
+                                'prob_attr': prob_list[i]['prob_attr'],
+                                'prob_text': prob_list[i]['prob_text'],
+                                'prob_diff': prob_list[i]['prob_diff'],
+                                'answer_text': prob_list[i]['answer_text'],
+                                'analysis': prob_list[i]['analysis'],
+                                'blank_num': prob_list[i]['blank_num'],
+                                'point_text': prob_list[i]['point_text'],
+                                'level_lesson': prob_list[i]['prob_level'] + "-" + prob_list[i]['lesson_id'].toString(),
+                                'prob_level': prob_list[i]['prob_level'],
+                                'lesson_id': prob_list[i]['lesson_id'],
+                            })
+                    }
+                    this.tableData.reverse();
+                    this.loading = false;
+                    this.$message({
+                        type: 'success',
+                        message: '筛选出 ' + this.tableData.length.toString() + ' 道题'
+                    });
+                });
+            },
+
+            select: function () {
+                $.cookie("scrollTop", 0);
+                $.cookie("level", this.level);
+                $.cookie("lesson_id", this.lesson_id);
+                this.search_mode = '';
+                this.input = '';
+                $.cookie("input", '');
+                $.cookie("search_mode", '');
+                // if(this.search_mode === '考点') {
+                //     this.tmpData = this.tableData;
+                //     this.tableData = [];
+                //     for (const prob in this.tmpData) {
+                //         if(prob['prob_level'] === this.level && prob['lesson_id'] === this.lesson_id) {
+                //             this.tableData.push(prob);
+                //         }
+                //     }
+                //     return;
+                // }
+                axios.get("/listAllProb?level=" + this.level + "&lesson_id=" + this.lesson_id.toString()
+                ).then((response) => {
+                    var prob_list = response.data;
+                    this.tableData = [];
+                    for (let i = 0; i < prob_list.length; i++) {
+                        if(prob_list[i]['prob_text'].indexOf('【题目已被删除】') === -1)
+                        this.tableData.push({
+                            'index': prob_list[i]['prob_id'],
+                            'options': prob_list[i]['options'],
+                            'prob_attr': prob_list[i]['prob_attr'],
+                            'prob_text': prob_list[i]['prob_text'],
+                            'prob_diff': prob_list[i]['prob_diff'],
+                            'answer_text': prob_list[i]['answer_text'],
+                            'analysis': prob_list[i]['analysis'],
+                            'blank_num': prob_list[i]['blank_num'],
+                            'point_text': prob_list[i]['point_text'],
+                        })
+                    }
+                    this.tableData.reverse();
+                    this.loading = false;
+                    this.$message({
+                        type: 'success',
+                        message: '筛选出 ' + this.tableData.length.toString() + ' 道题'
+                    });
+                    setTimeout(function(){document.documentElement.scrollTop = parseInt($.cookie("scrollTop"));}, 1000);
+                });
+            },
+
+            preview: function (index) {
+                $.cookie("prob_id", index);
+                window.open("/preview");
+            },
+
+            editProb: function (index) {
+                $.cookie("prob_id", index);
+                $.cookie("scrollTop", document.documentElement.scrollTop + document.body.scrollTop);
+                window.location.replace("/upload");
+            },
+
+            deleteProb: function (index) {
+                this.$confirm('此操作将删除该题, 是否继续?', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    axios.post("/deleteProb", $.param({'prob_id': index})
+                    ).then((response) => {
+                        if(response.data === "OK"){
+                            this.$message({
+                                type: 'success',
+                                message: '已删除 自动刷新'
+                            });
+                            setTimeout("", 2000);
+                            $.cookie("scrollTop", document.documentElement.scrollTop + document.body.scrollTop);
+                            window.location.replace("/upload_list");
+                        }
+                        else {
+                            this.$message({
+                                type: 'error',
+                                message: '删除失败'
+                            });
+                        }
+                    });
+
+                }).catch(() => {
+                    this.$message({
+                        type: 'info',
+                        message: '已取消删除'
+                    });
+                });
+
+            }
+        },
+
+        created: function () {
+            this.search_mode = $.cookie("search_mode");
+            this.input = $.cookie("input");
+            if($.cookie("search_mode") === "考点") {
+                this.search();
+            }else {
+                this.lesson_id = $.cookie("lesson_id");
+                this.level = $.cookie("level");
+                this.select();
+            }
+        },
+    })
+
+
+</script>
+
+</html>

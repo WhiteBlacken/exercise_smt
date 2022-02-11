@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <title>主界面</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link href="/css/homepage.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <link href="/css/index.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <script src="/js/vue@2.6.10.js"></script>
+    <script src="/js/axios@0.18.0.min.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/jquery.min.js"></script>
+</head>
+<body>
+<div th:replace="include::sidebar">
+</div>
+<el-container>
+    <div id="app">
+        <div id="mod_name" class="module_name">
+            <p><span>温故知新</span></p>
+        </div>
+        <div id="lev_info" class="level_info">
+            <p><span>当前等级</span><br><span>SMT Lev.{{ level }}</span></p>
+        </div>
+        <div id="choose1" class="">
+            <p><span>选择知识体系</span></p>
+        </div>
+        <div id="choose_sys" class="option">
+            <el-radio v-model="choice" label="smt" border>SMT课程体系</el-radio>
+            <el-radio v-model="choice" label="school" border>学校课程体系</el-radio>
+        </div>
+        <div id="choose2" class="">
+            <p><span>选择级别</span></p>
+        </div>
+        <div id="choose_lev" class="">
+            <el-slider
+              v-model="chosen_level"
+              :step="20"
+              :marks="marks"
+              :format-tooltip="formatTooltip"
+              show-stops>
+            </el-slider>
+        </div>
+        <div id="choose3" class="">
+            <p><span>选择题量</span></p>
+        </div>
+        <div id="choose_num" class="option">
+            <el-radio v-model="prob_num" :label="15" border>15</el-radio>
+            <el-radio v-model="prob_num" :label="20" border>20</el-radio>
+            <el-radio v-model="prob_num" :label="25" border>25</el-radio>
+        </div>
+        <div id="start">
+            <button type="button" id="start_button" @click="beginExercise">开始刷题</button>
+        </div>
+    </div>
+</el-container>
+
+</body>
+<script>
+    function setCookie(cname,cvalue) {
+        document.cookie = cname + "=" + cvalue + "; ";
+    }
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) 
+        {
+            var c = ca[i].trim();
+            if (c.indexOf(name) === 0)
+                return c.substring(name.length,c.length);
+        }
+        return "";
+    }
+
+    var app = new Vue({
+        el: "#app",
+        data: {
+            choice: 'smt',
+            level: 0,
+            chosen_level: 0,
+            marks: {0:'Lev.1',20:'Lev.2',40:'Lev.3',60:'Lev.4',80:'Lev.5',100:'Lev.6'},
+            prob_num: 0,
+            setting: {
+                src: "ai",
+                sys: 'smt',
+                lev: 0,
+                probNum: 25
+            }
+        },
+
+        methods: {
+            beginExercise: function () {
+                this.setting.lev = (this.chosen_level/20)+1;
+                this.setting.sys = this.choice;
+                this.setting.probNum = this.prob_num;
+                axios.post("/postSetting",$.param(this.setting)
+                ).then((response) => {
+                    console.log("已设置参数: ", response.data);
+                });
+                sessionStorage.setItem('lastUrl',window.location.href);
+                window.location.href = "/exercise_opt?src=ai&lev="+((this.chosen_level/20)+1)+"&num="+this.prob_num;
+            },
+
+            formatTooltip: function (chosen_level) {
+                if(chosen_level === 0)
+                    return 'Lev.1';
+                if(chosen_level === 20)
+                    return 'Lev.2';
+                if(chosen_level === 40)
+                    return 'Lev.3';
+                if(chosen_level === 60)
+                    return 'Lev.4';
+                if(chosen_level === 80)
+                    return 'Lev.5';
+                if(chosen_level === 100)
+                    return 'Lev.6';
+            },
+
+            initial: function () {
+                return new Promise(resolve => {
+                    axios.get('/homepageInitial').then((response) => {
+                        resolve(response.data);
+                    });
+                })
+            },
+
+            setSheet: async function () {
+                var rs = await this.initial();
+                this.level = rs.level;
+                this.chosen_level = (this.level - 1)*20;
+                this.prob_num = rs.num;
+            },
+        },
+
+        created: function () {
+            if(localStorage.getItem('SMTusername') !== null) {
+                if(getCookie(localStorage.getItem('SMTusername')) === "") {
+                    localStorage.clear();
+                    window.location.href = '/login';
+                }
+            }else {
+                window.location.href = '/login';
+            }
+            sessionStorage.clear();
+        },
+
+        mounted: function () {
+            this.$nextTick(() => {
+                this.setSheet();
+            })
+        }
+    })
+</script>
+</html>

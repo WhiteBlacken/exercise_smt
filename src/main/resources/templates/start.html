@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <title>初始界面</title>
+    <meta http-equiv="content-type" content="text/html charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+    <link href="/css/start.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <link href="/css/index.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <script src="/js/vue@2.6.10.js"></script>
+    <script src="/js/axios@0.18.0.min.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="http://mockjs.com/dist/mock.js"></script>
+</head>
+<body>
+        <div id="app">
+            <img id="background" src="/image/start_bg.png">
+            <button type="button" id="back_button" @click="goBack"></button>
+            <button type="button" id="home_button" @click="goHome"></button>
+            <img id="level" src="/image/level.png">
+            <div id="level_info">
+                <p><span>等级/L{{ level }}</span></p>
+            </div>
+            <img id="ribbon" src="/image/ribbon.png">
+            <div id="level_box">
+                <div class="star_container">
+                    <img id="star1" class="star" src="/image/star1.png" @click="choose(1)">
+                </div>
+                <div class="star_container">
+                    <img id="star2" class="star" src="/image/star2.png" @click="choose(2)">
+                </div>
+                <div class="star_container">
+                    <img id="star3" class="star" src="/image/star3.png" @click="choose(3)">
+                </div>
+                <div class="star_container">
+                    <img id="star4" class="star" src="/image/star4.png" @click="choose(4)">
+                </div>
+                <div class="star_container">
+                    <img id="star5" class="star" src="/image/star5.png" @click="choose(5)">
+                </div>
+                <div class="star_container">
+                    <img id="star6" class="star" src="/image/star6.png" @click="choose(6)">
+                </div>
+                <div class="star_container">
+                    <img id="star7" class="star" src="/image/star7.png" @click="choose(7)">
+                </div>
+                <div class="star_container">
+                    <img id="star8" class="star" src="/image/star8.png" @click="choose(8)">
+                </div>
+                <div class="star_container">
+                    <img id="star9" class="star" src="/image/star9.png" @click="choose(9)">
+                </div>
+                <div class="star_container">
+                    <img id="star10" class="star" src="/image/star10.png" @click="choose(10)">
+                </div>
+            </div>
+            <button type="button" id="start_button" @click="start"></button>
+        </div>
+</body>
+<script>
+    function setCookie(cname,cvalue) {
+        document.cookie = cname + "=" + cvalue + "; ";
+    }
+    function showData () {
+        var deviceWidth = document.documentElement.clientWidth;
+        var deviceHeight = document.documentElement.clientHeight;
+        var availWidth = window.screen.availWidth;
+        var availHeight =  window.screen.availHeight;
+        var screenHeight = window.screen.height;
+        var screenWidth = window.screen.width;
+        alert('deviceWidth:' + deviceWidth + ' deviceHeight: ' +deviceHeight + ' availWidth:' + availWidth +
+            ' availHeight:' + availHeight + ' screenWidth:' + screenWidth + ' screenHeight:' +screenHeight)
+    }
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) 
+        {
+            var c = ca[i].trim();
+            if (c.indexOf(name) === 0)
+                return c.substring(name.length,c.length);
+        }
+        return "";
+    }
+
+    window.addEventListener('resize', () => {
+        var deviceWidth = document.documentElement.clientWidth;
+        document.getElementById("app").style.transformOrigin = "left top";
+        document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+    }, false);
+
+    window.addEventListener("orientationchange",() => {
+        if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+            var deviceWidth = document.documentElement.clientWidth;
+            var deviceHeight = document.documentElement.clientHeight;
+            if(window.orientation == 0 || window.orientation == 180) {
+                deviceWidth = (deviceWidth < deviceHeight) ? deviceWidth : deviceHeight;
+                document.getElementById("app").style.transformOrigin = "left top";
+                document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+            }
+            if(window.orientation == 90 || window.orientation == -90) {
+                deviceWidth = (deviceWidth > deviceHeight) ? deviceWidth : deviceHeight;
+                document.getElementById("app").style.transformOrigin = "left top";
+                document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+            }
+        }
+    });
+    /*if(/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+        window.addEventListener("orientationchange",function(){
+            var deviceWidth = window.screen.width;
+            var deviceHeight = window.screen.height;
+            if(window.orientation == 0 || window.orientation == 180) {
+                if(deviceWidth >= deviceHeight) {
+                    document.getElementById("app").style.transformOrigin = "center top";
+                    document.getElementById("app").style.transform = "scale(" + (deviceHeight / 1533) + ")";
+                }else {
+                    document.getElementById("app").style.transformOrigin = "center top";
+                    document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                }
+            }
+            if(window.orientation == 90 || window.orientation == -90) {
+                if(deviceWidth < deviceHeight) {
+                    document.getElementById("app").style.transformOrigin = "center top";
+                    document.getElementById("app").style.transform = "scale(" + (deviceHeight / 1533) + ")";
+                }else {
+                    document.getElementById("app").style.transformOrigin = "center top";
+                    document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                }
+            }
+        });
+    }*/
+
+    var app = new Vue({
+        el: "#app",
+        data: {
+            level: 1,
+            chosen_lesson: 1,
+            setting: {
+                src: "lesson",
+                sys: '1',
+                lev: 1,
+                probNum: 20
+            }
+        },
+
+        methods: {
+            goBack: function () {
+                window.location.href = "https://www.smartreelearners.com/#/home";
+            },
+
+            goHome: function () {
+                window.location.href = "https://www.smartreelearners.com/#/home";
+            },
+
+            choose: function (option) {
+                console.log("--执行了choose--");
+                if(this.chosen_lesson != 0) {
+                    document.getElementById("star" + this.chosen_lesson.toString()).style.height = "90%";
+                    document.getElementById("star" + this.chosen_lesson.toString()).style.width = "90%";
+                }
+                this.chosen_lesson = option;
+                document.getElementById("star" + this.chosen_lesson.toString()).style.height = "100%";
+                document.getElementById("star" + this.chosen_lesson.toString()).style.width = "100%";
+            },
+
+            start: function () {
+                console.log("--执行了start--");
+
+                this.setting.sys = this.chosen_lesson.toString();
+                // this.setting.lev = this.level;
+                this.setting.lev = "1";
+                axios.post("/postSetting",$.param(this.setting)
+                ).then((response) => {
+                    //400-参数不匹配
+                    console.log("已设置参数: ", response.data);
+                });
+                sessionStorage.setItem("level",this.setting.lev.toString());
+                sessionStorage.setItem("lesson",this.setting.sys);
+                sessionStorage.setItem('lastUrl',window.location.href);
+                window.location.href = "/demo?src=lesson";
+            }
+        },
+
+        created: function () {
+            if(getCookie('user_id') !== null) {
+                if(getCookie('user_id') === "") {
+                    localStorage.clear();
+                    window.location.href = '/login';
+                }
+            }else {
+                window.location.href = '/login';
+            }
+            if(getCookie('level') !== null && getCookie('level').length > 0){
+                this.level = parseInt(getCookie('level'));
+            }
+            sessionStorage.clear();
+            if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+                var deviceWidth = document.documentElement.clientWidth;
+                var deviceHeight = document.documentElement.clientHeight;
+
+                if(window.orientation == 0 || window.orientation == 180) {
+                    deviceWidth = (deviceWidth < deviceHeight) ? deviceWidth : deviceHeight;
+                    document.getElementById("app").style.transformOrigin = "left top";
+                    document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                }
+                if(window.orientation == 90 || window.orientation == -90) {
+                    deviceWidth = (deviceWidth > deviceHeight) ? deviceWidth : deviceHeight;
+                    document.getElementById("app").style.transformOrigin = "left top";
+                    document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                }
+
+            }else {
+                var deviceWidth = document.documentElement.clientWidth;
+
+                document.getElementById("app").style.transformOrigin = "left top";
+                document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+
+            }
+        }
+    })
+</script>

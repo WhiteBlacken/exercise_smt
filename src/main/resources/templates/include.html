@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>sidebar</title>
+    <link href="/css/homepage.css" type="text/css" rel="stylesheet" charset="utf-8">
+</head>
+<body>
+<div id="navigation_box" class="nav_box" th:fragment="sidebar">
+    <ul id="sidebar" class="nav">
+        <li id="title">SMT<br>刷题平台</li>
+        <li><a href="/home" id="home">温故知新</a></li>
+        <li><a href="/week_test" id="week_test">双周测</a></li>
+        <li><a href="/wrong" id="wrong">错题集</a></li>
+        <li><a href="/history" id="history">历史记录</a></li>
+    </ul>
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,643 @@
+@font-face{
+    font-family: 'GothamRoundedBold';
+    src: url('/css/fonts/GothamRounded-Bold.woff.ttf') format('truetype'),
+    url('/css/fonts/GothamRounded-Bold.woff.ttf') format('woff');
+}
+@font-face{
+    font-family: 'GothamRoundedBook';
+    src: url('/css/fonts/GothamRounded-Book.woff.ttf') format('truetype'),
+    url('/css/fonts/GothamRounded-Book.woff.ttf') format('woff');
+}
+@font-face{
+    font-family: 'GothamRoundedMedium';
+    src: url('/css/fonts/Gotham-rounded-medium.woff.ttf') format('truetype'),
+    url('/css/fonts/Gotham-rounded-medium.woff.ttf') format('woff');
+}
+html,body {
+    height: 100%;
+    width: 100%;
+    
+}
+
+p {
+    margin: 0;
+    padding: 4px;
+}
+
+body {  
+    margin: 0;
+    background-color: #FFB71B;
+}
+
+#popBox {
+    position: absolute;
+    z-index: 4;
+    height: 46.67%;
+    width: 54%;
+    top: 25%;
+    left: 23%; 
+}
+
+#pop_msg {
+    position: absolute;
+    z-index: 5;
+    height: 6.67%;
+    width: 25%;
+    top: 49%;
+    left: 38%;
+    font-size: 24px;
+    font-family: 'Microsoft YaHei Regular';
+}
+
+#handIn_confirm {
+    position: absolute;
+    z-index: 5;
+    left: 39.5%;
+    top: 55%;
+    height: 4.82%;
+    width: 9.36%;
+    border: none;
+    background-image: url(/image/confirm_before.png);
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: center;
+    background-color: transparent;
+    background-size: 100% 100%;
+    border-radius: 30px;
+    cursor: pointer;
+    outline: none;
+}
+
+#handIn_confirm:after,#handIn_confirm:active {
+    cursor: auto;
+    background-image: url(/image/confirm_after.png);
+}
+
+#handIn_cancel {
+    position: absolute;
+    z-index: 5;
+    left: 50%;
+    top: 55%;
+    height: 4.82%;
+    width: 9.36%;
+    border: none;
+    background-image: url(/image/cancel_before.png);
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: center;
+    background-color: transparent;
+    background-size: 100% 100%;
+    border-radius: 30px;
+    cursor: pointer;
+    outline: none;
+}
+
+#handIn_cancel:after,#handIn_cancel:active {
+    cursor: auto;
+    background-image: url(/image/cancel_after.png);
+}
+
+#last_button {
+    position: absolute;
+    left: 70%;
+    top: 75%;
+    height: 9.62%;
+    width: 10.6%;
+    border: none;
+    background-image: url(/image/last_before.png);
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: center;
+    background-color: transparent;
+    background-size: 100% 100%;
+    border-radius: 30px;
+    cursor: pointer;
+    outline: none;
+}
+
+#next_button {
+    position: absolute;
+    left: 85%;
+    top: 75%;
+    height: 9.62%;
+    width: 10.6%;
+    border: none;
+    background-image: url(/image/next_before.png);
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: center;
+    background-color: transparent;
+    background-size: 100% 100%;
+    border-radius: 30px;
+    cursor: pointer;
+    outline: none;
+}
+
+#last_button:after,#last_button:active {
+    cursor: auto;
+    background-image: url(/image/last_after.png);
+}
+
+#next_button:after,#next_button:active {
+    cursor: auto;
+    background-image: url(/image/next_after.png);
+}
+
+#whole {
+    width: 100%;
+    height: 100%;
+    background-color: #FFB71B;
+}
+
+#app {
+    position: relative;
+    width: 1533px;
+    height: 1142px;
+}
+
+#pop_container {
+    position: absolute;
+    width: 1533px;
+    height: 1142px;
+    z-index: 0;
+}
+
+#main {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: space-between;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    background-color: #FFB71B;
+}
+
+#header {
+    justify-content: center;
+    text-align: center;
+    font-size: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    height: 16.67%;
+    align-content: space-between;
+    color: #F8F8F8;
+}
+
+#footer {
+    height: 6.67%;
+    width: 100%;
+    align-content: flex-start;
+    font-family: 'Microsoft JhengHei';
+    background-color: #FFB71B;
+}
+
+#top_bar {
+    position: absolute;
+    height: 76px;
+    width: 1533px;
+    left: 0;
+    right: 0;
+    background-color: #2A7DE1;
+    z-index: 0;
+}
+
+#container1 {
+    width: 100%;
+    height: 40%;
+    background-color: #2A7DE1;
+}
+
+#container2 {
+    width: 100%;
+    height: 60%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #FFB71B;
+}
+
+#container3 {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    background-color: #FFB71B;
+}
+
+#heading {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    background-color: #2A7DE1;
+    color: white;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+#heading1,#heading2 {
+    margin: 0;
+    height: 80%;
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+#heading1 {
+    width: 40%;
+    font-family: 'GothamRoundedBold';
+    justify-content: flex-end;
+    padding-right: 0.5rem;
+    white-space:nowrap;
+}
+
+#heading2 {
+    width: 40%;
+    font-family: 'Microsoft YaHei',微软雅黑;
+    font-weight: bold;
+    justify-content: flex-start;
+    padding-left: 0.5rem;
+    white-space:nowrap;
+}
+
+#heading3 {
+    position: relative;
+    height: 70%;
+    width: 87%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-radius: 38px;
+}
+
+#line1,#line20 {
+    display: none;
+}
+
+#line {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    left: 5.5%;
+    width: 89.3%;
+    z-index: 1;
+    height: 28.76%;
+    border-top-color: #2A7DE1;
+    border-top-width: 0.4rem;
+    border-top-style: solid;
+}
+
+#icon_1,#icon_2,#icon_3,#icon_4,#icon_5,#icon_6,#icon_7,#icon_8,#icon_9,#icon_10 {
+    position: relative;
+    z-index: 1;
+    width: 32.86%;
+    height: 32.9%;
+}
+
+#icon_11,#icon_12,#icon_13,#icon_14,#icon_15,#icon_16,#icon_17,#icon_18,#icon_19,#icon_20 {
+    position: relative;
+    z-index: 1;
+    width: 32.86%;
+    height: 32.9%;
+}
+
+ul {
+    position: relative;
+    height: 80%;
+    margin: 0;
+    padding: 0;
+    width: 94%;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+    list-style: none;
+}
+
+li {
+    width: 5%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    font-family: 'TW Cen MT Condensed';
+    z-index: 1;
+}
+
+li > p {
+    position: relative;
+    width: 100%;
+    font-family: 'GothamRoundedMedium';
+    color: #DCDCDC;
+    padding: 0;
+    top: -4.69%;
+}
+
+#link_left,#link_right {
+    position: absolute;
+    z-index: 2;
+    width: 3.55%;
+    height: 15%;
+    top: 11.5%;
+}
+
+#link_left {
+    left: 19.5%;
+}
+
+#link_right {
+    left: 80.5%;
+}
+
+#question_card {
+    position: relative;
+    background-color: #FFB71B;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 65%;
+}
+
+#book_container {
+    position: relative;
+    background-color: #FF9500;
+    border-radius: 20px;
+    height: 100%;
+    width: 87%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#book {
+    position: absolute;
+    z-index: 0;
+    left: 2%;
+    width: 96%;
+    height: 94%;
+}
+
+#question_area {
+    width: 79%;
+    height: 83%;
+}
+
+#question_info,#question_text {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 66%;
+}
+
+#question_info {
+    font-family: 'GothamRoundedMedium';
+    align-items: center;
+    font-weight: 200;
+    height: 10%;
+}
+
+#question_text {
+    align-items: flex-start;
+    font-family: 'GothamRoundedMedium';
+    font-size: 1.4em;
+    height: 23%;
+    margin-top: 1rem;
+}
+
+#opt_part,#txt_part,#kantuxuanyin_part,#tingyinxuanwen_part,#tingyinxuanci_part,#panduanzhengwu_part {
+    position: relative;
+    z-index: 1;
+    height: 70%;
+    width: 100%;
+}
+
+#image_container {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 30%;
+    left: 67%;
+    width: 22%;
+    height: 37.5%;
+
+    background-image: repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0));
+    border-radius: 20px;
+
+}
+
+.option_img_container{
+    display: flex;
+    position: relative;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+
+    height: 86%;
+    border-radius: 15px;
+    margin-bottom: 3%;
+    background-image: repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0));
+}
+
+#image {
+    width: 93.9%;
+    height: 93.2%;
+    border-radius: 16px;
+
+}
+
+#stem_audio {
+    width: 55px;
+    height: 55px;
+    margin-left: 13px;
+    position: absolute;
+    cursor: pointer;
+}
+
+.option_audio{
+    width: 55px;
+    height: 55px;
+    margin-left: 25px;
+    margin-right: 120px;
+    cursor: pointer;
+}
+
+.option_judge{
+    width:65px;
+    height:65px;
+    margin-left: 30px;
+    margin-right: 140px;
+    cursor: pointer;
+}
+
+.option_img{
+    width: 93.9%;
+    height: 93%;
+    border-radius: 11px;
+}
+
+.option {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    left: 1.18%;
+    width: 47%;
+    height: 10.3%;
+    padding: 0.5% 1.5%;
+    margin: 1% 0;
+    border-radius: 30px;
+    font-family: 'GothamRoundedMedium';
+    background-color: #F0F0F0;
+    cursor: pointer;
+    font-size: 1.4rem;
+}
+.option_1{
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 21.5%;
+    height: 7.3%;
+    padding: 0.5% 1%;
+    margin: 7% 0.7%;
+    border-radius: 30px;
+    font-family: 'GothamRoundedMedium';
+    background-color: #F0F0F0;
+    cursor: pointer;
+    font-size: 1.3rem;
+    float: left;
+}
+.option_2{
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    left: 3.18%;
+    width: 55%;
+    height: 17.3%;
+    padding: 0.5% 1.5%;
+    border-radius: 30px;
+    font-family: 'GothamRoundedMedium';
+    cursor: pointer;
+    font-size: 1.5rem;
+}
+.option_3{
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 21.5%;
+    height: 57.3%;
+    margin: 1% 0.7%;
+    border-radius: 30px;
+    font-family: 'GothamRoundedMedium';
+    cursor: pointer;
+    font-size: 1.3rem;
+    float: left;
+}
+.optionBox{
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+#question_a_text,#question_b_text,#question_c_text,#question_d_text {
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    word-break: break-all;
+}
+#problem_a_text,#problem_b_text,#problem_c_text,#problem_d_text {
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: 100%;
+    height: 14%;
+    padding: 0.5% 9%;
+    word-break: break-all;
+    border-radius: 30px;
+    background-color: #F0F0F0;
+}
+
+#input_box {
+    position: relative;
+    font-size: 1.5rem;
+    font-weight: 400;
+    padding: 0 2rem;
+    width: 42.4%;
+}
+
+.input_bar {
+    margin: 0.625rem 0;
+    border: 0.2rem solid black;
+    border-radius: 0.375rem;
+    font-size: 1.5rem !important;
+}
+
+.el-input__inner {
+    border: none !important;
+}
+
+#answer_card {
+    position: relative;
+    display: block;
+    height: 5%;
+    top: 5%;
+    margin: 0;
+    padding: 0;
+    font-size: 26px;
+}
+
+#finish_button {
+    height: 52.63%;
+    width: 6.45%;
+    border: none;
+    background-image: url(/image/finish_before.png);
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: center;
+    background-color: transparent;
+    background-size: 100% 100%;
+    border-radius: 30px;
+    cursor: pointer;
+    outline: none;
+}
+
+#finish_button:after,#finish_button:active {
+    cursor: auto;
+    background-image: url(/image/finish_after.png);
+}
+
+#back_button {
+    position: absolute;
+    height: 4.5%;
+    width: 3%;
+    left: 1.93%;
+    top: 1.4%;
+    border: none;
+    background-image: url(/image/back.png);
+    background-repeat: no-repeat;
+    background-position-x: center;
+    background-position-y: center;
+    background-color: transparent;
+    background-size: 100% 100%;
+    cursor: pointer;
+    outline: none;
+    z-index: 3;
+}

@@ -1,0 +1,141 @@
+body {
+    position: relative;
+}
+
+p {
+    margin: 0;
+}
+
+.text {
+    width: 700px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+#head {
+    margin-top: 80px;
+    font-weight: 650;
+    font-size: 3.5em;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+#slogan {
+    margin-top: 30px;
+    font-weight: 600;
+    font-size: 2em;
+}
+
+#ellipse_box {
+    position: relative;
+    width: 700px;
+    height: 150px;
+    margin: 20px auto;
+}
+
+#ellipse1,#ellipse2,#ellipse3,#ellipse4 {
+    border-width:0px;
+    position:absolute;
+    width:87px;
+    height:89px;
+    top: 30.5px;
+    display:flex;
+}
+
+#ellipse1 {
+    left:70.4px;
+}
+
+#ellipse2 {
+    left:227.8px;
+}
+
+#ellipse3 {
+    left:385.2px;
+}
+
+#ellipse4 {
+    left:542.6px;
+}
+
+#ellipse_text1,#ellipse_text2,#ellipse_text3,#ellipse_text4 {
+    position:absolute;
+    align-self:center;
+    text-align: center;
+    padding:2px 2px 2px 2px;
+    box-sizing:border-box;
+    width:100%;
+}
+
+#function_box {
+    position: relative;
+    width: 700px;
+    height: 100px;
+    margin: 20px auto;
+}
+
+#func_button1,#func_button2,#func_button3 {
+    height: 50px;
+    width: 110px;
+    top: 20px;
+    position:absolute;
+    background-color: transparent;
+    text-align: center;
+    border: 2px solid black;
+    cursor: pointer;
+    font-size: 20px;
+    border-radius: 8px;
+    -webkit-border-radius:8px;/*适配以webkit为核心的浏览器(chrome、safari等)*/
+    -moz-border-radius:8px;/*适配firefox浏览器*/
+    -ms-border-radius:8px;/*适配IE浏览器*/
+    -o-border-radius:8px;/*适配opera浏览器*/
+    outline: none;
+}
+
+#func_button1:hover,#func_button2:hover,#func_button3:hover {
+    background-color:rgb(229, 247, 253);
+}
+
+#func_button1:active,#func_button2:active,#func_button3:active {
+    background-color: rgb(218, 243, 252);
+}
+
+#func_button1 {
+    left: 120px;
+}
+
+#func_button2 {
+    left: 295px;
+}
+
+#func_button3 {
+    left: 470px;
+}
+
+#stu_login {
+    text-align: center;
+}
+
+#stu_login_button {
+    height: 70px;
+    width: 130px;
+    background-color: rgba(36, 151, 218, 0.774);
+    cursor: pointer;
+    font-size: 22px;
+    border: none;
+    border-radius: 8px;
+    -webkit-border-radius:8px;/*适配以webkit为核心的浏览器(chrome、safari等)*/
+    -moz-border-radius:8px;/*适配firefox浏览器*/
+    -ms-border-radius:8px;/*适配IE浏览器*/
+    -o-border-radius:8px;/*适配opera浏览器*/
+    outline: none;
+}
+
+#stu_login_button:hover {
+    background-color: rgba(36, 151, 218, 0.397);
+    border: 2px solid black;
+}
+
+#stu_login_button:active {
+    background-color: rgba(36, 151, 218, 0.486);
+    border: 2px solid black;
+}

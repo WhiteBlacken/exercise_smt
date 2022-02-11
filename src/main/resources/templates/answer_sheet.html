@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <link href="/css/exercise.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <title>sheet</title>
+</head>
+<body>
+<div id="drawer" class="drawer1" th:fragment="sheet">
+    <div id="drawer_opt_text">
+        <p class="text"><span>单选题</span></p>
+    </div>
+    <div id="drawer_opt_button" class="num_box">
+        <div v-for="index in opt_box" class="ellipse" @click="jumpProblem(index)">
+            <img :id="getId(index)" :src="img_src[index-1]" class="image"/>
+            <div class="ellipse_text">
+                <p><span>{{ index }}</span></p>
+            </div>
+        </div>
+    </div>
+    <div id="drawer_txt_text">
+        <p class="text"><span>文本题</span></p>
+    </div>
+    <div id="drawer_txt_button" class="num_box">
+        <div v-for="index in txt_box" class="ellipse" @click="jumpProblem(index)">
+            <img :id="getId(index)" :src="img_src[index-1]" class="image"/>
+            <div class="ellipse_text">
+                <p><span>{{ index }}</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

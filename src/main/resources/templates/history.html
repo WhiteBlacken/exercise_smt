@@ -1,0 +1,152 @@
+<!DOCTYPE html >
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>历史记录</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link href="/css/history.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <link href="/css/index.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <script src="/js/vue@2.6.10.js"></script>
+    <script src="/js/axios@0.18.0.min.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="http://mockjs.com/dist/mock.js"></script>
+</head>
+<body>
+<div th:replace="include::sidebar"></div>
+<div id="app">
+    <div id="mod_name" class="module_name">
+        <p><span>历史记录</span></p>
+    </div>
+    <div id="lev_info" class="level_info">
+        <p><span>当前等级</span><br><span>SMT Lev.{{ level }}</span></p>
+    </div>
+    <div id="part_name1" class="">
+        <p><span>课课练</span></p>
+    </div>
+    <div id="part1" class="table">
+        <template>
+            <el-table :data="tableData1" height="300" stripe border style="width: 100%">
+              <el-table-column prop="name" label="练习" width="100"></el-table-column>
+              <el-table-column prop="exer_eval_time" label="时间" width="180"></el-table-column>
+              <el-table-column prop="exer_eval_score" label="分数"></el-table-column>
+              <el-table-column fixed="right" label="操作" width="100">
+                  <template slot-scope="scope">
+                      <el-button @click="Click(scope.row)" type="text" size="small">详情</el-button>
+                  </template>
+              </el-table-column>
+            </el-table>
+        </template>
+    </div>
+    <div id="part_name2" class="">
+        <p><span>AI练习</span></p>
+    </div>
+    <div id="part2" class="table">
+        <template>
+            <el-table :data="tableData2" height="300" stripe border style="width: 100%">
+              <el-table-column prop="name" label="练习" width="100"></el-table-column>
+              <el-table-column prop="exer_eval_time" label="时间" width="180"></el-table-column>
+              <el-table-column prop="exer_eval_score" label="分数"></el-table-column>
+              <el-table-column fixed="right" label="操作" width="100">
+                <template slot-scope="scope">
+                    <el-button @click="Click(scope.row)" type="text" size="small">详情</el-button>
+                </template>
+            </el-table-column>
+            </el-table>
+        </template>
+    </div>
+</div>
+</body>
+<script>
+    function setCookie(cname,cvalue) {
+        document.cookie = cname + "=" + cvalue + "; ";
+    }
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i=0; i<ca.length; i++) 
+        {
+            var c = ca[i].trim();
+            if (c.indexOf(name)==0) 
+                return c.substring(name.length,c.length);
+        }
+        return "";
+    }
+
+
+    Mock.mock('/levelInitial',{
+        "level|1-6":1,
+    });
+
+    var app = new Vue({
+        el: "#app",
+        data: {
+            tableData1: [],
+            tableData2: [],
+            level: 0
+        },
+
+        methods: {
+            Click: function (row) {
+                if(row.name === 'lesson') {
+                    window.location.href = '/prob_opt_marked?src=lesson&mode=detail&id=' + row.id;
+                }else if(row.name === 'test') {
+                    window.location.href = '/prob_opt_marked?src=test&mode=detail&id=' + row.id;
+                }else {
+                    window.location.href = '/prob_opt_marked?src=ai&mode=detail&id=' + row.id;
+                }
+            },
+
+            getHistory: function () {
+                return new Promise(resolve => {
+                    axios.get('/getHistory').then((response) => {
+                        resolve(response.data);
+                    });
+                })
+            },
+
+            getSheet2: function () {
+                return new Promise(resolve => {
+                    axios.get('/getHistory').then((response) => {
+                        resolve(response.data);
+                    });
+                })
+            },
+
+            initial: function () {
+                return new Promise(resolve => {
+                    axios.get('/levelInitial').then((response) => {
+                        resolve(response.data);
+                    });
+                })
+            },
+
+            setSheet: async function () {
+                var res1 = await this.getHistory();
+                var res2 = await this.getSheet2();
+                var res3 = await this.initial();
+                this.tableData1 = res1;
+                this.tableData2 = res2;
+                this.level = res3.level;
+            }
+        },
+
+        created: function () {
+            if(localStorage.getItem('SMTusername') !== null) {
+                if(getCookie(localStorage.getItem('SMTusername')) === "") {
+                    localStorage.clear();
+                    window.location.href = '/login';
+                }
+            }else {
+                window.location.href = '/login';
+            }
+        },
+
+        mounted: function () {
+            this.$nextTick(() => {
+                this.setSheet();
+            });
+        }
+    })
+</script>
+</html>

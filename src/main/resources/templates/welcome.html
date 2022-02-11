@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>欢迎界面</title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link href="/css/welcome.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <script src="/js/vue@2.6.10.js"></script>
+    <script src="/js/axios@0.18.0.min.js"></script>
+</head>
+<body>
+<div id="app">
+    <div id="head" class="heading">
+        <div id="head_text" class="text">
+            <p><span>Welcome</span></p>
+        </div>
+    </div>
+    <div id="slogan" class="heading">
+        <div id="slogan_text" class="text">
+            <p><span>欢迎来到SMT刷题平台</span></p>
+        </div>
+    </div>
+    <div id="ellipse_box">
+        <div id="ellipse1" class="ellipse">
+            <img id="ellipse_img1" src="/image/ellipse.svg" />
+            <div id="ellipse_text1" class="ellipse_text">
+                <p><span>15万+</span></p>
+                <p><span>精选习题</span></p>
+            </div>
+        </div>
+        <div id="ellipse2" class="ellipse">
+            <img id="ellipse_img2" src="/image/ellipse.svg" />
+            <div id="ellipse_text2" class="ellipse_text">
+                <p><span>100%</span></p>
+                <p><span>详细解答</span></p>
+            </div>
+        </div>
+        <div id="ellipse3" class="ellipse">
+            <img id="ellipse_img3" src="/image/ellipse.svg" />
+            <div id="ellipse_text3" class="ellipse_text">
+                <p><span>AI智能</span></p>
+                <p><span>自适应</span></p>
+            </div>
+        </div>
+        <div id="ellipse4" class="ellipse">
+            <img id="ellipse_img4" src="/image/ellipse.svg" />
+            <div id="ellipse_text4" class="ellipse_text">
+                <p><span>100%</span></p>
+                <p><span>贴合教材</span></p>
+            </div>
+        </div>
+    </div>
+    <div id="function_box">
+        <div id="func1" class="func_button">
+            <button id="func_button1" type="button" @click="goLogin">家长登录</button>
+        </div>
+        <div id="func2" class="func_button">
+            <button id="func_button2" type="button" @click="goLogin">教师登录</button>
+        </div>
+        <div id="func3" class="func_button">
+            <button id="func_button3" type="button" @click="goRegister">用户注册</button>
+        </div>
+    </div>
+    <div id="stu_login">
+        <button id="stu_login_button" type="button" @click="goLogin">学生登录</button>
+    </div>
+</div>
+</body>
+
+<script>
+    var app = new Vue({
+        el: "#app",
+        data: {},
+        methods: {
+            goLogin: function() {
+                window.location.href = "/login";
+            },
+
+            goRegister: function() {
+                // window.location.href = "/register";
+                window.open("https://www.smartreelearners.com/#/register", "_blank");
+            }
+        }
+    })
+</script>
+</html>

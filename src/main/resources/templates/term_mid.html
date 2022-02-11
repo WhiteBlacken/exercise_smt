@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <title>期中评测</title>
+    <meta http-equiv="content-type" content="text/html charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+    <link href="/css/term_mid.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <link href="/css/index.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <link href="/css/antd.css" type="text/css" rel="stylesheet">
+    <script src="/js/vue@2.6.10.js"></script>
+    <script src="/js/axios@0.18.0.min.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="http://mockjs.com/dist/mock.js"></script>
+    <script src="/js/highcharts.js"></script>
+    <script src="/js/highcharts-vue.js"></script>
+    <script src="/js/antd.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div id="bind_win" v-show="ifBind">
+            <img style="position: absolute;width: 100%;height: auto;" src="/image/bind.png" @load="() => { this.winShow = true }">
+            <img style="position: absolute;width: 28%;height: auto;top: 410px;left: 36%;cursor: pointer;" src="/image/bind_button.png" @click="bind" v-if="winShow">
+            <el-input v-model="bindData.orgCode" style="top: 194px;" :disabled="false" prefix-icon="" class="input_bar" v-if="winShow"></el-input>
+            <el-input v-model="smtId" style="top: 219px;" :disabled="false" prefix-icon="" class="input_bar" v-if="winShow"></el-input>
+            <el-input v-model="bindData.password" style="top: 243px;" :disabled="false" prefix-icon="" class="input_bar" show-password v-if="winShow"></el-input>
+        </div>
+        <div id="container">
+            <div id="bg">
+                <img class="image" style="left: 0;" src="/image/bg2.jpg">
+            </div>
+            <div id="basicInfo">
+                <div id="levelInfo">
+                    <img class="image" src="/image/blue-bg.png">
+                    <div style="position: relative;width: 100%;font-family: 'Microsoft YaHei',微软雅黑;font-weight: 600;">&nbsp;等级/</div>
+                    <div style="text-align: center;position: relative;width: 100%;font-family: 'GothamRoundedMedium';top: -4%;font-size: 1.4rem;">Level {{ level }}</div>
+                    <button type="button" id="checkLevel" @click="checkLevel"></button>
+                </div>
+                <div id="classInfo">
+                    <img class="image" src="/image/yellow-bg.png">
+                    <div style="position: relative;width: 100%;font-family: 'Microsoft YaHei',微软雅黑;font-weight: 600;">&nbsp;课时/</div>
+                    <div style="text-align: center;position: relative;width: 100%;font-family: 'GothamRoundedMedium';font-size: 0.8rem;">Week {{ week }} / Lesson {{ lesson }}</div>
+                </div>
+            </div>
+            <div id="diff_table">
+                <img  style="height: 100%;width: auto;position: absolute;">
+            </div>
+            <div id="score_detail">
+                <img class="image" src="/image/table_bg.jpg">
+                <div id="myScore">
+                    <img class="image" src="/image/myScore_mid.jpg">
+                </div>
+                <div id="total_dashbd">
+                    <div style="position: absolute;width: 80%;height: 80%;">
+                        <img class="image" src="/image/dashbd_mid.png">
+                    </div>
+                    <div style="font-family: GothamRoundedMedium;font-size: 2rem;font-weight: 600;position: relative;top: 3%;left: 1%;">{{ mid_score_lev[0] }}</div>
+                    <div id="red_score">
+                        <img class="image" src="/image/red_score.png">
+                        <div class="score_text" style="bottom: 0;left: 0;width: 112.71%;height: 63.23%;transform-origin: left bottom;">阅读语法:<span style="font-family: 'GothamRoundedMedium';">{{ mid_score_lev[3] }}</span></div>
+                    </div>
+                    <div id="yellow_score">
+                        <img class="image" src="/image/yellow_score.png">
+                        <div class="score_text" style="top: 0;left: 0;width: 116.19%;height: 61.5%;transform-origin:left top;">拼读:<span style="font-family: 'GothamRoundedMedium';">{{ mid_score_lev[2] }}</span></div>
+                    </div>
+                    <div id="blue_score">
+                        <img class="image" src="/image/blue_score.png">
+                        <div class="score_text" style="top: 0;left: 0;width: 133.33%;height: 58.39%;transform-origin: left top;">口语:<span style="font-family: 'GothamRoundedMedium';">{{ mid_score_lev[1] }}</span></div>
+                    </div>
+                </div>
+                <div id="speak_dashbd" class="little_dashbd">
+                    <div class="square">
+                        <img class="image" v-show="mid_score.speak !== 0" src="/image/blue_square.png">
+                        <img class="image" v-show="mid_score.speak === 0" src="/image/gray_square.png">
+                    </div>
+                    <div class="square_text" v-show="mid_score.speak !== 0" style="color: #5a71fb;">{{ mid_score_lev[1] }}</div>
+                    <div class="square_text" v-show="mid_score.speak === 0" style="color: #e8e8e8;">{{ mid_score_lev[1] }}</div>
+                    <div style="position: absolute;font-size: 12px;font-family: 'Microsoft YaHei';font-weight: 600;transform: scale(0.8);-moz-transform:scale(0.8);top: -18%;left: -14%;color: rgb(158, 158, 160);">口 语</div>
+                    <a-progress type="dashboard" :percent="mid_score.speak" :width="45" :stroke-width="11" :gap-degree="20" gap-position="bottom" :show-info="false" :stroke-color="{'100%': '#5a71fb'}"/>
+                </div>
+                <div id="spell_dashbd" class="little_dashbd">
+                    <div class="square">
+                        <img class="image" v-show="mid_score.spell !== 0" src="/image/yellow_square.png">
+                        <img class="image" v-show="mid_score.spell === 0" src="/image/gray_square.png">
+                    </div>
+                    <div class="square_text" v-show="mid_score.spell !== 0" style="color: #fe9c37;">{{ mid_score_lev[2] }}</div>
+                    <div class="square_text" v-show="mid_score.spell === 0" style="color: #e8e8e8;">{{ mid_score_lev[2] }}</div>
+                    <div style="position: absolute;font-size: 12px;font-family: 'Microsoft YaHei';font-weight: 600;transform: scale(0.8);-moz-transform:scale(0.8);top: -18%;left: -14%;color: rgb(158, 158, 160);">拼 读</div>
+                    <a-progress type="dashboard" :percent="mid_score.spell" :width="45" :stroke-width="11" :gap-degree="20" gap-position="bottom" :show-info="false" :stroke-color="{'100%': '#fe9c37'}"/>
+                </div>
+                <div id="grammar_dashbd" class="little_dashbd">
+                    <div class="square">
+                        <img class="image" v-show="mid_score.grammar !== 0" src="/image/red_square.png">
+                        <img class="image" v-show="mid_score.grammer === 0" src="/image/gray_square.png">
+                    </div>
+                    <div class="square_text" v-show="mid_score.grammar !== 0" style="color: #ff6245;">{{ mid_score_lev[3] }}</div>
+                    <div class="square_text" v-show="mid_score.grammar === 0" style="color: #e8e8e8;">{{ mid_score_lev[3] }}</div>
+                    <div style="position: absolute;font-size: 12px;font-family: 'Microsoft YaHei';font-weight: 600;transform: scale(0.8);-moz-transform:scale(0.8);top: -18%;left: -17%;color: rgb(158, 158, 160);">阅读语法</div>
+                    <a-progress type="dashboard" :percent="mid_score.grammar" :width="45" :stroke-width="11" :gap-degree="20" gap-position="bottom" :show-info="false" :stroke-color="{'100%': '#ff6245'}"/>
+                </div>
+            </div>
+            <div id="record">
+                <div style="position: absolute;left: 30%;font-family: 'Microsoft YaHei',微软雅黑;font-weight: 600;">记</div>
+                <div style="position: absolute;left: 65%;font-family: 'Microsoft YaHei',微软雅黑;font-weight: 600;">录</div>
+            </div>
+            <div id="SMTmain">
+                <div id="SMARTREE">
+                    <img class="image" style="height: 100%;width: auto;position: relative;" src="/image/SMARTREE.png">
+                    <div>&nbsp;SMT主课件</div>
+                </div>
+                <div id="IPTV">
+                    <img class="image" style="height: 100%;width: auto;position: relative;" src="/image/IPTV.png">
+                    <div>&nbsp;IPTV</div>
+                </div>
+                <div id="smt_point">
+                    <img class="image" src="/image/point.png">
+                </div>
+                <div id="iptv_point">
+                    <img class="image" src="/image/point.png">
+                </div>
+                <div id="smt_progress_text">{{ finish_lesson }}/{{ total_lesson }}</div>
+                <div id="iptv_progress_text">{{ finish_movie }}/{{ total_movie }}</div>
+                <el-progress id="smt_progress" color="#247CE0" :stroke-width="3" :format="format" :percentage="finish_lesson*100/total_lesson"></el-progress>
+                <el-progress id="iptv_progress" color="#247CE0" :stroke-width="3" :format="format" :percentage="finish_movie*100/total_movie"></el-progress>
+                <div id="smt_text"><span style="color: #438AE4;">实际完成课时数</span><span style="color: #5B595A;">/应完成课时数</span></div>
+                <div id="iptv_text"><span style="color: #438AE4;">实际完成观影数</span><span style="color: #5B595A;">/应完成观影数</span></div>
+                <div id="main_report">
+                    <div class="rect1">
+                        <img class="image" src="/image/SMTword.png">
+                        <el-progress :text-inside="true" :stroke-width="11" :percentage="smt_word*100/smt_word_total" color="white" style="position: absolute;width: 69%;top: 44.5%;left: 14%;"></el-progress>
+                        <div style="position: relative;transform-origin: left top;transform: scale(0.7);top: 33%;left: 19%;"><span style="color: red;">{{ smt_word }}</span>/{{ smt_word_total }}</div>
+                    </div>
+                    <div class="rect2">
+                        <img class="image" src="/image/SMTsentence.png">
+                        <el-progress :text-inside="true" :stroke-width="11" :percentage="smt_sentence*100/smt_sentence_total" color="white" style="position: absolute;width: 69%;top: 44.5%;left: 14%;"></el-progress>
+                        <div style="position: relative;transform-origin: left top;transform: scale(0.7);top: 33%;left: 19%;"><span style="color: red;">{{ smt_sentence }}</span>/{{ smt_sentence_total }}</div>
+                    </div>
+                    <div class="rect3">
+                        <img class="image" src="/image/SMTmovie.png">
+                        <el-progress :text-inside="true" :stroke-width="11" :percentage="smt_movie*100/smt_movie_total" color="white" style="position: absolute;width: 69%;top: 44.5%;left: 14%;"></el-progress>
+                        <div style="position: relative;transform-origin: left top;transform: scale(0.7);top: 33%;left: 19%;"><span style="color: red;">{{ smt_movie }}</span>/{{ smt_movie_total }}</div>
+                    </div>
+                </div>
+                <button type="button" id="checkTrail" @click="checkTrail"></button>
+            </div>
+            <div id="library">
+                <div style="width: 17%;left: 1.5%;height: 6%;position: absolute;">
+                    <img class="image" src="/image/library.png">
+                    <div id="blue_circle1">
+                        <img class="image" src="/image/blue_circle.png">
+                    </div>
+                </div>
+                <div id="lib_report">
+                    <div id="libBook" class="rect4">
+                        <img class="image" src="/image/LIBbook.png">
+                        <el-progress :text-inside="true" :stroke-width="11" :percentage="lib_book*100/lib_book_total" color="white" style="position: absolute;width: 69%;top: 44.5%;left: 14%;"></el-progress>
+                        <div style="position: relative;transform-origin: left top;transform: scale(0.7);top: 33%;left: 19%;"><span style="color: red;">{{ lib_book }}</span>/{{ lib_book_total }}</div>
+                    </div>
+                    <div id="libHour" class="rect5">
+                        <img class="image" src="/image/LIBhour.png">
+                        <el-progress :text-inside="true" :stroke-width="11" :percentage="0" color="white" style="position: absolute;width: 69%;top: 44.5%;left: 14%;"></el-progress>
+                        <div style="position: relative;transform-origin: left top;transform: scale(0.7);top: 33%;left: 19%;"><span style="color: red;">{{ lib_hour }}</span>h</div>
+                    </div>
+                </div>
+                <div id="book">
+                    <div style="position: relative;top: -3%;">当前阅读书本</div>
+                    <div id="showBook">
+                        <img class="image" src="/image/book_bg2.jpg">
+                        <div id="bookImage">
+                            <el-carousel :interval="4000" type="card" height="75px" arrow="never" indicator-position="none">
+                                <el-carousel-item v-for="url in urls" :key="url">
+                                    <img class="image" :src="url">
+                                </el-carousel-item>
+                            </el-carousel>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="readlevel">
+                <div style="width: 20%;left: 1.5%;height: 7%;position: absolute;">
+                    <img class="image" src="/image/readlevel.png">
+                    <div id="blue_circle2">
+                        <img class="image" src="/image/blue_circle.png">
+                    </div>
+                </div>
+                <div id="level">
+                    <div id="read_info">
+                        <img class="image" src="/image/shadow.png">
+                        Level {{ readLev }}/{{ readNum }}L
+                    </div>
+                    <div style="width: 25%;height: 6%;;position: absolute;top: 0;left: 0;">
+                        <img class="image" src="/image/readLv.png">
+                    </div>
+                    <div id="read_table">
+                        <img class="image" src="/image/table.png">
+                        <div id="lv1" v-bind:style="Lv1">
+                            <img class="image" src="/image/lv1.png">
+                        </div>
+                        <div id="lv2" v-bind:style="Lv2">
+                            <img class="image" src="/image/lv2.png">
+                        </div>
+                        <div id="red1" v-bind:style="Red1">
+                            <img class="image" :src="red1Src">
+                        </div>
+                        <div id="red2" v-bind:style="Red2">
+                            <img class="image" src="/image/red2.png">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="analysis">
+                <div style="position: absolute;left: 30%;font-family: 'Microsoft YaHei',微软雅黑;font-weight: 600;">分</div>
+                <div style="position: absolute;left: 65%;font-family: 'Microsoft YaHei',微软雅黑;font-weight: 600;">析</div>
+            </div>
+            <div id="word_part">
+                <div id="AI">
+                    <img class="image" src="/image/AI.png">
+                </div>
+                <div id="AI_analysis">
+                    <img class="image" src="/image/AI_analysis.png">
+                </div>
+                <div id="pic_part">
+                    <img class="image" src="/image/pic_bg2.png">
+                    <div id="word">
+                        <img class="image" src="/image/word2.png">
+                    </div>
+                    <div id="time_avg">
+                        <img class="image" src="/image/time_avg2.png">
+                        <div style="position: absolute;top: 100%;font-size: 26px;font-family: 'GothamRoundedMedium';color: rgb(255,183,27);">{{ wordData.avgTime }}m</div>
+                    </div>
+                    <div id="score_word_avg">
+                        <img class="image" src="/image/score_word_avg2.jpg">
+                        <div style="position: absolute;top: 105%;font-size: 26px;left: 25%;font-family: 'GothamRoundedMedium';color: rgb(104,159,255)">{{ wordData.avgScore }}</div>
+                    </div>
+                    <div id="word_handle">
+                        <img class="image" src="/image/word_handle2.png">
+                    </div>
+                </div>
+                <div id="text_part">
+                    <div id="text">
+                        在词汇方面，已掌握考点总数为<span style="color: red;font-style: italic;font-weight: 600;font-size: 18px;">{{ wordData.point_handle }}</span> 个，<br>
+                        本阶段的平均分为<span style="color: red;font-style: italic;font-weight: 600;font-size: 18px;">{{ wordData.avgScore }}</span>，较上一阶段{{ chinese(wordData.progress) }}了<span style="color: red;font-style: italic;font-weight: 600;font-size: 18px;">{{ Math.abs(wordData.progress) }}</span> %。
+                    </div>
+                    <div id="show_word_score">
+                        <div id="handle_num">&nbsp;{{ wordData.word_unhandle }}</div>
+                        <div id="score_avg">&nbsp;{{ wordData.avgScore }}</div>
+                        <div id="effect">{{ wordData.progress }}%&nbsp;</div>
+                        <img class="image" src="/image/show_score2.png">
+                    </div>
+                </div>
+                <button type="button" id="word_detail" @click="wordDetail"></button>
+            </div>
+            <div id="paper_part">
+                <div id="pic_part2">
+                    <img class="image" src="/image/pic_bg2.png">
+                    <div id="paper">
+                        <img class="image" src="/image/paper2.png">
+                    </div>
+                    <div id="time_avg2">
+                        <img class="image" src="/image/time_avg2.png">
+                        <div style="position: absolute;top: 100%;font-size: 26px;font-family: 'GothamRoundedMedium';color: rgb(255,183,27);">{{ paperData.avgTime }}m</div>
+                    </div>
+                    <div id="score_paper_avg">
+                        <img class="image" src="/image/score_paper_avg2.png">
+                        <div style="position: absolute;top: 105%;font-size: 26px;left: 25%;font-family: 'GothamRoundedMedium';color: rgb(104,159,255)">{{ paperData.avgScore }}</div>
+                    </div>
+                    <div id="point_handle">
+                        <img class="image" src="/image/point_handle2.png">
+                    </div>
+                </div>
+                <div id="text_part2">
+                    <div id="text2">
+                        在语法方面，已掌握考点总数为<span style="color: red;font-style: italic;font-weight: 600;font-size: 18px;">{{ paperData.point_handle }}</span> 个，<br>
+                        本阶段的平均分为<span style="color: red;font-style: italic;font-weight: 600;font-size: 18px;">{{ paperData.avgScore }}</span>，较上一阶段{{ chinese(paperData.progress) }}了<span style="color: red;font-style: italic;font-weight: 600;font-size: 18px;">{{ Math.abs(paperData.progress) }}</span> %。
+                    </div>
+                    <div id="show_paper_score">
+                        <div id="handle_num2">&nbsp;{{ paperData.point_handle }}</div>
+                        <div id="score_avg2">&nbsp;{{ paperData.avgScore }}</div>
+                        <div id="effect2">{{ paperData.progress }}%&nbsp;</div>
+                        <img class="image" src="/image/show_score.png">
+                    </div>
+                </div>
+                <button type="button" id="paper_detail" @click="paperDetail"></button>
+            </div>
+            <div id="compare_text">综&nbsp;&nbsp;合&nbsp;&nbsp;分&nbsp;&nbsp;值</div>
+            <div id="compare">
+                <img id="legend" src="/image/legend_term.jpg">
+                <div id="yAxis">
+                    <img class="image" src="/image/yAxis.jpg">
+                </div>
+                <img id="xAxis" src="/image/xAxis_term.jpg">
+                <div id="compare_graph">
+                    <highcharts :options="chartOptions3" style="width:230px;height:130px;"></highcharts>
+                </div>
+            </div>
+        </div>
+        <div id="trail" v-if="isTrailPop">
+            <el-carousel id="carousel" :height="h + 'px'" :autoplay="false" arrow="hover" indicator-position="none" @change="changeHeight">
+                <el-carousel-item v-for="pic in trails" :key="pic">
+                    <img ref="portfolio" class="image" style="height: auto;" :src="pic" @load=imgLoad>
+                </el-carousel-item>
+            </el-carousel>
+        </div>
+        <div id="fullLevel" v-show="isLevelPop">
+            <img class="image">
+        </div>
+        <div id="pop_word" v-show="isWordPop">
+            <img class="image" src="/image/pop_window2.png">
+            <div id="graph1">
+                <highcharts :options="chartOptions1" style="width:310px;height:180px;"></highcharts>
+            </div>
+            <div class="pop_text" id="pop_text1">
+                在这两周的学习中，{{ stuName }}小朋友总计做了<span style="color: red;font-style: italic;font-weight: 600;font-size: 18px;">{{ wordData.times }}</span> 次的语音训练，<br>
+                总计用时<span style="color: red;font-style: italic;font-weight: 600;font-size: 18px;">{{ wordData.time }}</span> 分钟；平均分为<span style="color: red;font-style: italic;font-weight: 600;font-size: 18px;">{{ wordData.avgScore }}</span> 。
+            </div>
+            <div id="pop_show_word_score">
+                <div id="handle_num3">&nbsp;{{ wordData.word_unhandle }}</div>
+                <div id="score_avg3">&nbsp;{{ wordData.avgScore }}</div>
+                <div id="effect3">{{ wordData.progress }}%&nbsp;</div>
+                <img class="image" src="/image/show_score2.png">
+            </div>
+            <div id="handle_word_pic">
+                <img class="image" src="/image/handle_word4.png">
+            </div>
+            <div id="handle_word_table">
+                <el-table :data="wordComment" height="100%" borderstyle="width: 100%" :row-class-name="tableRowClassName" :header-row-style="{height:'14px',padding:'0'}"  :cell-style="setWordCellStyle" style="font-size: 12px">
+                    <el-table-column prop="word" label="单  词" align="center">
+                        <template slot-scope="scope">
+                            <span style="font-weight:bold;color:black">{{scope.row.word}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="evaluate" label="评  价" align="center">
+                        <template slot-scope="scope">
+                            <img :src="scope.row.evaluate" alt="" style="width: 17px;height: 17px;vertical-align: middle" />
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="audio" label="音  频" align="center">
+                        <template slot-scope="scope">
+                            <img src="/image/audio.png" alt="" style="width: 37px;height: 17px;vertical-align: middle;cursor: pointer;" @click="wordPlay(scope.row.audio)"/>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+        </div>
+        <div id="pop_paper" v-show="isPaperPop">
+            <img class="image" src="/image/pop_window2.png">
+            <div id="graph2">
+                <highcharts :options="chartOptions2" style="width:310px;height:180px;"></highcharts>
+            </div>
+            <div class="pop_text" id="pop_text2">
+                在这两周的学习中，{{ stuName }}小朋友总计做了<span style="color: red;font-style: italic;font-weight: 600;font-size: 16px;">{{ paperData.times }}</span> 次的语法训练，<br>
+                总计练习了<span style="color: red;font-style: italic;font-weight: 600;font-size: 16px;">{{ paperData.probNum }}</span> 题,<br>
+                其中，基础难度占<span style="color: red;font-style: italic;font-weight: 600;font-size: 16px;">{{ paperData.probEasy }}</span> %；中等难度占<span style="color: red;font-style: italic;font-weight: 600;font-size: 16px;">{{ paperData.probMedium }}</span> %；困难难度占<span style="color: red;font-style: italic;font-weight: 600;font-size: 16px;">{{ paperData.probHard }}</span> %；
+            </div>
+            <div id="pop_show_paper_score">
+                <div id="handle_num4">&nbsp;{{ paperData.point_handle }}</div>
+                <div id="score_avg4">&nbsp;{{ paperData.avgScore }}</div>
+                <div id="effect4">{{ paperData.progress }}%&nbsp;</div>
+                <img class="image" src="/image/show_score.png">
+            </div>
+            <div id="handle_paper_pic1">
+                <img class="image" src="/image/handle_paper2.png">
+            </div>
+            <div id="handle_paper_pic2">
+                <img class="image" src="/image/handle_paper3.jpg">
+            </div>
+            <div id="handle_paper_table">
+                <el-table :data="paperHandle" height="100%" borderstyle="width: 100%" :row-class-name="tableRowClassName" :header-row-style="{height:'14px',padding:'0'}"  :cell-style="setPaperCellStyle" style="font-size: 12px">
+                    <el-table-column prop="handle_paper" align="center">
+                        <template slot-scope="scope">
+                            <span style="font-weight:bold;color:black">{{scope.row.handle_paper}}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="unhandle_paper" align="center">
+                        <template slot-scope="scope">
+                            <span style="font-weight:bold;color:black">{{scope.row.unhandle_paper}}</span>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    Vue.use(HighchartsVue.default);
+    //Vue.use(Antd);
+    /*$(document).ready(function(){
+        $(window).resize(function() {
+            var cliWidth = document.body.scrollWidth;
+            var cliHeight = document.body.scrollHeight;
+            $('#app').css("transform-origin","0 0");
+            $('#app').css("transform","scale(" + (cliHeight / 2386.5) + ")");
+            $('#app').css("margin-left",( document.body.scrollWidth - 450) / 2 );
+        });
+    });*/
+
+    Mock.mock('/getSmtId',{
+        "smtId": ''
+    })
+
+    Mock.mock('/getMainReport?user_id=messi',{
+        "data": {
+            "level_movie_total": 20,  // 本 level 总计影片数
+            "level_movie_watched": 10,  // 本 level 累计已观影数量
+            "level_sentence_total": 10,  // 本 level 总计句子数
+            "level_sentence_learned": 10,  // 本 level 累计已学句子
+            "weekly_lesson_finish": 2, // 两周内上课次数
+            "level_word_learned": 10,  // 本 level 累计已学单词
+            "level_word_total": 20,  // 本 level 总计单词数
+            "weekly_movie_finish": 2   // 两周内观影次数
+        },
+        "code": "0",
+        "msg": "操作成功！"
+    })
+
+    Mock.mock('/getExerciseReport?user_id=messi',{
+        "data": {
+            "avg_time": 8,
+            "avg_score": 65,
+            "progress": -10,
+            "times": 3,
+            "prob_num": 60,
+            "last_ten_score": [
+                53,
+                56,
+                55,
+                61,
+                65,
+                69,
+                62,
+                69,
+                71,
+                78
+            ],
+            "prob_easy": 40,
+            "prob_medium": 30,
+            "prob_hard": 30,
+            "point_handle": 25,
+            "handle_list": [
+                "人称代词",
+                "There be",
+                "过去分词"
+            ],
+            "unhandle_list": [
+                "固定搭配",
+                "现在分词",
+                ""
+            ]
+        },
+        "code": "0",
+        "msg": "操作成功！"
+    })
+
+    Mock.mock('/getVocalReport?user_id=messi',{
+        "data": {
+            "word_unhandle": 13,  // 需要巩固的单词数量
+            "avg_time": 20,  // 练习平均耗时
+            "avg_score": 76,  // 练习平均得分
+            "progress": 20,  // 相对于上一阶段进步、退步
+            "time": 80,  // 两周内总计练习用时(分钟)
+            "times": 4,  // 两周内练习次数
+            "last_ten_score": [  // 过去 10 次训练得分
+                64,
+                63,
+                52,
+                41,
+                49,
+                59,
+                62,
+                69,
+                81,
+                78
+            ],
+            "comment_list": [  //单词评析: status 为 0 表示不通过, 为 1 表示通过
+                {
+                    "audio": "",
+                    "status": "0",
+                    "word": "abandon"
+                },
+                {
+                    "audio": "",
+                    "status": "1",
+                    "word": "banana"
+                },
+                {
+                    "audio": "",
+                    "status": "0",
+                    "word": "chair"
+                }
+            ]
+        },
+        "code": "0",
+        "msg": "操作成功！"
+    })
+
+    Mock.mock('/getLibraryReport?user_id=messi',{
+        "data": {
+            "lib_book_total": 9,  // 累计已读书本数量
+            "read_lev": 3,  // 当前所处阅读等级
+            "read_num": 400,  // 当前阅读量(单位为 L)
+            "book_urls": [  // 阅读书本图片 URL
+                "https://i0.hdslb.com/bfs/album/1e3e118c2b8b0473bedbf34808928e63b066b634.jpg",
+                "https://i0.hdslb.com/bfs/album/1ae25afb2e06e106a72dacd1d0910deb8b1e962d.png",
+                "https://i0.hdslb.com/bfs/album/4468f61b04bb98ac13a1b210ce5e922e8c630d2b.png"
+            ],
+            "lib_hour_total": 36  // 累计阅读时间
+        },
+        "code": "0",
+        "msg": "操作成功！"
+    })
+
+    Mock.mock('/getContrastReport?user_id=messi',{
+        "data": {
+            "my_avg_score": [
+                50,
+                60,
+                40,
+                70,
+                80
+            ],
+            "all_avg_score": [
+                60,
+                40,
+                50,
+                60,
+                40
+            ]
+        },
+        "code": "0",
+        "msg": "操作成功！"
+    })
+
+    Mock.mock('/getStudentInfo?user_id=messi',{
+        "data": {
+            "lesson": "3",
+            "level": "3",
+            "week": "2",
+            "name": "Messi"
+        },
+        "code": "0",
+        "msg": "操作成功！"
+    })
+
+    Mock.mock('/getTermMid?user_id=messi',{
+        "data": {
+            "total": 80,
+            "reading": 70,
+            "speaking": 90,
+            "phonics": 86,
+            "grammar": 77
+        },
+        "code": "0",
+        "msg": "操作成功！"
+    })
+
+    $(document).mouseup(function(e){
+        var popPaper = $('#pop_paper');  
+        var popWord = $('#pop_word'); 
+        var popTrail = $('#trail');
+        var fullLev = $('#fullLevel'); 
+        if((!popPaper.is(e.target) && popPaper.has(e.target).length === 0) && app.isPaperPop === true){
+            app.isPaperPop = false;
+            app.isPop = false; 
+            document.getElementById("container").style.filter = "brightness(1)";
+        }
+        if((!popWord.is(e.target) && popWord.has(e.target).length === 0) && app.isWordPop === true) {
+            app.isWordPop = false;
+            app.isPop = false; 
+            document.getElementById("container").style.filter = "brightness(1)";
+        }
+        if((!fullLev.is(e.target) && fullLev.has(e.target).length === 0) && app.isLevelPop === true) {
+            app.isLevelPop = false;
+            app.isPop = false; 
+            document.getElementById("container").style.filter = "brightness(1)";
+        }
+        if((!popTrail.is(e.target) && popTrail.has(e.target).length === 0) && app.isTrailPop === true) {
+            app.isTrailPop = false;
+            app.isPop = false; 
+            document.getElementById("container").style.filter = "brightness(1)";
+            if(app.$refs.portfolio) {
+                console.log($("#carousel")[0])
+                app.h = app.$refs.portfolio[0].height;
+                app.imgLoad();
+            }
+        }
+    });
+
+    window.onscroll = function() {
+        if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+            var deviceWidth = document.documentElement.clientWidth;
+            var deviceHeight = document.documentElement.clientHeight;
+            deviceWidth = (deviceWidth < deviceHeight) ? deviceWidth : deviceHeight;
+            var scale = deviceWidth / 450;
+            var percent = (document.documentElement.clientHeight * 100 / (document.getElementById("app").clientHeight * scale) - 18) / 2;
+            percent += (document.documentElement.scrollTop / (document.getElementById("app").clientHeight * scale)) * 100;
+            document.getElementById("bind_win").style.top = percent + "%";
+        }else {
+            var deviceWidth = document.documentElement.clientWidth;
+            var scale = deviceWidth / 1350;
+            var percent = (document.documentElement.clientHeight * 100 / (document.getElementById("app").clientHeight * scale) - 18) / 2;
+            percent += (document.documentElement.scrollTop / (document.getElementById("app").clientHeight * scale)) * 100;
+            document.getElementById("bind_win").style.top = percent + "%";
+        }
+    };
+
+    window.addEventListener("orientationchange",() => {
+        if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+            var deviceWidth = document.documentElement.clientWidth;
+            var deviceHeight = document.documentElement.clientHeight;
+            deviceWidth = (deviceWidth < deviceHeight) ? deviceWidth : deviceHeight;
+            document.getElementById("app").style.transformOrigin = "center top";
+            document.getElementById("app").style.transform = "scale(" + (deviceWidth / 450) + ")";
+        }
+    });
+
+    var app = new Vue({
+        el: "#app",
+        data: {
+            winShow: false,
+            bgShow: false,
+            h: 0,
+            idx: 0,
+            level: 1,
+            week: 1,
+            lesson: 1,
+            readLev: 1,
+            readNum: 100,
+            smt_word: 0,
+            smt_sentence: 0,
+            smt_movie: 0,
+            lib_book: 0,
+            lib_hour: 0,
+            smt_word_total: 266,
+            smt_sentence_total: 200,
+            smt_movie_total: 48,
+            finish_lesson: 0,
+            total_lesson: 4,
+            finish_movie: 0,
+            total_movie: 4,
+            isPop: false,
+            isWordPop: false,
+            isPaperPop: false,
+            isLevelPop: false,
+            isTrailPop: false,
+            ifBind: false,
+            stuName: '小王',
+            smtId: '1111',
+            urls: [
+            ],
+            trails: ['/image/report_week.png', '/image/report_term.png', 'image/SMARTREE.png'],
+            mid_score: {
+                total: 0,
+                speak: 0,
+                spell: 0,
+                grammar: 0
+            },
+            wordData: {
+                time: 0,
+                times: 0,
+                avgScore: 0,
+                avgTime: 0,
+                point_handle: 0,
+                word_unhandle: 0,
+                progress: 0,
+            },
+            paperData: {
+                times: 0,
+                probNum: 0,
+                probEasy: 0,
+                probMedium: 0,
+                probHard: 0,
+                avgScore: 0,
+                avgTime: 0,
+                point_handle: 0,
+                progress: 0,
+            },
+            wordComment: [{word: 'alligator',evaluate: '/image/evaluate1.png',audio: ''},{word: 'alligator',evaluate: '/image/evaluate2.png',audio: ''},{word: 'alligator',evaluate: '/image/evaluate3.png',audio: ''}],
+            paperHandle: [{handle_paper: 'DD',unhandle_paper: 'AA'},{handle_paper: 'EE',unhandle_paper: 'BB'},{handle_paper: 'FF',unhandle_paper: 'CC'}],
+            chartOptions1: {
+                chart: {
+                    type: 'areaspline'
+                },
+                title: {
+                    text: null
+                },
+                credits: {
+                    enabled: false
+                },
+                legend: {
+                    enabled: false
+                },
+                
+                xAxis: {
+                    categories: [1,2,3,4,5,6,7,8,9,10]
+                },
+                yAxis: {
+                    min: 0,
+                    max: 100,
+                    tickAmount: 6,
+                    title: {
+                        text: null
+                    },
+                },
+                tooltip: {
+                    enabled: true,
+                    shared: true,
+                    padding: 8,
+                    formatter: function () {
+                        return '<span style="color: {series.color}">Score:' + this.y + '</span>';
+                    },
+                },
+                plotOptions: {
+                    areaspline: {
+                        marker: {
+                            enabled:false,
+                            radius: 7,
+                            fillColor: 'white',
+                            lineColor: 'rgb(254, 156, 55)',
+                            lineWidth: 4
+                        },
+                        states: {
+                            hover: {
+                                enabled: true
+                            }
+                        },
+                        fillColor: {
+                            linearGradient: [0, 0, 0, 150],
+                            stops: [
+                                [0, 'rgba(254, 156, 55, 0.664)'],
+                                [0.8, 'white']
+                            ]
+                        }
+                    }
+                },
+                series: [{
+                    name: '',
+                    color: 'rgb(254, 156, 55)',
+                    marker: {
+                        symbol: 'circle'
+                    },
+                    lineWidth: 3,
+                    data: [10, 20, 30, 35, 44, 50, 58, 65, 80, 75]
+                }]
+            },
+            chartOptions2: {
+                chart: {
+                    type: 'areaspline'
+                },
+                title: {
+                    text: null
+                },
+                credits: {
+                    enabled: false
+                },
+                legend: {
+                    enabled: false
+                },
+                
+                xAxis: {
+                    categories: [1,2,3,4,5,6,7,8,9,10]
+                },
+                yAxis: {
+                    min: 0,
+                    max: 100,
+                    tickAmount: 6,
+                    title: {
+                        text: null
+                    },
+                },
+                tooltip: {
+                    enabled: true,
+                    shared: true,
+                    padding: 8,
+                    formatter: function () {
+                        return '<span style="color: {series.color}">Score:' + this.y + '</span>';
+                    },
+                },
+                plotOptions: {
+                    areaspline: {
+                        marker: {
+                            enabled:false,
+                            radius: 7,
+                            fillColor: 'white',
+                            lineColor: 'rgb(254, 156, 55)',
+                            lineWidth: 4
+                        },
+                        states: {
+                            hover: {
+                                enabled: true
+                            }
+                        },
+                        fillColor: {
+                            linearGradient: [0, 0, 0, 150],
+                            stops: [
+                                [0, 'rgba(254, 156, 55, 0.664)'],
+                                [0.8, 'white']
+                            ]
+                        }
+                    }
+                },
+                series: [{
+                    name: '',
+                    color: 'rgb(254, 156, 55)',
+                    marker: {
+                        symbol: 'circle'
+                    },
+                    lineWidth: 3,
+                    data: [10, 20, 30, 35, 44, 50, 58, 65, 80, 75]
+                }]
+            },
+            chartOptions3: {
+                chart: {
+                    type: 'spline'
+                },
+                title: {
+                    text: null
+                },
+                credits: {
+                    enabled: false
+                },
+                exporting: {
+                    enabled: false
+                },
+                legend: {
+                    enabled: false
+                },
+                xAxis: {
+                    categories: [0,1,2,3,4],
+                    labels: {
+                        enabled: false
+                    },
+                    gridLineWidth: 1,
+                    gridLineDashStyle: 'shortdash',
+                    tickmarkPlacement: 'on',
+                    lineWidth: 1
+                },
+                yAxis: {
+                    tickPositions: [0,10,20,30,40,50,60],
+                    title: {
+                        text: null
+                    },
+                    labels: {
+                        enabled: false
+                    }
+                },
+                tooltip: {
+                    enabled: false,
+                },
+                plotOptions: {
+                    spline: {
+                        marker: {
+                            radius: 2,
+                            fillColor: 'white',
+                            lineWidth: 1
+                        },
+                        states: {
+                            hover: {
+                                enabled: false
+                            }
+                        },
+                        enableMouseTracking: false
+                    }
+                },
+                series: [{
+                    name: '',
+                    marker: {
+                        symbol: 'circle',
+                        lineColor: '#FD9732'
+                    },
+                    lineColor: '#FD9732',
+                    lineWidth: 1,
+                    data: [48, 100, 72, 84, 91]
+                },{
+                    name: '',
+                    marker: {
+                        symbol: 'circle',
+                        lineColor: '#C7C7C7'
+                    },
+                    lineColor: '#C7C7C7',
+                    lineWidth: 1,
+                    data: [75, 64, 83, 96, 77]
+                }]
+            },
+            bindData: {
+                orgCode: '',
+                smtId: '',
+                password: '',
+            },
+        },
+        computed: {
+            lib_book_total() {
+                if(this.readLev === 1) {
+                    return 163;
+                }else if(this.readLev === 2) {
+                    return 178;
+                }else if(this.readLev === 3) {
+                    return 145;
+                }else if(this.readLev === 4) {
+                    return 137;
+                }else if(this.readLev === 5) {
+                    return 160;
+                }else if(this.readLev === 6) {
+                    return 115;
+                }else if(this.readLev === 7) {
+                    return 111;
+                }
+            },
+            Lv1() {
+                var cls = {};
+                if(this.readLev === 1) {
+                    cls.top = '15%';
+                    cls.left = '12.1%';
+                }else if(this.readLev === 2) {
+                    cls.top = '18.5%';
+                    cls.left = '24.6%';
+                }else if(this.readLev === 3) {
+                    cls.top = '13%';
+                    cls.left = '37.2%';
+                }else if(this.readLev === 4) {
+                    cls.top = '8.5%';
+                    cls.left = '49.6%';
+                }else if(this.readLev === 5) {
+                    cls.top = '2%';
+                    cls.left = '62.2%';
+                }else if(this.readLev === 6) {
+                    cls.top = '-3.5%';
+                    cls.left = '74.7%';
+                }else if(this.readLev === 7) {
+                    cls.top = '-10.5%';
+                    cls.left = '87.2%';
+                }
+                return cls;
+            },
+            Lv2() {
+                var cls = {};
+                if(this.readLev === 1) {
+                    cls.left = '12.1%';
+                }else if(this.readLev === 2) {
+                    cls.left = '24.6%';
+                }else if(this.readLev === 3) {
+                    cls.left = '37.2%';
+                }else if(this.readLev === 4) {
+                    cls.left = '49.5%';
+                }else if(this.readLev === 5) {
+                    cls.left = '62%';
+                }else if(this.readLev === 6) {
+                    cls.left = '74.7%';
+                }else if(this.readLev === 7) {
+                    cls.left = '87.2%';
+                }
+                return cls;
+            },
+            red1Src() {
+                if(this.readLev === 1) {
+                    return "/image/red1_1.png";
+                }else if(this.readLev === 2) {
+                    return "/image/red1_2.png";
+                }else if(this.readLev === 3) {
+                    return "/image/red1_3.png";
+                }else if(this.readLev === 4) {
+                    return "/image/red1_4.png";
+                }else if(this.readLev === 5) {
+                    return "/image/red1_5.png";
+                }else if(this.readLev === 6) {
+                    return "/image/red1_6.png";
+                }else if(this.readLev === 7) {
+                    return "/image/red1_7.png";
+                }
+            },
+            Red1() {
+                var cls = {};
+                if(this.readLev === 1) {
+                    cls.height = '31%';
+                    cls.left = '12.6%';
+                }else if(this.readLev === 2) {
+                    cls.height = '37%';
+                    cls.left = '25.1%';
+                }else if(this.readLev === 3) {
+                    cls.height = '42%';
+                    cls.left = '37.6%';
+                }else if(this.readLev === 4) {
+                    cls.height = '47%';
+                    cls.left = '50.1%';
+                }else if(this.readLev === 5) {
+                    cls.height = '54%';
+                    cls.left = '62.6%';
+                }else if(this.readLev === 6) {
+                    cls.height = '59%';
+                    cls.left = '75.1%';
+                }else if(this.readLev === 7) {
+                    cls.height = '66%';
+                    cls.left = '87.6%';
+                }
+                return cls;
+            },
+            Red2() {
+                var cls = {};
+                if(this.readLev === 1) {
+                    cls.left = '12.6%';
+                }else if(this.readLev === 2) {
+                    cls.left = '25.1%';
+                }else if(this.readLev === 3) {
+                    cls.left = '37.6%';
+                }else if(this.readLev === 4) {
+                    cls.left = '50.1%';
+                }else if(this.readLev === 5) {
+                    cls.left = '62.6%';
+                }else if(this.readLev === 6) {
+                    cls.left = '75.1%';
+                }else if(this.readLev === 7) {
+                    cls.left = '87.6%';
+                }
+                return cls;
+            },
+            mid_score_lev() {
+                var mid_score_lev = [this.mid_score.total,this.mid_score.speak,this.mid_score.spell,this.mid_score.grammar];
+                if(mid_score_lev[0] >= 95) {
+                    mid_score_lev[0] = 'A+';
+                }else if(mid_score_lev[0] >= 90) {
+                    mid_score_lev[0] = 'A';
+                }else if(mid_score_lev[0] >= 85) {
+                    mid_score_lev[0] = 'B+';
+                }else if(mid_score_lev[0] >= 80) {
+                    mid_score_lev[0] = 'B';
+                }else if(mid_score_lev[0] >= 75) {
+                    mid_score_lev[0] = 'C+';
+                }else if(mid_score_lev[0] >= 70) {
+                    mid_score_lev[0] = 'C';
+                }else if(mid_score_lev[0] >= 65) {
+                    mid_score_lev[0] = 'D+';
+                }else if(mid_score_lev[0] >= 60) {
+                    mid_score_lev[0] = 'D';
+                }else {
+                    mid_score_lev[0] = 'E';
+                }
+                for (i = 1;i < mid_score_lev.length;i++) {
+                    if(mid_score_lev[i] >= 95) {
+                        mid_score_lev[i] = 'A+';
+                    }else if(mid_score_lev[i] >= 90) {
+                        mid_score_lev[i] = ' A';
+                    }else if(mid_score_lev[i] >= 85) {
+                        mid_score_lev[i] = 'B+';
+                    }else if(mid_score_lev[i] >= 80) {
+                        mid_score_lev[i] = ' B';
+                    }else if(mid_score_lev[i] >= 75) {
+                        mid_score_lev[i] = 'C+';
+                    }else if(mid_score_lev[i] >= 70) {
+                        mid_score_lev[i] = ' C';
+                    }else if(mid_score_lev[i] >= 65) {
+                        mid_score_lev[i] = 'D+';
+                    }else if(mid_score_lev[i] >= 60) {
+                        mid_score_lev[i] = ' D';
+                    }else if(mid_score_lev[i] != 0) {
+                        mid_score_lev[i] = ' E';
+                    }else {
+                        mid_score_lev[i] = ' 无';
+                    }
+                }
+                return mid_score_lev;
+            }
+        },
+        methods: {
+            format() {
+                return '';
+            },
+
+            chinese(num) {
+                if(num > 0)
+                    return "提升";
+                else 
+                    return "下降";
+            },
+
+            tableRowClassName: function ({row, rowIndex}) {
+                if ((rowIndex % 2) !== 0) {
+                    return 'white_row';
+                } else {
+                    return 'grey_row';
+                }
+            },
+
+            setWordCellStyle : function ({column, columnIndex}) {
+                if(columnIndex === 0) {
+                    return 'padding: 4px 0;borderRadius: 6px 0 0 6px';
+                }else if(columnIndex === 1) {
+                    return 'padding: 4px 0;borderRadius: 0 0 0 0';
+                }else {
+                    return 'padding: 4px 0;borderRadius: 0 6px 6px 0';
+                }
+            },
+
+            setPaperCellStyle : function ({column, columnIndex}) {
+                if(columnIndex === 0) {
+                    return 'padding: 4px 0;borderRadius: 6px 0 0 6px';
+                }else {
+                    return 'padding: 4px 0;borderRadius: 0 6px 6px 0';
+                }
+            },
+
+            imgLoad: function () {
+                if(this.$refs.portfolio) {
+                    this.$nextTick(() => {
+                        this.h = this.$refs.portfolio[this.idx].height;
+                    })
+                }
+            },
+
+            changeHeight: function(idx1, idx2) {
+                this.idx = idx1;
+                if(this.$refs.portfolio) {
+                    this.h = this.$refs.portfolio[this.idx].height
+                    this.imgLoad()
+                }
+            },
+
+            wordPlay: function (url) {
+                alert(url);
+            },
+
+            checkTrail: function () {
+                this.isTrailPop = true;
+                this.isPop = true;
+                this.idx = 0;
+                console.log(this.$refs)
+                if(this.$refs.portfolio) {
+                    console.log($("#carousel")[0])
+                    this.h = this.$refs.portfolio[0].height;
+                    this.imgLoad();
+                }
+                document.getElementById("container").style.filter = "brightness(0.8)";
+            },
+
+            checkLevel: function () {
+                this.isLevelPop = true;
+                this.isPop = true;
+                document.getElementById("container").style.filter = "brightness(0.8)";
+            },
+
+            wordDetail: function () {
+                this.isWordPop = true;
+                this.isPop = true;
+                document.getElementById("container").style.filter = "brightness(0.8)";
+            },
+
+            paperDetail: function () {
+                this.isPaperPop = true;
+                this.isPop = true;
+                document.getElementById("container").style.filter = "brightness(0.8)";
+            },
+
+            CmpGraphPretreat: function (array) {
+                for(var i = 0;i < array.length;i++) {
+                    if(array[i] < 60)
+                        array[i] = array[i] * 10 / 60;
+                    else if(array[i] < 65)
+                        array[i] = 10 + 10 * ((array[i] - 60) / 5);
+                    else if(array[i] < 75)
+                        array[i] = 20 + 10 * ((array[i] - 65) / 10);
+                    else if(array[i] < 85)
+                        array[i] = 30 + 10 * ((array[i] - 75) / 10);
+                    else if(array[i] < 95)
+                        array[i] = 40 + 10 * ((array[i] - 85) / 10);
+                    else
+                        array[i] = 50 + 10 * ((array[i] - 95) / 5);
+                }
+                return array;
+            },
+
+            getSMTbind: function () {
+                return new Promise(resolve => {
+                    axios.get("/getSmtId").then((response) => {
+                        resolve(response.data.smtId);
+                    })
+                })
+            },
+
+            getSMTId: async function () {
+                this.smtId = await this.getSMTbind();
+                if(this.smtId.length === 0) {
+                    this.ifBind = true;
+                    if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+                        var deviceWidth = document.documentElement.clientWidth;
+                        var deviceHeight = document.documentElement.clientHeight;
+                        deviceWidth = (deviceWidth < deviceHeight) ? deviceWidth : deviceHeight;
+                        document.getElementById("bind_win").style.top = (document.documentElement.clientHeight * 100 / (document.getElementById("app").clientHeight * deviceWidth / 450) - 18) / 2 + "%";
+                    }else {
+                        var deviceWidth = document.documentElement.clientWidth;
+                        document.getElementById("bind_win").style.top = (document.documentElement.clientHeight * 100 / (document.getElementById("app").clientHeight * deviceWidth / 1350) - 18) / 2 + "%";
+                    }
+                    document.getElementById("container").style.filter = "blur(15px)";
+                }else {
+                    sessionStorage.setItem('smtId',this.smtId);
+                    this.setMainData();
+                    this.setExerciseData();
+                    this.setVocalData();
+                    this.setLibraryData();
+                    this.setContrastData();
+                    this.setMidScore();
+                    this.setUserInfo();//根据smtId调用函数获取数据
+                    this.setPortfolio();
+                }
+            },
+
+            getMainReport: function () {
+                return new Promise(resolve => {
+                    axios.get("/getMainReport?user_id=" + this.bindData.smtId).then((response) => {
+                        resolve(response.data);
+                    })
+                })
+            },
+
+            setMainData: async function () {
+                var response = await this.getMainReport();
+                var res = response.data;
+                this.smt_movie_total = res.level_movie_total;
+                this.smt_movie = res.level_movie_watched;
+                this.smt_sentence_total = res.level_sentence_total;
+                this.smt_sentence = res.level_sentence_learned;
+                this.smt_word_total = res.level_word_total;
+                this.smt_word = res.level_word_learned;
+                this.finish_lesson = res.weekly_lesson_finish;
+                this.finish_movie = res.weekly_movie_finish;
+            },
+
+            getExerciseReport: function () {
+                return new Promise(resolve => {
+                    axios.get("/getExerciseReport?user_id=" + this.bindData.smtId).then((response) => {
+                        resolve(response.data);
+                    })
+                })
+            },
+
+            setExerciseData: async function () {
+                var response = await this.getExerciseReport();
+                var res = response.data;
+                this.paperData.times = res.times;
+                this.paperData.probNum = res.prob_num;
+                this.paperData.probEasy = res.prob_easy;
+                this.paperData.probMedium = res.prob_medium;
+                this.paperData.probHard = res.prob_hard;
+                this.paperData.avgScore = res.avg_score;
+                this.paperData.avgTime = res.avg_time;
+                this.paperData.point_handle = res.point_handle;
+                this.paperData.progress = res.progress;
+                this.chartOptions2.series[0].data = res.last_ten_score;
+                for(var i = 0;i < res.handle_list.length;i++) {
+                    var obj = {};
+                    obj.handle_paper = res.handle_list[i];
+                    obj.unhandle_paper = res.unhandle_list[i];
+                    this.paperHandle.push(obj);
+                }
+            },
+
+            getVocalReport: function () {
+                return new Promise(resolve => {
+                    axios.get("/getVocalReport?user_id=" + this.bindData.smtId).then((response) => {
+                        resolve(response.data);
+                    })
+                })
+            },
+
+            setVocalData: async function () {
+                var response = await this.getVocalReport();
+                var res = response.data;
+                this.wordData.times = res.times;
+                this.wordData.time = res.time;
+                this.wordData.avgScore = res.avg_score;
+                this.wordData.avgTime = res.avg_time;
+                this.wordData.word_unhandle = res.word_unhandle;
+                this.paperData.progress = res.progress;
+                this.chartOptions1.series[0].data = res.last_ten_score;
+                for(var i = 0;i < res.comment_list.length;i++) {
+                    var obj = {};
+                    obj.word = res.comment_list[i].word;
+                    if(res.comment_list[i].status === "1")
+                        obj.evaluate = '/image/evaluate1.png';
+                    else if(res.comment_list[i].status === "0")
+                        obj.evaluate = '/image/evaluate3.png';
+                    obj.audio = res.comment_list[i].audio;
+                    this.wordComment.push(obj);
+                }
+            },
+
+            getLibraryReport: function () {
+                return new Promise(resolve => {
+                    axios.get("/getLibraryReport?user_id=" + this.bindData.smtId).then((response) => {
+                        resolve(response.data);
+                    })
+                })
+            },
+
+            setLibraryData: async function () {
+                var response = await this.getLibraryReport();
+                var res = response.data;
+                this.lib_book = res.lib_book_total;
+                this.lib_hour = res.lib_hour_total;
+                this.readLev = res.read_lev;
+                this.readNum = res.read_num;
+                for(var i = 0;i < res.book_urls.length;i++) {
+                    this.urls.push(res.book_urls[i]);
+                }
+            },
+
+            getContrastReport: function () {
+                return new Promise(resolve => {
+                    axios.get("/getContrastReport?user_id=" + this.bindData.smtId).then((response) => {
+                        resolve(response.data);
+                    })
+                })
+            },
+
+            setContrastData: async function () {
+                var response = await this.getContrastReport();
+                var res = response.data;
+                this.chartOptions3.series[0].data = this.CmpGraphPretreat(res.my_avg_score);
+                this.chartOptions3.series[1].data = this.CmpGraphPretreat(res.all_avg_score);
+            },
+
+            getMidScore: function () {
+                return new Promise(resolve => {
+                    axios.get("/getTermMid?user_id=" + this.bindData.smtId).then((response) => {
+                        resolve(response.data);
+                    })
+                })
+            },
+
+            setMidScore: async function () {
+                var response = await this.getMidScore();
+                var res = response.data;
+                this.mid_score.total = res.total;
+                this.mid_score.speak = res.speaking;
+                this.mid_score.spell = res.phonics;
+                this.mid_score.grammar = res.grammar;
+            },
+
+            getUserInfo: function () {
+                return new Promise(resolve => {
+                    axios.get("/getStudentInfo?user_id=" + this.bindData.smtId).then((response) => {
+                        resolve(response.data);
+                    })
+                })
+            },
+
+            setUserInfo: async function () {
+                var response = await this.getUserInfo();
+                var res = response.data;
+                this.level = res.level;
+                this.week = res.week;
+                this.lesson = res.lesson;
+                this.stuName = res.name;
+                $("#diff_table")[0].children[0].src = "/image/diff" + this.level + "_term.png";
+                $("#fullLevel")[0].children[0].src = "/image/fullLev2_" +this.level + ".png";
+            },
+
+            getPortfolio: function () {
+                return new Promise(resolve => {
+                    axios.get("/getPortfolio?user_id=" + this.bindData.smtId).then((response) => {
+                        resolve(response.data);
+                    })
+                })
+            },
+
+            setPortfolio: async function () {
+                var response = await this.getPortfolio();
+                var res = response.data;
+                // image = [];
+                // audio = [];
+                // for(i = 0;i < len(res.portfolioList);i++) {
+                //     if(res.portfolioList[i].fileType === "image") {
+                //         image.push("https://www.smartreelearners.com" + res.portfolioList[i].fileData);
+                //     }else if(res.portfolioList[i].fileType === "audio") {
+                //         audio.push("https://www.smartreelearners.com" + res.portfolioList[i].fileData);
+                //     }
+                // }
+                // this.trails = image;
+                // this.audios = audio;
+            },
+
+            bind: function () {
+                this.bindData.smtId = this.smtId;
+                console.log(this.bindData.orgCode + '  ' + this.bindData.smtId + '  ' + this.bindData.password);
+                this.ifBind = false;
+
+                this.setMainData();
+                this.setExerciseData();
+                this.setVocalData();
+                this.setLibraryData();
+                this.setContrastData();
+                this.setMidScore();
+                this.setUserInfo();
+                this.setPortfolio();
+
+
+                document.getElementById("container").style.filter = "blur(0px)";
+                axios.post("/bind", $.param(this.bindData)  
+                ).then((response) => {
+                    sessionStorage.setItem("smtId",this.bindData.smtId);
+                });
+            },
+        },
+        mounted: function () {
+            this.imgLoad()
+        },
+        created: function () {
+            if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+                var deviceWidth = document.documentElement.clientWidth;
+                var deviceHeight = document.documentElement.clientHeight;
+                deviceWidth = (deviceWidth < deviceHeight) ? deviceWidth : deviceHeight;
+                document.getElementById("app").style.transformOrigin = "center top";
+                document.getElementById("app").style.transform = "scale(" + (deviceWidth / 450) + ")";
+                var scale = deviceWidth / 450;
+                var percent = (document.documentElement.clientHeight * 100 / (document.getElementById("app").clientHeight * scale) - 18) / 2;
+                percent += (document.documentElement.scrollTop / (document.getElementById("app").clientHeight * scale)) * 100;
+                document.getElementById("bind_win").style.top = percent + "%";
+            }else {
+                var deviceWidth = document.documentElement.clientWidth;
+                document.getElementById("app").style.transformOrigin = "center top";
+                document.getElementById("app").style.transform = "scale(" + (deviceWidth / (450 * 3)) + ")";
+                var scale = deviceWidth / 1350;
+                var percent = (document.documentElement.clientHeight * 100 / (document.getElementById("app").clientHeight * scale) - 18) / 2;
+                percent += (document.documentElement.scrollTop / (document.getElementById("app").clientHeight * scale)) * 100;
+                document.getElementById("bind_win").style.top = percent + "%";
+            }
+
+            if(sessionStorage.getItem('smtId') === null) {
+                this.getSMTId();
+            }else {
+                this.bindData.smtId = sessionStorage.getItem('smtId');
+                this.setMainData();
+                this.setExerciseData();
+                this.setVocalData();
+                this.setLibraryData();
+                this.setContrastData();
+                this.setMidScore();
+                this.setUserInfo();//根据smtId调用函数获取数据
+                this.setPortfolio();
+            }
+            
+            document.getElementById("smt_point").style.left = (157 * this.finish_lesson / this.total_lesson + 6) + "px";
+            document.getElementById("iptv_point").style.left = (99 * this.finish_lesson / this.total_lesson + 217) + "px";
+            document.getElementById("smt_progress_text").style.left = (157 * this.finish_lesson / this.total_lesson + 6) + "px";
+            document.getElementById("iptv_progress_text").style.left = (99 * this.finish_lesson / this.total_lesson + 217) + "px";
+            this.chartOptions3.series[0].data = this.CmpGraphPretreat(this.chartOptions3.series[0].data);
+            this.chartOptions3.series[1].data = this.CmpGraphPretreat(this.chartOptions3.series[1].data);
+        }
+    })
+</script>

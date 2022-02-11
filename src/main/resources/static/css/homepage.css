@@ -1,0 +1,116 @@
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid black;
+    position: absolute;
+    top: 100px;
+}
+
+#title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 15px;
+}
+
+#sidebar a {
+    display: block;
+    color: black;
+    background-color: white;
+    width: 120px;
+    text-align: center;
+    font-size: 18px;
+    padding: 15px;
+    text-decoration: none;
+}
+
+#mod_name {
+    color: black;
+    position: absolute;
+    width: 160px;
+    top: 50px;
+    left: 240px;
+    font-size: 40px;
+    margin: 0;
+    padding: 0;
+    font-weight: bold;
+}
+
+#lev_info {
+    color: black;
+    position: absolute;
+    top: 75px;
+    left: 440px;
+    width: 100px;
+    font-size: 18px;
+}
+
+#choose1 {
+    color: black;
+    position: absolute;
+    top: 170px;
+    left: 240px;
+    width: 120px;
+    font-size: 20px;
+}
+
+#choose_sys {
+    position: absolute;
+    left: 240px;
+    top: 240px;
+}
+#choose2 {
+    color: black;
+    position: absolute;
+    top: 280px;
+    left: 240px;
+    width: 80px;
+    font-size: 20px;
+}
+
+#choose_lev {
+    position: absolute;
+    top: 350px;
+    left: 240px;
+    width: 400px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#choose_num {
+    position: absolute;
+    left: 240px;
+    top: 480px;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#choose3 {
+    color: black;
+    position: absolute;
+    top: 410px;
+    left: 240px;
+    width: 80px;
+    font-size: 20px;
+}
+#start {
+    position: absolute;
+    top: 540px;
+    width: 100%;
+    text-align: center;
+}
+
+#start_button {
+    height: 60px;
+    width: 120px;
+    background-color: rgba(36, 151, 218, 0.774);
+    color: white;
+    cursor: pointer;
+    font-size: 20px;
+    border: none;
+    border-radius: 8px;
+    -webkit-border-radius: 8px; /*适配以webkit为核心的浏览器(chrome、safari等)*/
+    -moz-border-radius: 8px; /*适配firefox浏览器*/
+    -ms-border-radius: 8px; /*适配IE浏览器*/
+    -o-border-radius: 8px; /*适配opera浏览器*/
+    outline: none;
+}
