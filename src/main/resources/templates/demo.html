@@ -1284,10 +1284,11 @@
                         this.stem_img = prob.data.image_url;
                     if(prob.data.resource_flag == 3 || prob.data.resource_flag == 4)
                     this.stem_aud = prob.data.audio_url;
-
+                    document.getElementById('question_text').style.width = "94%";
                     document.getElementById('image_container').style.display = "none";
                     if(this.num <= this.opt_choice_num) {
                         this.prob_attr = "选择题";
+                        document.getElementById('question_text').style.width = "66%";
                         let tmp = document.getElementById('image_container');
                         tmp.style.display = "";
                         if(this.stem_img == ""||!this.stem_img){
@@ -1310,6 +1311,7 @@
                         this.prob_attr = "听音选文";
                     else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num) {
                         this.prob_attr = "看图选音";
+                        document.getElementById('question_text').style.width = "66%";
                         let tmp = document.getElementById('image_container');
                         tmp.style.display = "";
                         if(this.stem_img == ""||!this.stem_img){
