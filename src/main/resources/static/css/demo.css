@@ -449,13 +449,17 @@ li > p {
     background-image: repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0));
 }
 
-#image {
+.imgSize {
     width: 93.9%;
     height: 93.2%;
     border-radius: 16px;
-
+    background-color: white;
 }
-
+#image {
+    width: 100%;
+    height: 100%;
+    border-radius: 16px;
+}
 #stem_audio {
     width: 55px;
     height: 55px;

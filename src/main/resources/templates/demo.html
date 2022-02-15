@@ -25,7 +25,6 @@
             <div id="app">
                 <div id="musicBox">
                     <audio id="stem_music" onended="musicEnd(0)"></audio>
-
                     <audio id="option_a_music" onended="musicEnd(1)"></audio>
                     <audio id="option_b_music" onended="musicEnd(2)"></audio>
                     <audio id="option_c_music" onended="musicEnd(3)"></audio>
@@ -60,7 +59,9 @@
                             <img src="/image/book.png" id="book">
                             <div id="question_area">
                                 <div id="image_container" style="display: none">
-                                    <img src="/image/logo.png" id="image">
+                                    <div class="imgSize">
+                                        <img src="/image/logo.png" id="image" onload="changeSize(this,'stem')">
+                                    </div>
                                 </div>
                                 <div id="question_info">
                                     <p style="font-family: 'GothamRoundedMedium';color: #2A7DE1;font-size: 2.5rem;"><span>Q{{ num }}</span></p>
@@ -123,31 +124,35 @@
                                 </div>
                                 <div id="tingyinxuanci_part" style="display: none">
                                     <div id="option_A" class="option_3" @click="chooseOption3('a')">
-
                                         <div class="option_img_container" v-if="option_a_img&&option_a_img != ''">
-
-                                            <img class="option_img" id="option_a_img" :src=option_a_img onerror="defaultImg('option_a_img')">
+                                            <div class="imgSize">
+                                                <img class="option_img" id="option_a_img" :src=option_a_img onload="changeSize(this,'option','a')">
+                                            </div>
                                         </div>
                                         <div id="problem_a_text">A. {{ options.A }}</div>
                                     </div>
                                     <div id="option_B" class="option_3" @click="chooseOption3('b')">
 
                                         <div class="option_img_container" v-if="option_b_img&&option_b_img != ''">
-
-                                            <img class="option_img" id="option_b_img" :src=option_b_img onerror="defaultImg('option_b_img')">
+                                            <div class="imgSize">
+                                                <img class="option_img" id="option_b_img" :src=option_b_img onload="changeSize(this,'option','b')">
+                                            </div>
                                         </div>
                                         <div id="problem_b_text">B. {{ options.B }}</div>
                                     </div>
                                     <div id="option_C" class="option_3" style="display: none;" @click="chooseOption3('c')">
-
                                         <div class="option_img_container" v-if="option_c_img && option_c_img != ''">
-                                            <img class="option_img" id="option_c_img" :src=option_c_img onerror="defaultImg('option_c_img')">
+                                            <div class="imgSize">
+                                                <img class="option_img" id="option_c_img" :src=option_c_img onload="changeSize(this,'option','c')">
+                                            </div>
                                         </div>
                                         <div id="problem_c_text">C. {{ options.C }}</div>
                                     </div>
                                     <div id="option_D" class="option_3" style="display: none;" @click="chooseOption3('d')">
                                         <div class="option_img_container" v-if="option_d_img && option_d_img != ''">
-                                            <img class="option_img" id="option_d_img" :src=option_d_img onerror="defaultImg('option_d_img')">
+                                            <div class="imgSize">
+                                                <img class="option_img" id="option_d_img" :src=option_d_img onload="changeSize(this,'option','d')">
+                                            </div>
                                         </div>
                                         <div id="problem_d_text">D. {{ options.D }}</div>
                                     </div>
@@ -185,6 +190,30 @@
         </div>
 </body>
 <script>
+    function changeSize (img,type,num='e') {
+        let image = new Image();
+        image.src = img.src;
+        if(image.width >= image.height){
+            let el;
+            if(type == 'stem'){
+                el = document.getElementById('image');
+            }else if(type == 'option'){
+                el = document.getElementById('option_' + num + '_img');
+            }
+            el.style.width = "100%";
+            el.style.height = "auto";
+        }else {
+            let el;
+            if(type == 'stem'){
+                el = document.getElementById('image');
+            }else if(type == 'option'){
+                el = document.getElementById('option_' + num + '_img');
+            }
+            el.style.width = "auto";
+            el.style.height = "100%";
+        }
+    }
+
     function pauseMusic () {
         document.getElementById('stem_music').pause();
         document.getElementById('option_a_music').pause();
@@ -201,6 +230,7 @@
             el.src = "/image/audio-unchecked.png";
         };
     }
+
     function setCookie(cname,cvalue) {
         document.cookie = cname + "=" + cvalue + "; ";
     }
@@ -374,7 +404,6 @@
             option_d_aud: "",
         },
         methods: {
-
             musicEnd: function (num) {
                 switch(num){
                     case 0: {
@@ -410,15 +439,6 @@
 
                         break;
                     }
-                }
-            },
-            defaultImg: function (e) {
-                let el = document.getElementById(e);
-                el.src='/image/logo.png';
-                if(e == 'image') {
-                    el = document.getElementById(e + '_container');
-                    el.style.borderRadius = "0";
-                    el.style.borderWidth = "0";
                 }
             },
 
@@ -597,18 +617,19 @@
             },
 
             judge: function (option) {
+                this.refreshAnswer3();
                 option = option.toUpperCase();
-                let el = document.getElementById('option_a_judge');
-                el.src = 'image/true-unselected.png';
-                el = document.getElementById('option_b_judge');
-                el.src = 'image/false-unselected.png';
                 this.formData.choice = option;
                 if(option == 'A'){
                     el = document.getElementById('option_a_judge');
                     el.src = '/image/true-selected.png';
+                    el.style.width = "75px";
+                    el.style.height = "75px";
                 }else if(option == 'B'){
                     el = document.getElementById('option_b_judge');
                     el.src = '/image/false-selected.png';
+                    el.style.width = "75px";
+                    el.style.height = "75px";
                 }
                 if(this.done_list.indexOf(this.num) === -1) {
                     this.remain = this.totalNum-(this.done_list.push(this.num));
@@ -626,21 +647,6 @@
             goBack: function () {
                 sessionStorage.clear();
                 window.location.replace("https://www.smartreelearners.com/#/home");
-            },
-
-            chooseOption2: function (option) {
-                this.formData.choice = option.toLowerCase();
-                if(this.done_list.indexOf(this.num) === -1) {
-                    this.remain = this.totalNum-(this.done_list.push(this.num));
-                }
-                this.formData.idx = this.prob_list[this.num - 1];
-                this.formData.finish = 1;
-                axios.post("/postSheet", $.param(this.formData)  //引入jQuery的作用
-                ).then((response) => {
-                    this.$nextTick(() => {
-                        this.setSheet();
-                    });
-                });
             },
 
             chooseOption: function (option) {
@@ -670,47 +676,8 @@
                 });
             },
 
-            chooseOption3: function (option) {
-                this.refreshAnswer();
-                document.getElementById('option-' + option.toUpperCase()).style.background = "#00D87E";
-                document.getElementById('option-' + option.toUpperCase()).style.color = "white";
-                this.formData.choice = option;
-                if (option === 'a') {
-                    this.formData.choice_text = this.options.A;
-                } else if (option === 'b') {
-                    this.formData.choice_text = this.options.B;
-                } else if (option === 'c') {
-                    this.formData.choice_text = this.options.C;
-                } else if (option === 'd') {
-                    this.formData.choice_text = this.options.D;
-                }
-                if(this.done_list.indexOf(this.num) === -1) {
-                    this.remain = this.totalNum-(this.done_list.push(this.num));
-                }
-                this.formData.idx = this.prob_list[this.num - 1];
-                this.formData.finish = 1;
-                axios.post("/postSheet", $.param(this.formData)  //引入jQuery的作用
-                ).then((response) => {
-                    this.$nextTick(() => {
-                        this.setSheet();
-                    });
-                });
-            },
-
-            chooseOption3: function (option) {
-                this.refreshAnswer2();
-                document.getElementById('problem_' + option + '_text').style.background = "#00D87E";
-                document.getElementById('problem_' + option + '_text').style.color = "white";
-                this.formData.choice = option;
-                if (option === 'a') {
-                    this.formData.choice_text = this.options.A;
-                } else if (option === 'b') {
-                    this.formData.choice_text = this.options.B;
-                } else if (option === 'c') {
-                    this.formData.choice_text = this.options.C;
-                } else if (option === 'd') {
-                    this.formData.choice_text = this.options.D;
-                }
+            chooseOption2: function (option) {
+                this.formData.choice = option.toLowerCase();
                 if(this.done_list.indexOf(this.num) === -1) {
                     this.remain = this.totalNum-(this.done_list.push(this.num));
                 }
@@ -778,33 +745,6 @@
                 });
             },
 
-            chooseOption3: function (option) {
-                this.refreshAnswer2();
-                document.getElementById('problem_' + option + '_text').style.background = "#00D87E";
-                document.getElementById('problem_' + option + '_text').style.color = "white";
-                this.formData.choice = option;
-                if (option === 'a') {
-                    this.formData.choice_text = this.options.A;
-                } else if (option === 'b') {
-                    this.formData.choice_text = this.options.B;
-                } else if (option === 'c') {
-                    this.formData.choice_text = this.options.C;
-                } else if (option === 'd') {
-                    this.formData.choice_text = this.options.D;
-                }
-                if(this.done_list.indexOf(this.num) === -1) {
-                    this.remain = this.totalNum-(this.done_list.push(this.num));
-                }
-                this.formData.idx = this.prob_list[this.num - 1];
-                this.formData.finish = 1;
-                axios.post("/postSheet", $.param(this.formData)  //引入jQuery的作用
-                ).then((response) => {
-                    this.$nextTick(() => {
-                        this.setSheet();
-                    });
-                });
-            },
-
             refreshAnswer: function () {
                 document.getElementById('option_A').style.background = "#F0F0F0";
                 document.getElementById('option_A').style.color = "black";
@@ -815,7 +755,6 @@
                 document.getElementById('option_D').style.background = "#F0F0F0";
                 document.getElementById('option_D').style.color = "black";
             },
-
 
             refreshAnswer1: function () {
                 document.getElementById('option-A').style.background = "#F0F0F0";
@@ -837,6 +776,17 @@
                 document.getElementById('problem_c_text').style.color = "black";
                 document.getElementById('problem_d_text').style.background = "#F0F0F0";
                 document.getElementById('problem_d_text').style.color = "black";
+            },
+
+            refreshAnswer3: function () {
+                let el = document.getElementById('option_a_judge');
+                el.src = 'image/true-unselected.png';
+                el.style.width = "65px";
+                el.style.height = "65px";
+                el = document.getElementById('option_b_judge');
+                el.src = 'image/false-unselected.png';
+                el.style.width = "65px";
+                el.style.height = "65px";
             },
 
             getIndex: function (option) {
@@ -949,6 +899,7 @@
                         }
                         this.refreshAnswer();
                         this.refreshAnswer2();
+                        this.refreshAnswer3();
                         this.rememberOpt(this.num);
                     }else if(this.num > this.opt_num) {
                         for(var i = 0;i < this.txt.length;i++) {
@@ -1011,7 +962,7 @@
                         }
                         this.refreshAnswer();
                         this.refreshAnswer2 ();
-
+                        this.refreshAnswer3 ();
                         this.rememberOpt(this.num);
                     }
                     this.store();
@@ -1065,6 +1016,7 @@
                         this.num += 1;
                         this.refreshAnswer();
                         this.refreshAnswer2();
+                        this.refreshAnswer3();
                         this.rememberOpt(this.num);
                     }else {
                         for(var i = 0;i < this.txt.length;i++) {
@@ -1610,48 +1562,29 @@
             }
         },
 
-        mounted() {
-            if(this.num <= this.opt_num) {
-                this.rememberOpt(this.num);
-                if(this.num <= this.opt_choice_num)
-                    this.openView('opt');
-                else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num)
-                    this.openView('tingyinxuanwen');
-                else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num)
-                    this.openView('kantuxuanyin');
-                else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num)
-                    this.openView('tingyinxuanci');
-                else
-                    this.openView('panduanzhengwu');
-            }else {
-                this.rememberTxt(this.num);
-                this.openView('txt');
-            }
-        },
+        // mounted() {
+        //     if(this.num <= this.opt_num) {
+        //         this.rememberOpt(this.num);
+        //         if(this.num <= this.opt_choice_num)
+        //             this.openView('opt');
+        //         else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num)
+        //             this.openView('tingyinxuanwen');
+        //         else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num)
+        //             this.openView('kantuxuanyin');
+        //         else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num)
+        //             this.openView('tingyinxuanci');
+        //         else
+        //             this.openView('panduanzhengwu');
+        //     }else {
+        //         this.rememberTxt(this.num);
+        //         this.openView('txt');
+        //     }
+        // },
 
         async mounted() {
-            window["defaultImg"] = () => {
-                this.defaultImg();
-            };
             window["musicEnd"] = (num) => {
                 this.musicEnd(num);
             }
-        },
-
-        async mounted() {
-            window["defaultImg"] = () => {
-                this.defaultImg();
-            };
-            window["musicEnd"] = (num) => {
-                this.musicEnd(num);
-
-            }
-        },
-
-        async mounted() {
-            window["defaultImg"] = () => {
-                this.defaultImg();
-            };
         },
     })
 </script>
