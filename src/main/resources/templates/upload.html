@@ -21,7 +21,7 @@
         }
 
         body {
-            width: 800px;
+            width: 860px;
         }
 
         .hide {
@@ -89,6 +89,10 @@
                     <el-form-item>
                         <el-radio-group v-model="radioType">
                             <el-radio label="Choice">选择题</el-radio>
+                            <el-radio label="tingyinxuanwen">听音选文</el-radio>
+                            <el-radio label="kantuxuanyin">看图选音</el-radio>
+                            <el-radio label="tingyinxuanci">听音选词</el-radio>
+                            <el-radio label="panduanzhengwu">判断正误</el-radio>
                             <el-radio label="txt">文本题</el-radio>
                         </el-radio-group>
                     </el-form-item>
@@ -115,12 +119,12 @@
                     </div>
 
                     <h3>题干：prob_text</h3>
-                    <el-form-item label="" prop="prob_text">
+                    <el-form-item label="" prop="prob_text" v-if="radioType === 'Choice' || radioType === 'panduanzhengwu'">
                     <h4>文字部分</h4>
                         <el-input label-width="800px" type="textarea" :rows="3" v-model="formData.prob_text"></el-input>
                     </el-form-item>
-                    <el-form-item label="">
-                    <h4>图片部分（可不填）</h4>
+                    <el-form-item label="" v-if="radioType === 'Choice' || radioType === 'kantuxuanyin' || radioType === 'panduanzhengwu' || radioType === 'txt'">
+                    <h4>图片部分</h4>
                     <el-upload
                             class="upload-demo"
                             drag
@@ -134,8 +138,8 @@
                         <div class="el-upload__tip" slot="tip">只能上传单个jpg/png文件</div>
                     </el-upload>
                     </el-form-item>
-                    <el-form-item label="">
-                    <h4>音频部分（可不填）</h4>
+                    <el-form-item label="" v-if="radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen' || radioType === 'panduanzhengwu' || radioType === 'txt'">
+                    <h4>音频部分</h4>
                     <el-upload
                             class="upload-demo"
                             action="fileUpload1"
@@ -148,13 +152,13 @@
                     </el-upload>
                     </el-form-item>
 
-                    <div v-if="radioType === 'Choice'" style="width: 600px">
+                    <div v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen' || radioType === 'kantuxuanyin'" style="width: 650px">
                         <h3>选项：options</h3>
                         <h4>A.</h4>
-                        <el-form-item label="文字部分">
+                        <el-form-item label="文字部分" v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen'">
                             <el-input v-model="formData.optionA"></el-input>
                         </el-form-item>
-                        <el-form-item label="图片部分">
+                        <el-form-item label="图片部分" v-if="radioType === 'tingyinxuanci'">
                             <el-upload
                                     class="upload-demo"
                                     action="fileUpload1"
@@ -166,7 +170,7 @@
                                 <el-button size="small" type="primary">点击上传</el-button>
                             </el-upload>
                         </el-form-item>
-                        <el-form-item label="音频部分">
+                        <el-form-item label="音频部分" v-if="radioType === 'kantuxuanyin'">
                             <el-upload
                                     class="upload-demo"
                                     action="fileUpload1"
@@ -180,10 +184,10 @@
                         </el-form-item>
 
                         <h4>B.</h4>
-                        <el-form-item label="文字部分">
+                        <el-form-item label="文字部分" v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen'">
                             <el-input v-model="formData.optionB"></el-input>
                         </el-form-item>
-                        <el-form-item label="图片部分">
+                        <el-form-item label="图片部分" v-if="radioType === 'tingyinxuanci'">
                             <el-upload
                                     class="upload-demo"
                                     action="fileUpload1"
@@ -195,7 +199,7 @@
                                 <el-button size="small" type="primary">点击上传</el-button>
                             </el-upload>
                         </el-form-item>
-                        <el-form-item label="音频部分">
+                        <el-form-item label="音频部分" v-if="radioType === 'kantuxuanyin'">
                             <el-upload
                                     class="upload-demo"
                                     action="fileUpload1"
@@ -209,10 +213,10 @@
                         </el-form-item>
 
                         <h4>C.</h4>
-                        <el-form-item label="文字部分" >
+                        <el-form-item label="文字部分" v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen'">
                             <el-input v-model="formData.optionC" placeholder="无 C 选项可不填"></el-input>
                         </el-form-item>
-                        <el-form-item label="图片部分">
+                        <el-form-item label="图片部分" v-if="radioType === 'tingyinxuanci'">
                             <el-upload
                                     class="upload-demo"
                                     action="fileUpload1"
@@ -224,7 +228,7 @@
                                 <el-button size="small" type="primary">点击上传</el-button>
                             </el-upload>
                         </el-form-item>
-                        <el-form-item label="音频部分">
+                        <el-form-item label="音频部分" v-if="radioType === 'kantuxuanyin'">
                             <el-upload
                                     class="upload-demo"
                                     action="fileUpload1"
@@ -238,10 +242,10 @@
                         </el-form-item>
 
                         <h4>D.</h4>
-                        <el-form-item label="文字部分">
+                        <el-form-item label="文字部分" v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen'">
                             <el-input v-model="formData.optionD" placeholder="无 D 选项可不填"></el-input>
                         </el-form-item>
-                        <el-form-item label="图片部分">
+                        <el-form-item label="图片部分" v-if="radioType === 'tingyinxuanci'">
                             <el-upload
                                     class="upload-demo"
                                     action="fileUpload1"
@@ -253,7 +257,7 @@
                                 <el-button size="small" type="primary">点击上传</el-button>
                             </el-upload>
                         </el-form-item>
-                        <el-form-item label="音频部分">
+                        <el-form-item label="音频部分" v-if="radioType === 'kantuxuanyin'">
                             <el-upload
                                     class="upload-demo"
                                     action="fileUpload1"
@@ -265,17 +269,17 @@
                                 <el-button size="small" type="primary">点击上传</el-button>
                             </el-upload>
                         </el-form-item>
-
-                        <h4>正确答案</h4>
-                        <el-form-item label="" prop="answer">
-                            <el-select v-model="formData.answer" placeholder="选择选项">
-                                <el-option label="A" value="A"></el-option>
-                                <el-option label="B" value="B"></el-option>
-                                <el-option label="C" value="C"></el-option>
-                                <el-option label="D" value="D"></el-option>
-                            </el-select>
-                        </el-form-item>
-
+                    </div>
+                    <div v-if="radioType === 'panduanzhengwu' || radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen' || radioType === 'kantuxuanyin'" style="width: 650px">
+                    <h4>正确答案</h4>
+                    <el-form-item label="" prop="answer">
+                        <el-select v-model="formData.answer" placeholder="选择选项">
+                            <el-option label="A" value="A"></el-option>
+                            <el-option label="B" value="B"></el-option>
+                            <el-option label="C" value="C"></el-option>
+                            <el-option label="D" value="D"></el-option>
+                        </el-select>
+                    </el-form-item>
                     </div>
 
                     <div v-if="radioType === 'txt'">
