@@ -16,14 +16,7 @@ public class SheetTemp {
     private ArrayList<Long> num_list;
     private Long opt_num;
     private Long txt_num;
-    //add begin
-    private int opt_choice_num;
-    private int opt_tingyinxuanwen_num;
-    private int opt_kantuxuanyin_num;
-    private int opt_tingyinxuanci_num;
-    private int opt_panduanzhengwu_num;
 
-    //add end
     private String exer_level;
     private String start_time;
     private String end_time;
@@ -91,46 +84,6 @@ public class SheetTemp {
         this.txt_num = txt_num;
     }
 
-    public int getOpt_choice_num() {
-        return opt_choice_num;
-    }
-
-    public void setOpt_choice_num(int opt_choice_num) {
-        this.opt_choice_num = opt_choice_num;
-    }
-
-    public int getOpt_tingyinxuanwen_num() {
-        return opt_tingyinxuanwen_num;
-    }
-
-    public void setOpt_tingyinxuanwen_num(int opt_tingyinxuanwen_num) {
-        this.opt_tingyinxuanwen_num = opt_tingyinxuanwen_num;
-    }
-
-    public int getOpt_kantuxuanyin_num() {
-        return opt_kantuxuanyin_num;
-    }
-
-    public void setOpt_kantuxuanyin_num(int opt_kantuxuanyin_num) {
-        this.opt_kantuxuanyin_num = opt_kantuxuanyin_num;
-    }
-
-    public int getOpt_tingyinxuanci_num() {
-        return opt_tingyinxuanci_num;
-    }
-
-    public void setOpt_tingyinxuanci_num(int opt_tingyinxuanci_num) {
-        this.opt_tingyinxuanci_num = opt_tingyinxuanci_num;
-    }
-
-    public int getOpt_panduanzhengwu_num() {
-        return opt_panduanzhengwu_num;
-    }
-
-    public void setOpt_panduanzhengwu_num(int opt_panduanzhengwu_num) {
-        this.opt_panduanzhengwu_num = opt_panduanzhengwu_num;
-    }
-
     public String getExer_level() {
         return exer_level;
     }
@@ -161,5 +114,20 @@ public class SheetTemp {
 
     public void setEvaluated(boolean evaluated) {
         this.evaluated = evaluated;
+    }
+
+    @Override
+    public String toString() {
+        return "SheetTemp{" +
+                "id=" + id +
+                ", sheet_list=" + sheet_list +
+                ", num_list=" + num_list +
+                ", opt_num=" + opt_num +
+                ", txt_num=" + txt_num +
+                ", exer_level='" + exer_level + '\'' +
+                ", start_time='" + start_time + '\'' +
+                ", end_time='" + end_time + '\'' +
+                ", evaluated=" + evaluated +
+                '}';
     }
 }

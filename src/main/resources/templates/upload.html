@@ -416,16 +416,6 @@
             lesson_id: 0,
             grammar: 'Example: is/am/are',
             rules: {
-                prob_text: [{
-                    required: true,
-                    message: '请输入题干内容',
-                    trigger: 'blur'
-                }, {
-                    min: 2,
-                    max: 400,
-                    message: '长度在 2 到 400 个字符',
-                    trigger: 'blur'
-                }],
                 answer: [{
                     required: true,
                     message: '答案不能为空',
@@ -527,7 +517,7 @@
                 }
 
                 if (this.formData["prob_level"].length === 0 || this.formData["lesson_id"] === 0 ||
-                    this.formData["prob_text"].length === 0 || this.formData["answer"].length === 0)
+                    this.formData["answer"].length === 0)
                     this.$message({
                         type: 'error',
                         message: '请检查 lesson、level、题目、答案是否完整'
@@ -535,9 +525,12 @@
 
                 else {
                     this.formData["prob_attr"] = this.radioType;
-                    if (this.formData["prob_attr"] !== "Choice") {
+                    console.log(this.radioType)
+                    console.log(this.formData["prob_attr"])
+                    if (this.formData["prob_attr"] !== "Choice" && this.formData["prob_attr"] !== "tingyinxuanwen" && this.formData["prob_attr"] !== "kantuxuanyin" && this.formData["prob_attr"] !== "tingyinxuanci" && this.formData["prob_attr"] !== "panduanzhengwu") {
                         this.formData["prob_attr"] = this.formData["txt_type"];
                     }
+                console.log(this.formData["prob_attr"])
                     console.log("submit:", this.formData);
                     $.cookie("prob_id", null);
                     $.cookie("level", this.formData["prob_level"]);

@@ -310,13 +310,11 @@ public class UploadController {
                                @RequestParam("option_b_audio") String option_b_audio, //add
                                @RequestParam("option_c_audio") String option_c_audio, //add
                                @RequestParam("option_d_audio") String option_d_audio, //add
-                               @RequestParam("option_flag") int option_flag, //add
                                @RequestParam("answer") String answer_text,
                                @RequestParam("analysis") String analysis,
                                @RequestParam("prob_text") String prob_text,
                                @RequestParam("stem_image") String stem_image, //add
                                @RequestParam("stem_audio") String stem_audio, //add
-                               @RequestParam("stem_flag") int stem_flag, //add
                                @RequestParam("prob_attr") String prob_attr,
                                @RequestParam("prob_diff") String prob_diff,
                                @RequestParam("prob_level") String prob_level,
@@ -330,90 +328,81 @@ public class UploadController {
                 answerRepository.updateAnswer(prob_id, analysis, answer_text);
                 problemRepository.updateProblemByPoint_id(prob_id, prob_text, prob_attr, prob_diff, prob_level, lesson_id, point_id, blank_num);
             } else if (mode == 1) {   //新增模式
-                if (!isContainChinese(prob_text)) {  //检查是否有重复题目, 有中文就不检测
-                    List<Problem> probList = problemRepository.getAllProblem();
-                    for (Problem prob : probList) {
-                        String probTxt = prob.getProb_text();
-                        if (purify(probTxt).equals(purify(prob_text)))
-                            return "已有重复题目: " + prob.getProb_id().toString();
-                    }
-                }
+//                if (!isContainChinese(prob_text)) {  //检查是否有重复题目, 有中文就不检测
+//                    List<Problem> probList = problemRepository.getAllProblem();
+//                    for (Problem prob : probList) {
+//                        String probTxt = prob.getProb_text();
+//                        if (purify(probTxt).equals(purify(prob_text)))
+//                            return "已有重复题目: " + prob.getProb_id().toString();
+//                    }
+//                }
+                System.out.println("prob_attr:" + prob_attr);
                 /*
                 需要做三件事
-                1. 处理option *
-                2. 处理answer
+                1. 处理answer
+                2. 处理options *
                 3. 处理problem *
                  */
-
-                //1. 处理option
-                //如果传入为空会怎么样？-> 依然可以执行   mysql-utf-8 一个中文占3个字节
-                Options options = new Options(optionA,optionB,optionC,optionD);
-                switch (option_flag){
-                    case 1:
-                        //text only->do nothing
-                        break;
-                    case 2:
-                        //pic only->save pic url
-                        options.setA_image_url(option_a_image);
-                        options.setB_image_url(option_b_image);
-                        options.setC_image_url(option_c_image);
-                        options.setD_image_url(option_d_image);
-                        break;
-                    case 3:
-                        //audio only->save audio url
-                        options.setA_audio_url(option_a_audio);
-                        options.setB_audio_url(option_b_audio);
-                        options.setC_audio_url(option_c_audio);
-                        options.setD_audio_url(option_d_audio);
-                        break;
-                    case 4:
-                        //audio+pic->save both url
-                        options.setA_audio_url(option_a_audio);
-                        options.setB_audio_url(option_b_audio);
-                        options.setC_audio_url(option_c_audio);
-                        options.setD_audio_url(option_d_audio);
-
-                        options.setA_image_url(option_a_image);
-                        options.setB_image_url(option_b_image);
-                        options.setC_image_url(option_c_image);
-                        options.setD_image_url(option_d_image);
-                        break;
-                }
-                //要把flag存下来，作为展示时的信息
-                options.setResource_flag(option_flag);
-                Options now_options = optionsRepository.save(options);
-
-                //2. 处理answer
-                Answer answer = new Answer(answer_text,analysis);
+                Answer answer = new Answer(answer_text, analysis);
                 Answer now_answer = answerRepository.save(answer);
 
-                //3. 处理problem
-
                 Long grammar_id = calGrammar_id(lesson_id, prob_level);
-                Problem problem = new Problem(prob_text,prob_attr,prob_level,prob_diff,lesson_id,grammar_id,point_id,blank_num);
-                problem.setOptions_id(now_options.getOptions_id());
+                Problem problem = new Problem(prob_text, prob_attr, prob_level, prob_diff, lesson_id, grammar_id, point_id, blank_num);
                 problem.setAnswer_id(now_answer.getAnswer_id());
-                //根据flag来确定
-                switch (stem_flag){
-                    case 1:
-                        //text only->do nothing
-                        break;
-                    case 2:
-                        //text+pic->save pic url
+
+                Options options = new Options(optionA, optionB, optionC, optionD);
+                switch (prob_attr) {
+                    case "Choice":
+                        //处理选项-选项无特殊资源
+                        //处理题目
                         problem.setImage_url(stem_image);
                         break;
-                    case 3:
-                        //text+audio->save audio url
+                    case "tingyinxuanwen":
+                        //处理选项-选项无特殊资源
+                        //处理题目
+                        problem.setProb_text("从下面的音素中选出你听到的音素：");
                         problem.setAudio_url(stem_audio);
                         break;
-                    case 4:
-                        //text+audio+pic->save both url
+                    case "kantuxuanyin":
+                        //处理选项-仅音频资源
+                        options.setA_audio_url(option_a_audio);
+                        options.setB_audio_url(option_b_audio);
+                        options.setC_audio_url(option_c_audio);
+                        options.setD_audio_url(option_d_audio);
+                        //处理问题-仅图片资源
+                        problem.setProb_text("看图片，选出对应的句子");
+                        problem.setImage_url(stem_image);
+                        break;
+                    case "tingyinxuanci":
+                        //处理选项-文字和音频
+                        options.setA_image_url(option_a_image);
+                        options.setB_image_url(option_b_image);
+                        options.setC_image_url(option_c_image);
+                        options.setD_image_url(option_d_image);
+                        //处理题目-音频
+                        problem.setProb_text("听录音，选出图片对应的名词");
+                        problem.setAudio_url(stem_audio);
+                        break;
+                    case "panduanzhengwu":
+                        //处理选项-选项固定，无需处理
+                        //处理题目-音频和图片
+                        problem.setProb_text("听录音，判读图文是否匹配");
+                        problem.setAudio_url(stem_audio);
+                        problem.setImage_url(stem_image);
+                        break;
+                    case "Fill":
+                        //处理选项-文本题没有选项
+                        //处理题目-文字、音频和图片
+                        problem.setProb_text("听录音，填写对应的句子");
                         problem.setImage_url(stem_image);
                         problem.setAudio_url(stem_audio);
                         break;
+
                 }
-                //将flag记录下来，作为展示的依据
-                problem.setResource_flag(stem_flag);
+
+                Options now_options = optionsRepository.save(options);
+                problem.setOptions_id(now_options.getOptions_id());
+
                 problemRepository.save(problem);
             }
 
@@ -547,7 +536,7 @@ public class UploadController {
             e.printStackTrace();
         }
 
-        FileInfo fileInfo = new FileInfo(info,option,url_path);
+        FileInfo fileInfo = new FileInfo(info, option, url_path);
         //返回文件访问地址
         return fileInfo;
     }

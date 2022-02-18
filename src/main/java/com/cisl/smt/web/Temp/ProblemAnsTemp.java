@@ -297,4 +297,32 @@ public class ProblemAnsTemp {
     public void setOption_d_image(String option_d_image) {
         this.option_d_image = option_d_image;
     }
+
+    @Override
+    public String toString() {
+        return "ProblemAnsTemp{" +
+                "idx=" + idx +
+                ", finish=" + finish +
+                ", choice='" + choice + '\'' +
+                ", choice_text='" + choice_text + '\'' +
+                ", prob_text='" + prob_text + '\'' +
+                ", analysis='" + analysis + '\'' +
+                ", ans='" + ans + '\'' +
+                ", point='" + point + '\'' +
+                ", type='" + type + '\'' +
+                ", eval_res=" + eval_res +
+                ", showOrder=" + showOrder +
+                ", layoutType='" + layoutType + '\'' +
+                ", stem_audio='" + stem_audio + '\'' +
+                ", stem_image='" + stem_image + '\'' +
+                ", option_a_audio='" + option_a_audio + '\'' +
+                ", option_b_audio='" + option_b_audio + '\'' +
+                ", option_c_audio='" + option_c_audio + '\'' +
+                ", option_d_audio='" + option_d_audio + '\'' +
+                ", option_a_image='" + option_a_image + '\'' +
+                ", option_b_image='" + option_b_image + '\'' +
+                ", option_c_image='" + option_c_image + '\'' +
+                ", option_d_image='" + option_d_image + '\'' +
+                '}';
+    }
 }
