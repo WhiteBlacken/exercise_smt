@@ -182,21 +182,62 @@ public class UploadController {
             problemDetail.setProb_id(problem.getProb_id());
             Options options = optionsRepository.getOptions(problem.getOptions_id());
             String options_text = "";
+            //之前按照选项是否有文本进行判断，实际上现在的题目很多没有选项文本了（音频或者图片）
+//            if (options.getOption_a() != null && options.getOption_a().length() != 0) {
+//                options_text = "【A】" + options.getOption_a() + "【B】" + options.getOption_b() + "【C】" + options.getOption_c();
+//                if (options.getOption_d() != null && options.getOption_d().length() > 0)
+//                    options_text += "【D】" + options.getOption_d();
+//            } else {
+//                if (problem.getBlank_num() == null)
+//                    problem.setBlank_num((long) 0);
+//                options_text = "空行数量：" + problem.getBlank_num().toString();
+//            }
+            //组装选项
             if (options.getOption_a() != null && options.getOption_a().length() != 0) {
-                options_text = "【A】" + options.getOption_a() + "【B】" + options.getOption_b() + "【C】" + options.getOption_c();
-                if (options.getOption_d() != null && options.getOption_d().length() > 0)
-                    options_text += "【D】" + options.getOption_d();
-            } else {
-                if (problem.getBlank_num() == null)
-                    problem.setBlank_num((long) 0);
-                options_text = "空行数量：" + problem.getBlank_num().toString();
+                options_text = "【A】" + options.getOption_a();
+                if (options.getOption_b() != null && options.getOption_b().length() != 0) {
+                    options_text = options_text + "【B】" + options.getOption_b();
+                    if (options.getOption_c() != null && options.getOption_c().length() != 0) {
+                        options_text = options_text + "【C】" + options.getOption_c();
+                        if (options.getOption_d() != null && options.getOption_d().length() != 0) {
+                            options_text = options_text + "【D】" + options.getOption_d();
+                        }
+                    }
+                }
             }
+            String prob_attr = "";
+            //使用题型进行判断
+            switch (problem.getProb_attr()) {
+                case "Choice":
+                    prob_attr = "选择";
+                    break;
+                case "tingyinxuanci":
+                    prob_attr = "听音选词";
+                    options_text = options_text + " 选项含图片";
+                    break;
+                case "kantuxuanyin":
+                    prob_attr = "看图选音";
+                    options_text = "选项为音频";
+                    break;
+                case "tingyinxuanwen":
+                    prob_attr = "听音选文";
+                    break;
+                case "panduanzhengwu":
+                    prob_attr = "判断正误";
+                    options_text = "选项为 对、错";
+                    break;
+                case "Fill":
+                    prob_attr = "文本题";
+                    break;
+            }
+
             problemDetail.setOptions(options_text);
             problemDetail.setProb_text(problem.getProb_text());
-            problemDetail.setProb_attr(problem.getProb_attr());
+            problemDetail.setProb_attr(prob_attr);
             problemDetail.setProb_level(problem.getProb_level());
             problemDetail.setProb_diff(problem.getProb_diff());
             problemDetail.setLesson_id(problem.getLesson_id());
+//            System.out.println("level_lesson:"+problem.getLesson_id()+"_"+problem.getProb_level());
             problemDetail.setPoint_text(pointRepository.getPoint(problem.getPoint_id()).getPoint_text());
             problemDetail.setPoint_id(problem.getPoint_id());
             problemDetail.setBlank_num(problem.getBlank_num());
