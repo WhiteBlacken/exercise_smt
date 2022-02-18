@@ -129,7 +129,7 @@ public class ExerciseController {
     }
 
     @GetMapping(path = "/getMap")
-    public SheetMap getMap(){
+    public SheetMap getMap() {
         return SheetMap.getInstance();
     }
 
@@ -138,7 +138,7 @@ public class ExerciseController {
         Long userId = getUserFromCookies(request);
         HashMap<Long, SheetTemp> map = SheetMap.getInstance().getTempHashMap();
         SheetTemp st = map.get(userId);
-        if(st == null){  //键不存在
+        if (st == null) {  //键不存在
             map.put(userId, new SheetTemp());   //一个 user_id 有自己的 sheetTemp
         }
         assert map.get(userId) != null;
@@ -252,9 +252,9 @@ public class ExerciseController {
                     probEvalList = util.stringToList(probEvalListStr);
                 } catch (Exception e) {
                     //如果暂时没有此用户的记录，就 new 一个空的
-                    try{
+                    try {
                         reviewCollecService.insertCollec(USER_ID, "[]", "[]");
-                    }catch (Exception ex){
+                    } catch (Exception ex) {
                         ex.printStackTrace();
                     }
                     System.out.println(util.getException(e));
@@ -267,9 +267,9 @@ public class ExerciseController {
                 probList.add(pt.getIdx());   //核心步骤：加入 prob_id
                 probEvalListStr = probEvalList.toString();
                 probListStr = probList.toString();
-                if(probEvalListStr.contains(" "))
+                if (probEvalListStr.contains(" "))
                     probEvalListStr = probEvalListStr.replaceAll(" ", "");
-                if(probListStr.contains(" "))
+                if (probListStr.contains(" "))
                     probListStr = probListStr.replaceAll(" ", "");
                 reviewCollecService.updateCollec(USER_ID, probEvalListStr, probListStr);   //更新该用户的错题集
 
@@ -352,7 +352,9 @@ public class ExerciseController {
         ArrayList<Long> probNumList = new ArrayList<>();
         SettingTemp settingTemp = SettingTemp.getInstance();
         //通过难度和lesson_id取Problem
+        System.out.println("level:" + settingTemp.getLev().toString() + ";lesson_id:" + lesson_id);
         List<Problem> tempList = problemService.getProblemByLevelAndLesson_id(settingTemp.getLev().toString(), lesson_id);
+//        List<Problem> tempList = problemService.getProblemByLevelAndLesson_id("2", lesson_id);
 
         List<Problem> easyChoiceProbList = new ArrayList<>(),
                 easyTextProbList = new ArrayList<>(),
@@ -362,11 +364,9 @@ public class ExerciseController {
         for (Problem p : tempList) {
             if (p.getProb_diff().equals("Easy") && p.getProb_attr().equals("Choice")) {
                 easyChoiceProbList.add(p);
-            }
-            else if (p.getProb_diff().equals("Easy") && !p.getProb_attr().equals("Choice")) {
+            } else if (p.getProb_diff().equals("Easy") && !p.getProb_attr().equals("Choice")) {
                 easyTextProbList.add(p);
-            }
-            else if (p.getProb_diff().equals("Medium")) {
+            } else if (p.getProb_diff().equals("Medium")) {
                 mediumProbList.add(p);
             }
         }
@@ -413,11 +413,11 @@ public class ExerciseController {
         ArrayList<ProblemEvaluation> probEvalList = new ArrayList<>();
         probEvalList = problemEvalService.getProblemEvalByUser(USER_ID);
         Collections.shuffle(probEvalList);
-        if(probEvalList.size() >= partNum) {  //修复 bug 遗忘曲线题目量不足
+        if (probEvalList.size() >= partNum) {  //修复 bug 遗忘曲线题目量不足
             for (int i = 0; i < partNum; i++) {
                 Long prob_id = probEvalList.get(i).getProb_id();
                 Problem problem = problemService.getProblemByProb_id(prob_id);
-                if(problem!=null){
+                if (problem != null) {
                     probList.add(prob_id);
                 }
             }
@@ -442,7 +442,7 @@ public class ExerciseController {
         String probEvalListStr = "[]";
         try {
             probEvalListStr = reviewCollecService.getCollec(USER_ID).getProb_eval_list();
-        }catch (NullPointerException ne){
+        } catch (NullPointerException ne) {
             reviewCollecService.insertCollec(USER_ID, "[]", "[]");
         }
         ArrayList<Long> probEvalList = util.stringToList(probEvalListStr); //所有错题
@@ -450,18 +450,18 @@ public class ExerciseController {
         ArrayList<Long> probList = new ArrayList<>();
         Integer curLevel = SettingTemp.getInstance().getLev();
         for (Long num : probEvalList) {
-            Long probId=0L;
+            Long probId = 0L;
             try {
                 probId = problemEvalService.getProblemEvalById(num).getProb_id();
-            } catch (NullPointerException e){
+            } catch (NullPointerException e) {
 
             }
             //只选取level 等于 当前level的题
             //qxy
 
             Problem problem = problemService.getProblemByProb_id(probId);
-            if(problem!=null){
-                if(Integer.valueOf(problemService.getProblemByProb_id(probId).getProb_level()).equals(curLevel)){
+            if (problem != null) {
+                if (Integer.valueOf(problemService.getProblemByProb_id(probId).getProb_level()).equals(curLevel)) {
                     wrongList.add(probId);
                 }
             }
@@ -482,7 +482,7 @@ public class ExerciseController {
 //            List<Long> tmpList = pointProblemList.stream().map(Problem::getProb_id).collect(Collectors.toList());
 
             List<Long> tmpList = new ArrayList<>();
-            for(Problem problem : pointProblemList){
+            for (Problem problem : pointProblemList) {
                 tmpList.add(problem.getProb_id());
             }
             if (curSum + tmpList.size() >= partNum) {
@@ -546,12 +546,12 @@ public class ExerciseController {
             probList.add(problem.getProb_id());
 
         Collections.shuffle(probList);
-        if(probList.size() >= partNum)
+        if (probList.size() >= partNum)
             probList = new ArrayList<>(probList.subList(0, partNum));
         else {
-            while (probList.size() < partNum){
+            while (probList.size() < partNum) {
                 Long newId = getOneRandom();
-                if(!probList.contains(newId) && !problemService.getProblemByProb_id(newId).getProb_text().contains("题目已被删除"))
+                if (!probList.contains(newId) && !problemService.getProblemByProb_id(newId).getProb_text().contains("题目已被删除"))
                     probList.add(newId);
             }
         }
@@ -589,7 +589,7 @@ public class ExerciseController {
             List<Problem> allProb = problemService.getProblemByPoint_id(pointId);
             //聚集该考点的所有题目-题号
 //            outputProblemList.addAll(allProb.stream().map(Problem::getProb_id).collect(Collectors.toList()));
-            for(Problem problem : allProb){
+            for (Problem problem : allProb) {
                 outputProblemList.add(problem.getProb_id());
             }
         }
@@ -600,16 +600,16 @@ public class ExerciseController {
         HashSet<Long> hashSet = new HashSet<>(outputProblemList);
         assert outputProblemList.size() == hashSet.size();  //保证列表去重
 
-        if(outputProblemList.size() > partNum)   //推荐的题目太多则裁剪
+        if (outputProblemList.size() > partNum)   //推荐的题目太多则裁剪
             outputProblemList = new ArrayList<>(outputProblemList.subList(0, partNum));
         else {   //题目太少则补充随机
             int margin = partNum - outputProblemList.size();
-            if(margin > 0) System.out.println("推荐刷题进入去重，补齐" + margin);
+            if (margin > 0) System.out.println("推荐刷题进入去重，补齐" + margin);
             int loop = 30;
             while (margin > 0 && loop > 0) {
                 long newId = getOneRandom();
                 loop--;
-                if(!outputProblemList.contains(newId) && !problemService.getProblemByProb_id(newId).getProb_text().contains("题目已被删除")){
+                if (!outputProblemList.contains(newId) && !problemService.getProblemByProb_id(newId).getProb_text().contains("题目已被删除")) {
                     outputProblemList.add(newId);
                     margin--;
                 }
@@ -630,7 +630,7 @@ public class ExerciseController {
         ArrayList<Long> outputProblemList = new ArrayList<>();
         SheetTemp st = getSheet(request);
         for (ProblemAnsTemp pat : st.getSheet_list()) {
-            if(pat.getFinish() == 1 && pat.getEval_res() == 0)  //已做且做错的题目
+            if (pat.getFinish() == 1 && pat.getEval_res() == 0)  //已做且做错的题目
                 outputProblemList.add(pat.getIdx());
         }
         System.out.println("505");
@@ -646,7 +646,7 @@ public class ExerciseController {
 
     public boolean checkDiff(ArrayList<Long> tmpList) {
         int easyNum = 0, midNum = 0;
-        for (Long prob_id :tmpList) {
+        for (Long prob_id : tmpList) {
             if (problemService.getProblemByProb_id(prob_id).getProb_attr().equals("Easy")) {
                 easyNum++;
             }
@@ -654,7 +654,7 @@ public class ExerciseController {
                 midNum++;
             }
         }
-        assert easyNum==16 && midNum==4;
+        assert easyNum == 16 && midNum == 4;
         return true;
     }
 
@@ -683,6 +683,7 @@ public class ExerciseController {
             //进入课课练做题，V2.0版本中，按照 4 个来源组合抽取, 此处 sys 代表lesson_id
             ArrayList<Long> tmpList = new ArrayList<>();
 
+            System.out.println("lesson_id:"+Long.valueOf(settingTemp.getSys()));
             Long lesson_id = Long.valueOf(settingTemp.getSys());
 //            tmpList.addAll(getFromNew(lesson_id, 20));  //2021.7.22: 校对期间，全部是该 lesson 的题目
 //            tmpList.addAll(getFromMedium(4));
@@ -691,7 +692,7 @@ public class ExerciseController {
 //            tmpList.addAll(getHighFrequency(3));
 
             //2021.11.03: 厦门海沧地区测试，15+3+2
-            System.out.println("lesson_id:"+lesson_id);
+            System.out.println("lesson_id:" + lesson_id);
             //直接造假的题号用于测试
 //            tmpList.add(14361L);
 //            tmpList.add(14362L);
@@ -701,11 +702,13 @@ public class ExerciseController {
 //            tmpList.add(14366L);
             //begin
             tmpList.addAll(getFromLessonEasyAndMedium(lesson_id, 15));
-            tmpList.addAll(getFromSimilar(3, USER_ID));
-            tmpList.addAll(getFromForgetCurve(2, USER_ID));
+            System.out.println("tmpList1-size:" + tmpList.size());
+//            tmpList.addAll(getFromSimilar(3, USER_ID));
+//            System.out.println("tmpList2-size:"+tmpList.size());
+//            tmpList.addAll(getFromForgetCurve(2, USER_ID));
+//            System.out.println("tmpList3-size:"+tmpList.size());
 
             tmpList = uniqueProbList(tmpList);
-
 
             //end
             //此处 tmpList 已固定题量g 20，不需要 shuffle
@@ -756,74 +759,56 @@ public class ExerciseController {
         st.setStart_time(sdf.format(date));  //试卷开始时间
 
         int optNum = 0, txtNum = 0;
-        int opt_choice_num = 0 ;
-        int opt_tingyinxuanwen_num = 0;
-        int opt_kantuxuanyin_num = 0;
-        int opt_tingyinxuanci_num = 0;
-        int opt_panduanzhengwu_num = 0;
 
         for (Long probNum : probList) {  //将题目填入 sheet_list
             ProblemAnsTemp pt = new ProblemAnsTemp();
 
             Problem p = problemService.getProblemByProb_id(probNum);
-            if (p.getProb_attr().equals("Choice")) {
-                optNum++;
-                pt.setType("opt");
-                //查询对应的option
-                Options options = optionsService.getOptions(p.getOptions_id());
-                if((p.getResource_flag()==2||p.getResource_flag()==0)&&(options.getResource_flag()==1||options.getResource_flag()==0)){
-                    pt.setLayoutType("选择题");
-                    pt.setShowOrder(1);
+            Options options = optionsService.getOptions(p.getOptions_id());
+            pt.setLayoutType(p.getProb_attr());
+            switch (p.getProb_attr()) {
+                case "Choice":
+                    //处理选项-选项无特殊资源
+                    //处理题目
                     pt.setStem_image(p.getImage_url());
-                    opt_choice_num++;
-                }
-                else if(p.getResource_flag()==3&&(options.getResource_flag()==1||options.getResource_flag()==0)){
-                    pt.setLayoutType("听音选文");
-                    pt.setShowOrder(2);
+                    break;
+                case "tingyinxuanwen":
+
+                    //处理选项-选项无特殊资源
+                    //处理题目
                     pt.setStem_audio(p.getAudio_url());
-                    opt_tingyinxuanwen_num++;
-                }
-                else if(p.getResource_flag()==2&&options.getResource_flag()==3){
-                    pt.setLayoutType("看图选音");
-                    pt.setShowOrder(3);
-                    pt.setStem_image(p.getImage_url());
+                    break;
+                case "kantuxuanyin":
+                    //处理选项-仅音频资源
                     pt.setOption_a_audio(options.getA_audio_url());
                     pt.setOption_b_audio(options.getB_audio_url());
                     pt.setOption_c_audio(options.getC_audio_url());
                     pt.setOption_d_audio(options.getD_audio_url());
-                    opt_kantuxuanyin_num++;
-                }
-                else if(p.getResource_flag()==3&&(options.getResource_flag()==4||options.getResource_flag()==2)){
-                    pt.setLayoutType("听音选词");
-                    pt.setShowOrder(4);
-                    pt.setStem_audio(p.getAudio_url());
+                    //处理问题-仅图片资源
+                    pt.setStem_image(p.getImage_url());
+                    break;
+                case "tingyinxuanci":
+                    //处理选项-文字和音频
                     pt.setOption_a_image(options.getA_image_url());
                     pt.setOption_b_image(options.getB_image_url());
                     pt.setOption_c_image(options.getC_image_url());
                     pt.setOption_d_image(options.getD_image_url());
-                    opt_tingyinxuanci_num++;
-                }
-                else if(p.getResource_flag()==4&&options.getResource_flag()==2){
-                    pt.setLayoutType("判断正误");
-                    pt.setShowOrder(5);
+                    //处理题目-音频
+                    pt.setStem_audio(p.getAudio_url());
+                    break;
+                case "panduanzhengwu":
+                    //处理选项-选项固定，无需处理
+                    //处理题目-音频和图片
                     pt.setStem_audio(p.getAudio_url());
                     pt.setStem_image(p.getImage_url());
-                    pt.setOption_a_image("");
-                    pt.setOption_b_image("");
-                    pt.setOption_c_image("");
-                    pt.setOption_d_image("");
-                    opt_panduanzhengwu_num++;
-                }
-            } else {
-                txtNum++;
-                pt.setType("txt");
-                pt.setLayoutType("填空题");
-                pt.setShowOrder(6);
-                pt.setStem_audio(p.getAudio_url());
-                pt.setStem_image(p.getImage_url());
+                    break;
+                case "Fill":
+                    //处理选项-文本题没有选项
+                    //处理题目-文字、音频和图片
+                    pt.setStem_image(p.getImage_url());
+                    pt.setStem_audio(p.getAudio_url());
+                    break;
             }
-
-
 
             pt.setIdx(probNum);
             pt.setFinish((long) 0);   //默认未完成状态
@@ -839,8 +824,8 @@ public class ExerciseController {
         Collections.sort(st.getSheet_list(), new Comparator<ProblemAnsTemp>() {
             @Override
             public int compare(ProblemAnsTemp o1, ProblemAnsTemp o2) {
-                if (o1.getShowOrder()<o2.getShowOrder())return -1;
-                else if (o1.getShowOrder()==o2.getShowOrder())return 0;
+                if (o1.getShowOrder() < o2.getShowOrder()) return -1;
+                else if (o1.getShowOrder() == o2.getShowOrder()) return 0;
                 else return 1;
             }
         });
@@ -848,11 +833,6 @@ public class ExerciseController {
         st.setOpt_num((long) optNum);
         st.setTxt_num((long) txtNum);
 
-        st.setOpt_choice_num(opt_choice_num);
-        st.setOpt_tingyinxuanwen_num(opt_tingyinxuanwen_num);
-        st.setOpt_kantuxuanyin_num(opt_kantuxuanyin_num);
-        st.setOpt_tingyinxuanci_num(opt_tingyinxuanci_num);
-        st.setOpt_panduanzhengwu_num(opt_panduanzhengwu_num);
 
         st.setExer_level(level.toString());
 
@@ -866,7 +846,7 @@ public class ExerciseController {
         exercise.setUpdate_time(sdf.format(new Date()));
 
         exerciseService.insertExercise(exercise);
-        System.out.println("st:"+st);
+        System.out.println("st:" + st);
         return st;
     }
 
@@ -889,7 +869,7 @@ public class ExerciseController {
         settingTemp.setLev(lev);
         settingTemp.setProbNum(probNum);
         settingTemp.setSys(sys);
-        System.out.println("settingTemp:"+settingTemp);
+        System.out.println("settingTemp:" + settingTemp);
         return settingTemp;
     }
 
@@ -956,7 +936,6 @@ public class ExerciseController {
     }
 
 
-
     public ArrayList<Long> reorganizeProbList(ArrayList<Long> tmpList) {
         ArrayList<Long> orderList = new ArrayList<>();
         for (Long tmpNum : tmpList)
@@ -965,7 +944,7 @@ public class ExerciseController {
 //                System.out.println("problem_equals:"+problemService.getProblemByProb_id(tmpNum).getProb_attr().equals("Choice"));
                 if (problemService.getProblemByProb_id(tmpNum).getProb_attr().equals("Choice"))
                     orderList.add(tmpNum);
-            }catch (Exception e){
+            } catch (Exception e) {
                 System.out.println(tmpNum);
                 System.out.println(tmpList);
                 e.printStackTrace();
@@ -988,12 +967,12 @@ public class ExerciseController {
         tmpList.clear();
         tmpList.addAll(set);
         int margin = origin - tmpList.size();
-        if(margin > 0) System.out.println("uniq进入去重，补齐" + margin);
+        if (margin > 0) System.out.println("uniq进入去重，补齐" + margin);
         int loop = 30;
         while (margin > 0 && loop > 0) {  //题目不够会陷入死循环
             long newId = getOneRandom();
             loop--;
-            if(!tmpList.contains(newId) && !problemService.getProblemByProb_id(newId).getProb_text().contains("题目已被删除")){
+            if (!tmpList.contains(newId) && !problemService.getProblemByProb_id(newId).getProb_text().contains("题目已被删除")) {
                 tmpList.add(newId);
                 margin--;
             }
@@ -1008,21 +987,21 @@ public class ExerciseController {
          */
         int origin = tmpList.size();
         ArrayList<Long> newList = new ArrayList<>();
-        System.out.println("tmpList.length:"+tmpList.size());
-        System.out.println("tmpList:"+tmpList);
+        System.out.println("tmpList.length:" + tmpList.size());
+        System.out.println("tmpList:" + tmpList);
         for (Long prob_id : tmpList) {
-            if(!problemService.getProblemByProb_id(prob_id).getProb_text().contains("题目已被删除"))
+            if (!problemService.getProblemByProb_id(prob_id).getProb_text().contains("题目已被删除"))
                 newList.add(prob_id);
         }
         int margin = origin - newList.size();
         System.out.println(tmpList);
         System.out.println(newList);
-        if(margin > 0) System.out.println("有被删除的题目，补齐" + margin);
+        if (margin > 0) System.out.println("有被删除的题目，补齐" + margin);
         int loop = 30;
         while (margin > 0 && loop > 0) {  //题目不够会陷入死循环
             long newId = getOneRandom();
             loop--;
-            if(!newList.contains(newId) && !problemService.getProblemByProb_id(newId).getProb_text().contains("题目已被删除")){
+            if (!newList.contains(newId) && !problemService.getProblemByProb_id(newId).getProb_text().contains("题目已被删除")) {
                 newList.add(newId);
                 margin--;
             }
