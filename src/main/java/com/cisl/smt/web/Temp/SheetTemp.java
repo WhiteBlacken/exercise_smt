@@ -22,6 +22,13 @@ public class SheetTemp {
     private String end_time;
     private boolean evaluated;
 
+    private int opt_choice_num;
+    private int opt_tingyinxuanwen_num;
+    private int opt_kantuxuanyin_num;
+    private int opt_tingyinxuanci_num;
+    private int opt_panduanzhengwu_num;
+    private int txt_fill_num;
+
     public SheetTemp(){
         ArrayList<ProblemAnsTemp> empty1 = new ArrayList<>();
         ArrayList<Long> empty2 = new ArrayList<>();
@@ -116,6 +123,55 @@ public class SheetTemp {
         this.evaluated = evaluated;
     }
 
+
+    public int getOpt_choice_num() {
+        return opt_choice_num;
+    }
+
+    public void setOpt_choice_num(int opt_choice_num) {
+        this.opt_choice_num = opt_choice_num;
+    }
+
+    public int getOpt_tingyinxuanwen_num() {
+        return opt_tingyinxuanwen_num;
+    }
+
+    public void setOpt_tingyinxuanwen_num(int opt_tingyinxuanwen_num) {
+        this.opt_tingyinxuanwen_num = opt_tingyinxuanwen_num;
+    }
+
+    public int getOpt_kantuxuanyin_num() {
+        return opt_kantuxuanyin_num;
+    }
+
+    public void setOpt_kantuxuanyin_num(int opt_kantuxuanyin_num) {
+        this.opt_kantuxuanyin_num = opt_kantuxuanyin_num;
+    }
+
+    public int getOpt_tingyinxuanci_num() {
+        return opt_tingyinxuanci_num;
+    }
+
+    public void setOpt_tingyinxuanci_num(int opt_tingyinxuanci_num) {
+        this.opt_tingyinxuanci_num = opt_tingyinxuanci_num;
+    }
+
+    public int getOpt_panduanzhengwu_num() {
+        return opt_panduanzhengwu_num;
+    }
+
+    public void setOpt_panduanzhengwu_num(int opt_panduanzhengwu_num) {
+        this.opt_panduanzhengwu_num = opt_panduanzhengwu_num;
+    }
+
+    public int getTxt_fill_num() {
+        return txt_fill_num;
+    }
+
+    public void setTxt_fill_num(int txt_fill_num) {
+        this.txt_fill_num = txt_fill_num;
+    }
+
     @Override
     public String toString() {
         return "SheetTemp{" +
@@ -128,6 +184,12 @@ public class SheetTemp {
                 ", start_time='" + start_time + '\'' +
                 ", end_time='" + end_time + '\'' +
                 ", evaluated=" + evaluated +
+                ", opt_choice_num=" + opt_choice_num +
+                ", opt_tingyinxuanwen_num=" + opt_tingyinxuanwen_num +
+                ", opt_kantuxuanyin_num=" + opt_kantuxuanyin_num +
+                ", opt_tingyinxuanci_num=" + opt_tingyinxuanci_num +
+                ", opt_panduanzhengwu_num=" + opt_panduanzhengwu_num +
+                ", txt_fill_num=" + txt_fill_num +
                 '}';
     }
 }
