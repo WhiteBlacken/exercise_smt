@@ -1128,7 +1128,6 @@
                             }
                         });
                     }
-
                     this.prob_list = res.num_list;   //直接获取题号序列
                     this.opt_num = res.opt_num;
                     this.opt_choice_num = res.opt_choice_num;
@@ -1151,64 +1150,51 @@
                         activityTemp.index = j;
                         activityTemp.src = '/image/grey-star.png';
                         this.activities.push(activityTemp);
-                        // if(res.sheet_list[j].layoutType == "choice") {
-                        //     this.opt_choice_box.push(j);
-                        //     this.opt_box.push(j);
-                        // }
-                        // else if(res.sheet_list[j].layoutType == "tingyinxuanwen") {
-                        //     this.opt_tingyinxuanwen_box.push(j);
-                        //     this.opt_box.push(j);
-                        // }
-                        // else if(res.sheet_list[j].layoutType == "kantuxuanyin") {
-                        //     this.opt_kantuxuanyin_box.push(j);
-                        //     this.opt_box.push(j);
-                        // }
-                        // else if(res.sheet_list[j].layoutType == "tingyinxuanci") {
-                        //     this.opt_tingyinxuanci_box.push(j);
-                        //     this.opt_box.push(j);
-                        // }
-                        // else if(res.sheet_list[j].layoutType == "panduanzhengwu") {
-                        //     this.opt_panduanzhengwu_box.push(j);
-                        //     this.opt_box.push(j);
-                        // }
-                        // else if(res.sheet_list[j].layoutType == "txt") {
-                        //     this.txt_box.push(j);
-                        // }
-                        if(j <= this.opt_choice_num) {
+                        if(res.sheet_list[j].layoutType == "Choice") {
                             this.opt_choice_box.push(j);
-
                             this.opt_box.push(j);
-                        }else if(j <= this.opt_choice_num + this.opt_tingyinxuanwen_num){
+                        }
+                        else if(res.sheet_list[j].layoutType == "tingyinxuanwen") {
                             this.opt_tingyinxuanwen_box.push(j);
                             this.opt_box.push(j);
-                        }else if(j <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num){
+                        }
+                        else if(res.sheet_list[j].layoutType == "kantuxuanyin") {
                             this.opt_kantuxuanyin_box.push(j);
-
                             this.opt_box.push(j);
-                        }else if(j <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num){
+                        }
+                        else if(res.sheet_list[j].layoutType == "tingyinxuanci") {
                             this.opt_tingyinxuanci_box.push(j);
                             this.opt_box.push(j);
-
-                        }else if(j <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num + this.opt_panduanzhengwu_num){
+                        }
+                        else if(res.sheet_list[j].layoutType == "panduanzhengwu") {
                             this.opt_panduanzhengwu_box.push(j);
                             this.opt_box.push(j);
-                        }else{
+                        }
+                        else if(res.sheet_list[j].layoutType == "txt") {
                             this.txt_box.push(j);
                         }
+                        // if(j <= this.opt_choice_num) {
+                        //     this.opt_choice_box.push(j);
+                        //
+                        //     this.opt_box.push(j);
+                        // }else if(j <= this.opt_choice_num + this.opt_tingyinxuanwen_num){
+                        //     this.opt_tingyinxuanwen_box.push(j);
+                        //     this.opt_box.push(j);
+                        // }else if(j <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num){
+                        //     this.opt_kantuxuanyin_box.push(j);
+                        //
+                        //     this.opt_box.push(j);
+                        // }else if(j <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num){
+                        //     this.opt_tingyinxuanci_box.push(j);
+                        //     this.opt_box.push(j);
+                        //
+                        // }else if(j <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num + this.opt_panduanzhengwu_num){
+                        //     this.opt_panduanzhengwu_box.push(j);
+                        //     this.opt_box.push(j);
+                        // }else{
+                        //     this.txt_box.push(j);
+                        // }
                     }
-                }
-                if(this.num <= this.opt_choice_num) {
-                    this.openView('opt');
-                }else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num){
-                    this.openView('tingyinxuanwen');
-                }else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num){
-                    this.openView('kantuxuanyin');
-                }else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num){
-                    this.openView('tingyinxuanci');
-                }else if(this.num <= this.opt_choice_num + this.opt_tingyinxuanwen_num + this.opt_kantuxuanyin_num + this.opt_tingyinxuanci_num + this.opt_panduanzhengwu_num){
-                    this.openView('panduanzhengwu');
-                }else{
-                    this.openView('txt');
                 }
                 this.fetchProblem();
             },
@@ -1279,8 +1265,9 @@
                 document.getElementById('question_text').style.width = "94%";
                 document.getElementById('image_container').style.display = "none";
                 switch (prob.data.prob_attr) {
-                    case "choice": {
+                    case "Choice": {
                         this.prob_attr = "选择题";
+                        this.openView('opt');
                         document.getElementById('question_text').style.width = "66%";
                         let tmp = document.getElementById('image_container');
                         tmp.style.display = "";
@@ -1321,6 +1308,7 @@
                     }
                     case "tingyinxuanwen": {
                         this.prob_attr = "听音选文";
+                        this.openView('tingyinxuanwen');
                         if(prob.data.audio_url && prob.data.audio_url != "")
                             this.stem_aud = prob.data.audio_url;
                         this.options_id = prob.data.options_id;
@@ -1346,6 +1334,7 @@
                     }
                     case "kantuxuanyin": {
                         this.prob_attr = "看图选音";
+                        this.openView('kantuxuanyin');
                         document.getElementById('question_text').style.width = "66%";
                         let tmp = document.getElementById('image_container');
                         tmp.style.display = "";
@@ -1389,6 +1378,7 @@
                     }
                     case "tingyinxuanci": {
                         this.prob_attr = "听音选词";
+                        this.openView('tingyinxuanci');
                         if(prob.data.audio_url && prob.data.audio_url != "")
                             this.stem_aud = prob.data.audio_url;
                         this.options_id = prob.data.options_id;
@@ -1434,6 +1424,7 @@
                     }
                     case "panduanzhengwu": {
                         this.prob_attr = "判断正误";
+                        this.openView('panduanzhengwu');
                         document.getElementById('question_text').style.width = "66%";
                         let tmp = document.getElementById('image_container');
                         tmp.style.display = "";
@@ -1460,6 +1451,7 @@
                     case "Rewrite":
                     case "Translation": {
                         this.txt = [];
+                        this.openView('txt');
                         document.getElementById('question_text').style.width = "66%";
                         let tmp = document.getElementById('image_container');
                         tmp.style.display = "";
