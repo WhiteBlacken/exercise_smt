@@ -1248,269 +1248,6 @@
                 this.imgSrc = img.src;
             },
 
-            // fetchProblem: async function () {
-            //     console.log("opt_choice_num:" + this.opt_choice_num)
-            //     console.log("opt_tingyinxuanwen_num:" + this.opt_tingyinxuanwen_num)
-            //     console.log("opt_kantuxuanyin_num:" + this.opt_kantuxuanyin_num)
-            //     console.log("opt_tingyinxuanci_num:" + this.opt_tingyinxuanci_num)
-            //     console.log("opt_panduanzhengwu_num:" + this.opt_panduanzhengwu_num)
-            //     console.log("opt_num:" + this.opt_num)
-            //     this.stem_img = "";
-            //     this.option_a_img = "";
-            //     this.option_b_img = "";
-            //     this.option_c_img = "";
-            //     this.option_d_img = "";
-            //     this.stem_aud = "";
-            //     this.option_a_aud = "";
-            //     this.option_b_aud = "";
-            //     this.option_c_aud = "";
-            //     this.option_d_aud = "";
-            //     this.imgSrc = "";
-            //     this.prob_text = "";
-            //     this.prob_attr =  "";
-            //     this.options_id = 0;
-            //     this.options.A = "";
-            //     this.options.B = "";
-            //     this.options.C = "";
-            //     this.options.D = "";
-            //     var prob = await axios.get("/getProblem?num=" + this.prob_list[this.num - 1].toString());
-            //     if(prob.data.prob_text && prob.data.prob_text != "")
-            //         this.prob_text = prob.data.prob_text;
-            //     document.getElementById('question_text').style.width = "94%";
-            //     document.getElementById('image_container').style.display = "none";
-            //     switch (prob.data.prob_attr) {
-            //         case "choice": {
-            //             this.prob_attr = "选择题";
-            //             document.getElementById('question_text').style.width = "66%";
-            //             let tmp = document.getElementById('image_container');
-            //             tmp.style.display = "";
-            //             if(!prob.data.image_url || prob.data.image_url == ""){
-            //                 tmp = document.getElementById('image');
-            //                 tmp.style.borderRadius = "0";
-            //                 tmp.src = "/image/logo.png";
-            //                 tmp = document.getElementsByClassName('imgSize')[0];
-            //                 tmp.style.borderRadius = "0";
-            //                 tmp = document.getElementById('image_container');
-            //                 tmp.style.backgroundImage = "none";
-            //             }else {
-            //                 this.stem_img = prob.data.image_url;
-            //                 document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
-            //                 document.getElementById('image').src = this.stem_img;
-            //                 document.getElementById('image').style.borderRadius = "16px";
-            //             }
-            //             this.options_id = prob.data.options_id;
-            //             var option = await axios.get("/getOptions?id=" + this.options_id);
-            //             console.log(option)
-            //             this.options.A = option.data.option_a;
-            //             this.options.B = option.data.option_b;
-            //             if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null) && (option.data.option_c.length > 0)) {
-            //                 this.options.C = option.data.option_c;
-            //                 document.getElementById('option_C').style.display = "";
-            //             } else {
-            //                 this.options.C = "";
-            //                 document.getElementById('option_C').style.display = "none";
-            //             }
-            //             if (option.data.hasOwnProperty('option_d') && (option.data.option_d !== null) && (option.data.option_d.length > 0)) {
-            //                 this.options.D = option.data.option_d;
-            //                 document.getElementById('option_D').style.display = "";
-            //             } else {
-            //                 this.options.D = "";
-            //                 document.getElementById('option_D').style.display = "none";
-            //             }
-            //             break;
-            //         }
-            //         case "tingyinxuanwen": {
-            //             this.prob_attr = "听音选文";
-            //             if(prob.data.audio_url && prob.data.audio_url != "")
-            //                 this.stem_aud = prob.data.audio_url;
-            //             this.options_id = prob.data.options_id;
-            //             var option = await axios.get("/getOptions?id=" + this.options_id);
-            //             console.log(option);
-            //             this.options.A = option.data.option_a;
-            //             this.options.B = option.data.option_b;
-            //             if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null) && (option.data.option_c.length > 0)) {
-            //                 this.options.C = option.data.option_c;
-            //                 document.getElementById('option_C').style.display = "";
-            //             } else {
-            //                 this.options.C = "";
-            //                 document.getElementById('option_C').style.display = "none";
-            //             }
-            //             if (option.data.hasOwnProperty('option_d') && (option.data.option_d !== null) && (option.data.option_d.length > 0)) {
-            //                 this.options.D = option.data.option_d;
-            //                 document.getElementById('option_D').style.display = "";
-            //             } else {
-            //                 this.options.D = "";
-            //                 document.getElementById('option_D').style.display = "none";
-            //             }
-            //             break;
-            //         }
-            //         case "kantuxuanyin": {
-            //             this.prob_attr = "看图选音";
-            //             document.getElementById('question_text').style.width = "66%";
-            //             let tmp = document.getElementById('image_container');
-            //             tmp.style.display = "";
-            //             tmp.style.display = "";
-            //             if(!prob.data.image_url || prob.data.image_url == ""){
-            //                 tmp = document.getElementById('image');
-            //                 tmp.style.borderRadius = "0";
-            //                 tmp.src = "/image/logo.png";
-            //                 tmp = document.getElementsByClassName('imgSize')[0];
-            //                 tmp.style.borderRadius = "0";
-            //                 tmp = document.getElementById('image_container');
-            //                 tmp.style.backgroundImage = "none";
-            //             }else {
-            //                 this.stem_img = prob.data.image_url;
-            //                 document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
-            //                 document.getElementById('image').src = this.stem_img;
-            //                 document.getElementById('image').style.borderRadius = "16px";
-            //             }
-            //             this.options_id = prob.data.options_id;
-            //             var option = await axios.get("/getOptions?id=" + this.options_id);
-            //             console.log(option)
-            //             this.option_a_aud = option.data.a_audio_url;
-            //             this.option_b_aud = option.data.b_audio_url;
-            //             if (option.data.hasOwnProperty('c_audio_url') && (option.data.c_audio_url !== null) && (option.data.c_audio_url.length > 0)) {
-            //                 this.option_c_aud = option.data.c_audio_url;
-            //                 document.getElementById('option_C').style.display = "";
-            //             } else {
-            //                 this.options.C = "";
-            //                 this.option_c_aud = "";
-            //                 document.getElementById('option_C').style.display = "none";
-            //             }
-            //             if (option.data.hasOwnProperty('d_audio_url') && (option.data.d_audio_url !== null) && (option.data.d_audio_url.length > 0)) {
-            //                 this.option_d_aud = option.data.d_audio_url;
-            //                 document.getElementById('option_D').style.display = "";
-            //             } else {
-            //                 this.options.D = "";
-            //                 this.option_d_aud = "";
-            //                 document.getElementById('option_D').style.display = "none";
-            //             }
-            //             break;
-            //         }
-            //         case "tingyinxuanci": {
-            //             this.prob_attr = "听音选词";
-            //             if(prob.data.audio_url && prob.data.audio_url != "")
-            //                 this.stem_aud = prob.data.audio_url;
-            //             this.options_id = prob.data.options_id;
-            //             var option = await axios.get("/getOptions?id=" + this.options_id);
-            //             console.log(option)
-            //             this.options.A = option.data.option_a;
-            //             this.options.B = option.data.option_b;
-            //             if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null) && (option.data.option_c.length > 0)) {
-            //                 this.options.C = option.data.option_c;
-            //                 document.getElementById('option_C').style.display = "";
-            //             } else {
-            //                 this.options.C = "";
-            //                 document.getElementById('option_C').style.display = "none";
-            //             }
-            //             if (option.data.hasOwnProperty('option_d') && (option.data.option_d !== null) && (option.data.option_d.length > 0)) {
-            //                 this.options.D = option.data.option_d;
-            //                 document.getElementById('option_D').style.display = "";
-            //             } else {
-            //                 this.options.D = "";
-            //                 document.getElementById('option_D').style.display = "none";
-            //             }
-            //             if (option.data.hasOwnProperty('a_image_url') && (option.data.a_image_url !== null) && (option.data.a_image_url.length > 0)) {
-            //                 this.option_a_img = option.data.a_image_url;
-            //             } else {
-            //                 this.option_a_img = "";
-            //             }
-            //             if (option.data.hasOwnProperty('b_image_url') && (option.data.b_image_url !== null) && (option.data.b_image_url.length > 0)) {
-            //                 this.option_b_img = option.data.b_image_url;
-            //             } else {
-            //                 this.option_b_img = "";
-            //             }
-            //             if (option.data.hasOwnProperty('c_image_url') && (option.data.c_image_url !== null) && (option.data.c_image_url.length > 0)) {
-            //                 this.option_c_img = option.data.c_image_url;
-            //             } else {
-            //                 this.option_c_img = "";
-            //             }
-            //             if (option.data.hasOwnProperty('d_image_url') && (option.data.d_image_url !== null) && (option.data.d_image_url.length > 0)) {
-            //                 this.option_d_img = option.data.d_image_url;
-            //             } else {
-            //                 this.option_d_img = "";
-            //             }
-            //             break;
-            //         }
-            //         case "panduanzhengwu": {
-            //             this.prob_attr = "判断正误";
-            //             document.getElementById('question_text').style.width = "66%";
-            //             let tmp = document.getElementById('image_container');
-            //             tmp.style.display = "";
-            //             if(!prob.data.image_url || prob.data.image_url == ""){
-            //                 tmp = document.getElementById('image');
-            //                 tmp.style.borderRadius = "0";
-            //                 tmp.src = "/image/logo.png";
-            //                 tmp = document.getElementsByClassName('imgSize')[0];
-            //                 tmp.style.borderRadius = "0";
-            //                 tmp = document.getElementById('image_container');
-            //                 tmp.style.backgroundImage = "none";
-            //             }else {
-            //                 this.stem_img = prob.data.image_url;
-            //                 document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
-            //                 document.getElementById('image').src = this.stem_img;
-            //                 document.getElementById('image').style.borderRadius = "16px";
-            //             }
-            //             if(prob.data.audio_url && prob.data.audio_url != "")
-            //                 this.stem_aud = prob.data.audio_url;
-            //             break;
-            //         }
-            //         case "Correct":
-            //         case "Fill":
-            //         case "Rewrite":
-            //         case "Translation": {
-            //             this.txt = [];
-            //             document.getElementById('question_text').style.width = "66%";
-            //             let tmp = document.getElementById('image_container');
-            //             tmp.style.display = "";
-            //             if(!prob.data.image_url || prob.data.image_url == ""){
-            //                 tmp = document.getElementById('image');
-            //                 tmp.style.borderRadius = "0";
-            //                 tmp.src = "/image/logo.png";
-            //                 tmp = document.getElementsByClassName('imgSize')[0];
-            //                 tmp.style.borderRadius = "0";
-            //                 tmp = document.getElementById('image_container');
-            //                 tmp.style.backgroundImage = "none";
-            //             }else {
-            //                 this.stem_img = prob.data.image_url;
-            //                 document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
-            //                 document.getElementById('image').src = this.stem_img;
-            //                 document.getElementById('image').style.borderRadius = "16px";
-            //             }
-            //             if(prob.data.audio_url && prob.data.audio_url != "")
-            //                 this.stem_aud = prob.data.audio_url;
-            //             if(prob.data.prob_attr === "Correct") {
-            //                 this.prob_attr = "改错题";
-            //             }else if(prob.data.prob_attr === "Fill") {
-            //                 this.prob_attr = "填空题";
-            //             }else if(prob.data.prob_attr === "Rewrite") {
-            //                 this.prob_attr = "改写题";
-            //             }else if(prob.data.prob_attr === "Translation") {
-            //                 this.prob_attr = "翻译题";
-            //             }
-            //             for(var i = 0;i < prob.data.blank_num;i++) {//2记得改为prob.data.blank_num
-            //                 this.txt.push("");
-            //             }
-            //             this.input_num = [...Array(prob.data.blank_num).keys()];//2记得改为prob.data.blank_num
-            //             this.prob_text = prob.data.prob_text;
-            //             break;
-            //         }
-            //     }
-            //     for (var j = 1; j <= this.totalNum; j++) {
-            //         if(j === this.num) {
-            //             document.getElementById("icon_" + j).style.width = "47.4%";
-            //             document.getElementById("icon_" + j).style.height = "46.9%";
-            //             document.getElementById("icon_" + j).style.margin = "0";
-            //             document.getElementById("num_" + j).style.fontSize = "1.25rem";
-            //         }else {
-            //             document.getElementById("icon_" + j).style.width = "33.1%";
-            //             document.getElementById("icon_" + j).style.height = "32.9%";
-            //             document.getElementById("icon_" + j).style.margin = "5% 0 0 0"
-            //             document.getElementById("num_" + j).style.fontSize = "1rem";
-            //         }
-            //     }
-            // },
-
             fetchProblem: async function () {
                 console.log("opt_choice_num:" + this.opt_choice_num)
                 console.log("opt_tingyinxuanwen_num:" + this.opt_tingyinxuanwen_num)
@@ -1528,21 +1265,26 @@
                 this.option_b_aud = "";
                 this.option_c_aud = "";
                 this.option_d_aud = "";
-                if (this.num <= this.opt_num) {
-                    var prob = await axios.get("/getProblem?num=" + this.prob_list[this.num - 1].toString());
+                this.imgSrc = "";
+                this.prob_text = "";
+                this.prob_attr =  "";
+                this.options_id = 0;
+                this.options.A = "";
+                this.options.B = "";
+                this.options.C = "";
+                this.options.D = "";
+                var prob = await axios.get("/getProblem?num=" + this.prob_list[this.num - 1].toString());
+                if(prob.data.prob_text && prob.data.prob_text != "")
                     this.prob_text = prob.data.prob_text;
-                    if(prob.data.resource_flag == 2 || prob.data.resource_flag == 4)
-                        this.stem_img = prob.data.image_url;
-                    if(prob.data.resource_flag == 3 || prob.data.resource_flag == 4)
-                    this.stem_aud = prob.data.audio_url;
-                    document.getElementById('question_text').style.width = "94%";
-                    // document.getElementById('image_container').style.display = "none";
-                    if(prob.data.prob_attr == "choice") {
+                document.getElementById('question_text').style.width = "94%";
+                document.getElementById('image_container').style.display = "none";
+                switch (prob.data.prob_attr) {
+                    case "choice": {
                         this.prob_attr = "选择题";
                         document.getElementById('question_text').style.width = "66%";
                         let tmp = document.getElementById('image_container');
                         tmp.style.display = "";
-                        if(!this.stem_img || this.stem_img == ""){
+                        if(!prob.data.image_url || prob.data.image_url == ""){
                             tmp = document.getElementById('image');
                             tmp.style.borderRadius = "0";
                             tmp.src = "/image/logo.png";
@@ -1551,45 +1293,14 @@
                             tmp = document.getElementById('image_container');
                             tmp.style.backgroundImage = "none";
                         }else {
-                            document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
-                            document.getElementsByClassName('imgSize')[0].style.width = "93.9%";
-                            document.getElementsByClassName('imgSize')[0].style.height = "93.2%";
-                            document.getElementById('image').src = this.stem_img;
-                            document.getElementById('image').style.borderRadius = "16px";
-                        }
-                    }
-                    else if(prob.data.prob_attr == "tingyinxuanwen")
-                        this.prob_attr = "听音选文";
-                    else if(prob.data.prob_attr == "kantuxuanyin") {
-                        this.prob_attr = "看图选音";
-                        document.getElementById('question_text').style.width = "66%";
-                        let tmp = document.getElementById('image_container');
-                        tmp.style.display = "";
-                        if(this.stem_img == ""||!this.stem_img){
-                            tmp = document.getElementById('image');
-                            tmp.style.borderRadius = "0";
-                            tmp.style.width = "100%";
-                            tmp.style.height = "100%";
-                            tmp.style.borderRadius = "0";
-                            tmp.src = "/image/logo.png";
-                            tmp = document.getElementById('image_container');
-                            tmp.style.backgroundImage = "none";
-                        }else {
+                            this.stem_img = prob.data.image_url;
                             document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
                             document.getElementById('image').src = this.stem_img;
                             document.getElementById('image').style.borderRadius = "16px";
-                            document.getElementById('image').style.width = "93.9%";
-                            document.getElementById('image').style.height = "93.2%";
                         }
-                    }
-                    else if(prob.data.prob_attr == "tingyinxuanci")
-                        this.prob_attr = "听音选词";
-                    else if(prob.data.prob_attr == "panduanzhengwu")
-                        this.prob_attr = "判断正误";
-                    this.options_id = prob.data.options_id;
-                    var option = await axios.get("/getOptions?id=" + this.options_id);
-                    console.log(option)
-                    if(option.data.resource_flag == 1 || option.data.resource_flag == 4){
+                        this.options_id = prob.data.options_id;
+                        var option = await axios.get("/getOptions?id=" + this.options_id);
+                        console.log(option)
                         this.options.A = option.data.option_a;
                         this.options.B = option.data.option_b;
                         if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null) && (option.data.option_c.length > 0)) {
@@ -1606,28 +1317,56 @@
                             this.options.D = "";
                             document.getElementById('option_D').style.display = "none";
                         }
+                        break;
                     }
-                    if(option.data.resource_flag == 2||option.data.resource_flag == 4){
-                        this.option_a_img = option.data.a_image_url;
-                        this.option_b_img = option.data.b_image_url;
-                        if (option.data.hasOwnProperty('c_image_url') && (option.data.c_image_url !== null) && (option.data.c_image_url.length > 0)) {
-                            this.option_c_img = option.data.c_image_url;
+                    case "tingyinxuanwen": {
+                        this.prob_attr = "听音选文";
+                        if(prob.data.audio_url && prob.data.audio_url != "")
+                            this.stem_aud = prob.data.audio_url;
+                        this.options_id = prob.data.options_id;
+                        var option = await axios.get("/getOptions?id=" + this.options_id);
+                        console.log(option);
+                        this.options.A = option.data.option_a;
+                        this.options.B = option.data.option_b;
+                        if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null) && (option.data.option_c.length > 0)) {
+                            this.options.C = option.data.option_c;
                             document.getElementById('option_C').style.display = "";
                         } else {
                             this.options.C = "";
-                            this.option_c_img = "";
                             document.getElementById('option_C').style.display = "none";
                         }
-                        if (option.data.hasOwnProperty('d_image_url') && (option.data.d_image_url !== null) && (option.data.d_image_url.length > 0)) {
-                            this.option_d_img = option.data.d_image_url;
+                        if (option.data.hasOwnProperty('option_d') && (option.data.option_d !== null) && (option.data.option_d.length > 0)) {
+                            this.options.D = option.data.option_d;
                             document.getElementById('option_D').style.display = "";
                         } else {
                             this.options.D = "";
-                            this.option_d_img = "";
                             document.getElementById('option_D').style.display = "none";
                         }
+                        break;
                     }
-                    if(option.data.resource_flag == 3){
+                    case "kantuxuanyin": {
+                        this.prob_attr = "看图选音";
+                        document.getElementById('question_text').style.width = "66%";
+                        let tmp = document.getElementById('image_container');
+                        tmp.style.display = "";
+                        tmp.style.display = "";
+                        if(!prob.data.image_url || prob.data.image_url == ""){
+                            tmp = document.getElementById('image');
+                            tmp.style.borderRadius = "0";
+                            tmp.src = "/image/logo.png";
+                            tmp = document.getElementsByClassName('imgSize')[0];
+                            tmp.style.borderRadius = "0";
+                            tmp = document.getElementById('image_container');
+                            tmp.style.backgroundImage = "none";
+                        }else {
+                            this.stem_img = prob.data.image_url;
+                            document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
+                            document.getElementById('image').src = this.stem_img;
+                            document.getElementById('image').style.borderRadius = "16px";
+                        }
+                        this.options_id = prob.data.options_id;
+                        var option = await axios.get("/getOptions?id=" + this.options_id);
+                        console.log(option)
                         this.option_a_aud = option.data.a_audio_url;
                         this.option_b_aud = option.data.b_audio_url;
                         if (option.data.hasOwnProperty('c_audio_url') && (option.data.c_audio_url !== null) && (option.data.c_audio_url.length > 0)) {
@@ -1646,29 +1385,116 @@
                             this.option_d_aud = "";
                             document.getElementById('option_D').style.display = "none";
                         }
+                        break;
                     }
-                }else {
-                    this.txt = [];
-                    var prob = await axios.get("/getProblem?num="+this.prob_list[this.num-1].toString());
-                    this.prob_text = prob.data.prob_text;
-                    if(prob.data.resource_flag == 2 || prob.data.resource_flag == 4)
-                        this.stem_img = prob.data.image_url;
-                    if(prob.data.resource_flag == 3 || prob.data.resource_flag == 4)
-                        this.stem_aud = prob.data.audio_url;
-                    if(prob.data.prob_attr === "Correct") {
-                        this.prob_attr = "改错题";
-                    }else if(prob.data.prob_attr === "Fill") {
-                        this.prob_attr = "填空题";
-                    }else if(prob.data.prob_attr === "Rewrite") {
-                        this.prob_attr = "改写题";
-                    }else if(prob.data.prob_attr === "Translation") {
-                        this.prob_attr = "翻译题";
+                    case "tingyinxuanci": {
+                        this.prob_attr = "听音选词";
+                        if(prob.data.audio_url && prob.data.audio_url != "")
+                            this.stem_aud = prob.data.audio_url;
+                        this.options_id = prob.data.options_id;
+                        var option = await axios.get("/getOptions?id=" + this.options_id);
+                        console.log(option)
+                        this.options.A = option.data.option_a;
+                        this.options.B = option.data.option_b;
+                        if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null) && (option.data.option_c.length > 0)) {
+                            this.options.C = option.data.option_c;
+                            document.getElementById('option_C').style.display = "";
+                        } else {
+                            this.options.C = "";
+                            document.getElementById('option_C').style.display = "none";
+                        }
+                        if (option.data.hasOwnProperty('option_d') && (option.data.option_d !== null) && (option.data.option_d.length > 0)) {
+                            this.options.D = option.data.option_d;
+                            document.getElementById('option_D').style.display = "";
+                        } else {
+                            this.options.D = "";
+                            document.getElementById('option_D').style.display = "none";
+                        }
+                        if (option.data.hasOwnProperty('a_image_url') && (option.data.a_image_url !== null) && (option.data.a_image_url.length > 0)) {
+                            this.option_a_img = option.data.a_image_url;
+                        } else {
+                            this.option_a_img = "";
+                        }
+                        if (option.data.hasOwnProperty('b_image_url') && (option.data.b_image_url !== null) && (option.data.b_image_url.length > 0)) {
+                            this.option_b_img = option.data.b_image_url;
+                        } else {
+                            this.option_b_img = "";
+                        }
+                        if (option.data.hasOwnProperty('c_image_url') && (option.data.c_image_url !== null) && (option.data.c_image_url.length > 0)) {
+                            this.option_c_img = option.data.c_image_url;
+                        } else {
+                            this.option_c_img = "";
+                        }
+                        if (option.data.hasOwnProperty('d_image_url') && (option.data.d_image_url !== null) && (option.data.d_image_url.length > 0)) {
+                            this.option_d_img = option.data.d_image_url;
+                        } else {
+                            this.option_d_img = "";
+                        }
+                        break;
                     }
-                    for(var i = 0;i < prob.data.blank_num;i++) {//2记得改为prob.data.blank_num
-                        this.txt.push("");
+                    case "panduanzhengwu": {
+                        this.prob_attr = "判断正误";
+                        document.getElementById('question_text').style.width = "66%";
+                        let tmp = document.getElementById('image_container');
+                        tmp.style.display = "";
+                        if(!prob.data.image_url || prob.data.image_url == ""){
+                            tmp = document.getElementById('image');
+                            tmp.style.borderRadius = "0";
+                            tmp.src = "/image/logo.png";
+                            tmp = document.getElementsByClassName('imgSize')[0];
+                            tmp.style.borderRadius = "0";
+                            tmp = document.getElementById('image_container');
+                            tmp.style.backgroundImage = "none";
+                        }else {
+                            this.stem_img = prob.data.image_url;
+                            document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
+                            document.getElementById('image').src = this.stem_img;
+                            document.getElementById('image').style.borderRadius = "16px";
+                        }
+                        if(prob.data.audio_url && prob.data.audio_url != "")
+                            this.stem_aud = prob.data.audio_url;
+                        break;
                     }
-                    this.input_num = [...Array(prob.data.blank_num).keys()];//2记得改为prob.data.blank_num
-                    this.prob_text = prob.data.prob_text;
+                    case "Correct":
+                    case "Fill":
+                    case "Rewrite":
+                    case "Translation": {
+                        this.txt = [];
+                        document.getElementById('question_text').style.width = "66%";
+                        let tmp = document.getElementById('image_container');
+                        tmp.style.display = "";
+                        if(!prob.data.image_url || prob.data.image_url == ""){
+                            tmp = document.getElementById('image');
+                            tmp.style.borderRadius = "0";
+                            tmp.src = "/image/logo.png";
+                            tmp = document.getElementsByClassName('imgSize')[0];
+                            tmp.style.borderRadius = "0";
+                            tmp = document.getElementById('image_container');
+                            tmp.style.backgroundImage = "none";
+                        }else {
+                            this.stem_img = prob.data.image_url;
+                            document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
+                            document.getElementById('image').src = this.stem_img;
+                            document.getElementById('image').style.borderRadius = "16px";
+                        }
+                        if(prob.data.audio_url && prob.data.audio_url != "")
+                            this.stem_aud = prob.data.audio_url;
+                        if(prob.data.prob_attr === "Correct") {
+                            this.prob_attr = "改错题";
+                        }else if(prob.data.prob_attr === "Fill") {
+                            this.prob_attr = "填空题";
+                        }else if(prob.data.prob_attr === "Rewrite") {
+                            this.prob_attr = "改写题";
+                        }else if(prob.data.prob_attr === "Translation") {
+                            this.prob_attr = "翻译题";
+                        }
+                        for(var i = 0;i < prob.data.blank_num;i++) {//2记得改为prob.data.blank_num
+                            this.txt.push("");
+                        }
+                        this.input_num = [...Array(prob.data.blank_num).keys()];//2记得改为prob.data.blank_num
+                        this.prob_text = prob.data.prob_text;
+                        break;
+                    }
                 }
                 for (var j = 1; j <= this.totalNum; j++) {
                     if(j === this.num) {
@@ -1684,6 +1510,180 @@
                     }
                 }
             },
+
+            // fetchProblem: async function () {
+            //     console.log("opt_choice_num:" + this.opt_choice_num)
+            //     console.log("opt_tingyinxuanwen_num:" + this.opt_tingyinxuanwen_num)
+            //     console.log("opt_kantuxuanyin_num:" + this.opt_kantuxuanyin_num)
+            //     console.log("opt_tingyinxuanci_num:" + this.opt_tingyinxuanci_num)
+            //     console.log("opt_panduanzhengwu_num:" + this.opt_panduanzhengwu_num)
+            //     console.log("opt_num:" + this.opt_num)
+            //     this.stem_img = "";
+            //     this.option_a_img = "";
+            //     this.option_b_img = "";
+            //     this.option_c_img = "";
+            //     this.option_d_img = "";
+            //     this.stem_aud = "";
+            //     this.option_a_aud = "";
+            //     this.option_b_aud = "";
+            //     this.option_c_aud = "";
+            //     this.option_d_aud = "";
+            //     if (this.num <= this.opt_num) {
+            //         var prob = await axios.get("/getProblem?num=" + this.prob_list[this.num - 1].toString());
+            //         this.prob_text = prob.data.prob_text;
+            //         if(prob.data.resource_flag == 2 || prob.data.resource_flag == 4)
+            //             this.stem_img = prob.data.image_url;
+            //         if(prob.data.resource_flag == 3 || prob.data.resource_flag == 4)
+            //         this.stem_aud = prob.data.audio_url;
+            //         document.getElementById('question_text').style.width = "94%";
+            //         // document.getElementById('image_container').style.display = "none";
+            //         if(prob.data.prob_attr == "choice") {
+            //             this.prob_attr = "选择题";
+            //             document.getElementById('question_text').style.width = "66%";
+            //             let tmp = document.getElementById('image_container');
+            //             tmp.style.display = "";
+            //             if(!this.stem_img || this.stem_img == ""){
+            //                 tmp = document.getElementById('image');
+            //                 tmp.style.borderRadius = "0";
+            //                 tmp.src = "/image/logo.png";
+            //                 tmp = document.getElementsByClassName('imgSize')[0];
+            //                 tmp.style.borderRadius = "0";
+            //                 tmp = document.getElementById('image_container');
+            //                 tmp.style.backgroundImage = "none";
+            //             }else {
+            //                 document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
+            //                 document.getElementsByClassName('imgSize')[0].style.width = "93.9%";
+            //                 document.getElementsByClassName('imgSize')[0].style.height = "93.2%";
+            //                 document.getElementById('image').src = this.stem_img;
+            //                 document.getElementById('image').style.borderRadius = "16px";
+            //             }
+            //         }
+            //         else if(prob.data.prob_attr == "tingyinxuanwen")
+            //             this.prob_attr = "听音选文";
+            //         else if(prob.data.prob_attr == "kantuxuanyin") {
+            //             this.prob_attr = "看图选音";
+            //             document.getElementById('question_text').style.width = "66%";
+            //             let tmp = document.getElementById('image_container');
+            //             tmp.style.display = "";
+            //             if(this.stem_img == ""||!this.stem_img){
+            //                 tmp = document.getElementById('image');
+            //                 tmp.style.borderRadius = "0";
+            //                 tmp.style.width = "100%";
+            //                 tmp.style.height = "100%";
+            //                 tmp.style.borderRadius = "0";
+            //                 tmp.src = "/image/logo.png";
+            //                 tmp = document.getElementById('image_container');
+            //                 tmp.style.backgroundImage = "none";
+            //             }else {
+            //                 document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
+            //                 document.getElementById('image').src = this.stem_img;
+            //                 document.getElementById('image').style.borderRadius = "16px";
+            //                 document.getElementById('image').style.width = "93.9%";
+            //                 document.getElementById('image').style.height = "93.2%";
+            //             }
+            //         }
+            //         else if(prob.data.prob_attr == "tingyinxuanci")
+            //             this.prob_attr = "听音选词";
+            //         else if(prob.data.prob_attr == "panduanzhengwu")
+            //             this.prob_attr = "判断正误";
+            //         this.options_id = prob.data.options_id;
+            //         var option = await axios.get("/getOptions?id=" + this.options_id);
+            //         console.log(option)
+            //         if(option.data.resource_flag == 1 || option.data.resource_flag == 4){
+            //             this.options.A = option.data.option_a;
+            //             this.options.B = option.data.option_b;
+            //             if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null) && (option.data.option_c.length > 0)) {
+            //                 this.options.C = option.data.option_c;
+            //                 document.getElementById('option_C').style.display = "";
+            //             } else {
+            //                 this.options.C = "";
+            //                 document.getElementById('option_C').style.display = "none";
+            //             }
+            //             if (option.data.hasOwnProperty('option_d') && (option.data.option_d !== null) && (option.data.option_d.length > 0)) {
+            //                 this.options.D = option.data.option_d;
+            //                 document.getElementById('option_D').style.display = "";
+            //             } else {
+            //                 this.options.D = "";
+            //                 document.getElementById('option_D').style.display = "none";
+            //             }
+            //         }
+            //         if(option.data.resource_flag == 2||option.data.resource_flag == 4){
+            //             this.option_a_img = option.data.a_image_url;
+            //             this.option_b_img = option.data.b_image_url;
+            //             if (option.data.hasOwnProperty('c_image_url') && (option.data.c_image_url !== null) && (option.data.c_image_url.length > 0)) {
+            //                 this.option_c_img = option.data.c_image_url;
+            //                 document.getElementById('option_C').style.display = "";
+            //             } else {
+            //                 this.options.C = "";
+            //                 this.option_c_img = "";
+            //                 document.getElementById('option_C').style.display = "none";
+            //             }
+            //             if (option.data.hasOwnProperty('d_image_url') && (option.data.d_image_url !== null) && (option.data.d_image_url.length > 0)) {
+            //                 this.option_d_img = option.data.d_image_url;
+            //                 document.getElementById('option_D').style.display = "";
+            //             } else {
+            //                 this.options.D = "";
+            //                 this.option_d_img = "";
+            //                 document.getElementById('option_D').style.display = "none";
+            //             }
+            //         }
+            //         if(option.data.resource_flag == 3){
+            //             this.option_a_aud = option.data.a_audio_url;
+            //             this.option_b_aud = option.data.b_audio_url;
+            //             if (option.data.hasOwnProperty('c_audio_url') && (option.data.c_audio_url !== null) && (option.data.c_audio_url.length > 0)) {
+            //                 this.option_c_aud = option.data.c_audio_url;
+            //                 document.getElementById('option_C').style.display = "";
+            //             } else {
+            //                 this.options.C = "";
+            //                 this.option_c_aud = "";
+            //                 document.getElementById('option_C').style.display = "none";
+            //             }
+            //             if (option.data.hasOwnProperty('d_audio_url') && (option.data.d_audio_url !== null) && (option.data.d_audio_url.length > 0)) {
+            //                 this.option_d_aud = option.data.d_audio_url;
+            //                 document.getElementById('option_D').style.display = "";
+            //             } else {
+            //                 this.options.D = "";
+            //                 this.option_d_aud = "";
+            //                 document.getElementById('option_D').style.display = "none";
+            //             }
+            //         }
+            //     }else {
+            //         this.txt = [];
+            //         var prob = await axios.get("/getProblem?num="+this.prob_list[this.num-1].toString());
+            //         this.prob_text = prob.data.prob_text;
+            //         if(prob.data.resource_flag == 2 || prob.data.resource_flag == 4)
+            //             this.stem_img = prob.data.image_url;
+            //         if(prob.data.resource_flag == 3 || prob.data.resource_flag == 4)
+            //             this.stem_aud = prob.data.audio_url;
+            //         if(prob.data.prob_attr === "Correct") {
+            //             this.prob_attr = "改错题";
+            //         }else if(prob.data.prob_attr === "Fill") {
+            //             this.prob_attr = "填空题";
+            //         }else if(prob.data.prob_attr === "Rewrite") {
+            //             this.prob_attr = "改写题";
+            //         }else if(prob.data.prob_attr === "Translation") {
+            //             this.prob_attr = "翻译题";
+            //         }
+            //         for(var i = 0;i < prob.data.blank_num;i++) {//2记得改为prob.data.blank_num
+            //             this.txt.push("");
+            //         }
+            //         this.input_num = [...Array(prob.data.blank_num).keys()];//2记得改为prob.data.blank_num
+            //         this.prob_text = prob.data.prob_text;
+            //     }
+            //     for (var j = 1; j <= this.totalNum; j++) {
+            //         if(j === this.num) {
+            //             document.getElementById("icon_" + j).style.width = "47.4%";
+            //             document.getElementById("icon_" + j).style.height = "46.9%";
+            //             document.getElementById("icon_" + j).style.margin = "0";
+            //             document.getElementById("num_" + j).style.fontSize = "1.25rem";
+            //         }else {
+            //             document.getElementById("icon_" + j).style.width = "33.1%";
+            //             document.getElementById("icon_" + j).style.height = "32.9%";
+            //             document.getElementById("icon_" + j).style.margin = "5% 0 0 0"
+            //             document.getElementById("num_" + j).style.fontSize = "1rem";
+            //         }
+            //     }
+            // },
 
             rememberOpt: function (option) {
                 axios.get("/getSheet").then((response) => {
