@@ -157,6 +157,8 @@ public class ExerciseController {
         for (ProblemAnsTemp pt : tmpList) {
             if (pt.getIdx().equals(idx)) {
                 System.out.println(idx.toString() + "choice_text: " + choice_text);
+                System.out.println("choice:"+choice);
+                System.out.println("type:"+pt.getType());
                 pt.setChoice(choice);
                 pt.setFinish(finish);
                 pt.setChoice_text(choice_text);
@@ -776,6 +778,7 @@ public class ExerciseController {
                     optNum++;
                     opt_choice_num++;
                     pt.setShowOrder(1);
+                    pt.setType("opt");
                     //处理选项-选项无特殊资源
                     //处理题目
                     pt.setStem_image(p.getImage_url());
@@ -784,6 +787,7 @@ public class ExerciseController {
                     optNum++;
                     opt_tingyinxuanwen_num++;
                     pt.setShowOrder(2);
+                    pt.setType("opt");
                     //处理选项-选项无特殊资源
                     //处理题目
                     pt.setStem_audio(p.getAudio_url());
@@ -792,6 +796,7 @@ public class ExerciseController {
                     optNum++;
                     opt_kantuxuanyin_num++;
                     pt.setShowOrder(3);
+                    pt.setType("opt");
                     //处理选项-仅音频资源
                     pt.setOption_a_audio(options.getA_audio_url());
                     pt.setOption_b_audio(options.getB_audio_url());
@@ -804,6 +809,7 @@ public class ExerciseController {
                     optNum++;
                     opt_tingyinxuanci_num++;
                     pt.setShowOrder(4);
+                    pt.setType("opt");
                     //处理选项-文字和音频
                     pt.setOption_a_image(options.getA_image_url());
                     pt.setOption_b_image(options.getB_image_url());
@@ -816,6 +822,7 @@ public class ExerciseController {
                     optNum++;
                     opt_panduanzhengwu_num++;
                     pt.setShowOrder(5);
+                    pt.setType("opt");
                     //处理选项-选项固定，无需处理
                     //处理题目-音频和图片
                     pt.setStem_audio(p.getAudio_url());
@@ -825,6 +832,7 @@ public class ExerciseController {
                     txtNum++;
                     txt_fill_num++;
                     pt.setShowOrder(6);
+                    pt.setType("txt");
                     //处理选项-文本题没有选项
                     //处理题目-文字、音频和图片
                     pt.setStem_image(p.getImage_url());
