@@ -683,7 +683,7 @@ public class ExerciseController {
             //进入课课练做题，V2.0版本中，按照 4 个来源组合抽取, 此处 sys 代表lesson_id
             ArrayList<Long> tmpList = new ArrayList<>();
 
-            System.out.println("lesson_id:"+Long.valueOf(settingTemp.getSys()));
+            System.out.println("lesson_id:" + Long.valueOf(settingTemp.getSys()));
             Long lesson_id = Long.valueOf(settingTemp.getSys());
 //            tmpList.addAll(getFromNew(lesson_id, 20));  //2021.7.22: 校对期间，全部是该 lesson 的题目
 //            tmpList.addAll(getFromMedium(4));
@@ -759,7 +759,12 @@ public class ExerciseController {
         st.setStart_time(sdf.format(date));  //试卷开始时间
 
         int optNum = 0, txtNum = 0;
-
+        int opt_choice_num = 0;
+        int opt_tingyinxuanwen_num = 0;
+        int opt_kantuxuanyin_num = 0;
+        int opt_tingyinxuanci_num = 0;
+        int opt_panduanzhengwu_num = 0;
+        int txt_fill_num = 0;
         for (Long probNum : probList) {  //将题目填入 sheet_list
             ProblemAnsTemp pt = new ProblemAnsTemp();
 
@@ -768,17 +773,22 @@ public class ExerciseController {
             pt.setLayoutType(p.getProb_attr());
             switch (p.getProb_attr()) {
                 case "Choice":
+                    optNum++;
+                    opt_choice_num++;
                     //处理选项-选项无特殊资源
                     //处理题目
                     pt.setStem_image(p.getImage_url());
                     break;
                 case "tingyinxuanwen":
-
+                    optNum++;
+                    opt_tingyinxuanwen_num++;
                     //处理选项-选项无特殊资源
                     //处理题目
                     pt.setStem_audio(p.getAudio_url());
                     break;
                 case "kantuxuanyin":
+                    optNum++;
+                    opt_kantuxuanyin_num++;
                     //处理选项-仅音频资源
                     pt.setOption_a_audio(options.getA_audio_url());
                     pt.setOption_b_audio(options.getB_audio_url());
@@ -788,6 +798,8 @@ public class ExerciseController {
                     pt.setStem_image(p.getImage_url());
                     break;
                 case "tingyinxuanci":
+                    optNum++;
+                    opt_tingyinxuanci_num++;
                     //处理选项-文字和音频
                     pt.setOption_a_image(options.getA_image_url());
                     pt.setOption_b_image(options.getB_image_url());
@@ -797,12 +809,16 @@ public class ExerciseController {
                     pt.setStem_audio(p.getAudio_url());
                     break;
                 case "panduanzhengwu":
+                    optNum++;
+                    opt_panduanzhengwu_num++;
                     //处理选项-选项固定，无需处理
                     //处理题目-音频和图片
                     pt.setStem_audio(p.getAudio_url());
                     pt.setStem_image(p.getImage_url());
                     break;
                 case "Fill":
+                    txtNum++;
+                    txt_fill_num++;
                     //处理选项-文本题没有选项
                     //处理题目-文字、音频和图片
                     pt.setStem_image(p.getImage_url());
@@ -832,6 +848,13 @@ public class ExerciseController {
 
         st.setOpt_num((long) optNum);
         st.setTxt_num((long) txtNum);
+
+        st.setOpt_choice_num(opt_choice_num);
+        st.setOpt_tingyinxuanwen_num(opt_tingyinxuanwen_num);
+        st.setOpt_kantuxuanyin_num(opt_kantuxuanyin_num);
+        st.setOpt_tingyinxuanci_num(opt_tingyinxuanci_num);
+        st.setOpt_panduanzhengwu_num(opt_panduanzhengwu_num);
+        st.setTxt_fill_num(txt_fill_num);
 
 
         st.setExer_level(level.toString());
