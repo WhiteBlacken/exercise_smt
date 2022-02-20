@@ -128,7 +128,7 @@
                                 <div id="tingyinxuanci_part" style="display: none">
                                     <div id="option_A" class="option_3" @click="chooseOption3('a')">
                                         <div class="option_img_container" v-if="option_a_img&&option_a_img != ''">
-                                            <div class="imgSize">
+                                            <div class="imgSize1">
                                                 <img class="option_img" id="option_a_img" :src=option_a_img onload="changeSize(this,'option','a')">
                                             </div>
                                         </div>
@@ -137,7 +137,7 @@
                                     <div id="option_B" class="option_3" @click="chooseOption3('b')">
 
                                         <div class="option_img_container" v-if="option_b_img&&option_b_img != ''">
-                                            <div class="imgSize">
+                                            <div class="imgSize1">
                                                 <img class="option_img" id="option_b_img" :src=option_b_img onload="changeSize(this,'option','b')">
                                             </div>
                                         </div>
@@ -145,7 +145,7 @@
                                     </div>
                                     <div id="option_C" class="option_3" style="display: none;" @click="chooseOption3('c')">
                                         <div class="option_img_container" v-if="option_c_img && option_c_img != ''">
-                                            <div class="imgSize">
+                                            <div class="imgSize1">
                                                 <img class="option_img" id="option_c_img" :src=option_c_img onload="changeSize(this,'option','c')">
                                             </div>
                                         </div>
@@ -153,7 +153,7 @@
                                     </div>
                                     <div id="option_D" class="option_3" style="display: none;" @click="chooseOption3('d')">
                                         <div class="option_img_container" v-if="option_d_img && option_d_img != ''">
-                                            <div class="imgSize">
+                                            <div class="imgSize1">
                                                 <img class="option_img" id="option_d_img" :src=option_d_img onload="changeSize(this,'option','d')">
                                             </div>
                                         </div>
@@ -205,6 +205,13 @@
             }
             el.style.width = "100%";
             el.style.height = "auto";
+            console.log(image.width)
+            console.log(image.height)
+            if(image.height > image.width * 0.88){
+                    el.style.width = "95%";
+                    el.style.height = "auto";
+            }
+
         }else {
             let el;
             if(type == 'stem'){
@@ -214,6 +221,14 @@
             }
             el.style.width = "auto";
             el.style.height = "100%";
+            console.log(image.width)
+            console.log(image.height)
+            if(image.width > image.height * 0.88){
+                el.style.width = "95%";
+                el.style.height = "auto";
+            }
+
+
         }
     }
 
@@ -1237,7 +1252,6 @@
                         activityTemp.index = j;
                         activityTemp.src = '/image/grey-star.png';
                         this.activities.push(activityTemp);
-                        console.log(res.sheet_list[j-1])
                         if(res.sheet_list[j-1].layoutType == "Choice") {
                             this.opt_choice_box.push(j);
                             this.opt_box.push(j);
@@ -1323,18 +1337,18 @@
             },
 
             fetchProblem: async function () {
-                console.log("opt_choice_num:" + this.opt_choice_num)
-                console.log("opt_tingyinxuanwen_num:" + this.opt_tingyinxuanwen_num)
-                console.log("opt_kantuxuanyin_num:" + this.opt_kantuxuanyin_num)
-                console.log("opt_tingyinxuanci_num:" + this.opt_tingyinxuanci_num)
-                console.log("opt_panduanzhengwu_num:" + this.opt_panduanzhengwu_num)
-                console.log("opt_num:" + this.opt_num)
-                console.log("opt_choice_box:" + this.opt_choice_box)
-                console.log("opt_tingyinxuanwen_box:" + this.opt_tingyinxuanwen_box)
-                console.log("opt_kantuxuanyin_box:" + this.opt_kantuxuanyin_box)
-                console.log("opt_tingyinxuanci_box:" + this.opt_tingyinxuanci_box)
-                console.log("opt_panduanzhengwu_box:" + this.opt_panduanzhengwu_box)
-                console.log("txt_box:" + this.txt_box)
+                // console.log("opt_choice_num:" + this.opt_choice_num)
+                // console.log("opt_tingyinxuanwen_num:" + this.opt_tingyinxuanwen_num)
+                // console.log("opt_kantuxuanyin_num:" + this.opt_kantuxuanyin_num)
+                // console.log("opt_tingyinxuanci_num:" + this.opt_tingyinxuanci_num)
+                // console.log("opt_panduanzhengwu_num:" + this.opt_panduanzhengwu_num)
+                // console.log("opt_num:" + this.opt_num)
+                // console.log("opt_choice_box:" + this.opt_choice_box)
+                // console.log("opt_tingyinxuanwen_box:" + this.opt_tingyinxuanwen_box)
+                // console.log("opt_kantuxuanyin_box:" + this.opt_kantuxuanyin_box)
+                // console.log("opt_tingyinxuanci_box:" + this.opt_tingyinxuanci_box)
+                // console.log("opt_panduanzhengwu_box:" + this.opt_panduanzhengwu_box)
+                // console.log("txt_box:" + this.txt_box)
                 this.stem_img = "";
                 this.option_a_img = "";
                 this.option_b_img = "";
@@ -1367,7 +1381,6 @@
                         tmp.style.display = "";
                         if(!prob.data.image_url || prob.data.image_url == ""){
                             tmp = document.getElementById('image');
-                            tmp.style.borderRadius = "0";
                             tmp.src = "/image/logo.png";
                             tmp = document.getElementsByClassName('imgSize')[0];
                             tmp.style.borderRadius = "0";
@@ -1377,11 +1390,9 @@
                             this.stem_img = prob.data.image_url;
                             document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
                             document.getElementById('image').src = this.stem_img;
-                            document.getElementById('image').style.borderRadius = "16px";
                         }
                         this.options_id = prob.data.options_id;
                         var option = await axios.get("/getOptions?id=" + this.options_id);
-                        console.log(option)
                         this.options.A = option.data.option_a;
                         this.options.B = option.data.option_b;
                         if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null) && (option.data.option_c.length > 0)) {
@@ -1407,7 +1418,6 @@
                             this.stem_aud = prob.data.audio_url;
                         this.options_id = prob.data.options_id;
                         var option = await axios.get("/getOptions?id=" + this.options_id);
-                        console.log(option);
                         this.options.A = option.data.option_a;
                         this.options.B = option.data.option_b;
                         if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null) && (option.data.option_c.length > 0)) {
@@ -1435,7 +1445,6 @@
                         tmp.style.display = "";
                         if(!prob.data.image_url || prob.data.image_url == ""){
                             tmp = document.getElementById('image');
-                            tmp.style.borderRadius = "0";
                             tmp.src = "/image/logo.png";
                             tmp = document.getElementsByClassName('imgSize')[0];
                             tmp.style.borderRadius = "0";
@@ -1445,11 +1454,10 @@
                             this.stem_img = prob.data.image_url;
                             document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
                             document.getElementById('image').src = this.stem_img;
-                            document.getElementById('image').style.borderRadius = "16px";
+                            document.getElementsByClassName('imgSize')[0].style.borderRadius = "16px";
                         }
                         this.options_id = prob.data.options_id;
                         var option = await axios.get("/getOptions?id=" + this.options_id);
-                        console.log(option)
                         this.option_a_aud = option.data.a_audio_url;
                         this.option_b_aud = option.data.b_audio_url;
                         if (option.data.hasOwnProperty('c_audio_url') && (option.data.c_audio_url !== null) && (option.data.c_audio_url.length > 0)) {
@@ -1477,7 +1485,6 @@
                             this.stem_aud = prob.data.audio_url;
                         this.options_id = prob.data.options_id;
                         var option = await axios.get("/getOptions?id=" + this.options_id);
-                        console.log(option)
                         this.options.A = option.data.option_a;
                         this.options.B = option.data.option_b;
                         if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null) && (option.data.option_c.length > 0)) {
@@ -1524,7 +1531,6 @@
                         tmp.style.display = "";
                         if(!prob.data.image_url || prob.data.image_url == ""){
                             tmp = document.getElementById('image');
-                            tmp.style.borderRadius = "0";
                             tmp.src = "/image/logo.png";
                             tmp = document.getElementsByClassName('imgSize')[0];
                             tmp.style.borderRadius = "0";
@@ -1534,7 +1540,7 @@
                             this.stem_img = prob.data.image_url;
                             document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
                             document.getElementById('image').src = this.stem_img;
-                            document.getElementById('image').style.borderRadius = "16px";
+                            document.getElementsByClassName('imgSize')[0].style.borderRadius = "16px";
                         }
                         if(prob.data.audio_url && prob.data.audio_url != "")
                             this.stem_aud = prob.data.audio_url;
