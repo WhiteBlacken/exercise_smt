@@ -473,6 +473,22 @@ li > p {
     height: 100%;
 }
 
+.finger{
+    position: absolute;
+    z-index: -1;
+    width: 80px;
+    margin-left: 28px;
+    margin-top: 20px;
+    opacity: 0;
+    animation: fade 2s;
+}
+
+@keyframes fade {
+    0% {opacity: 1;z-index: 10000}
+    75% {opacity: 1}
+    100% {opacity: 0;z-index: -1}
+}
+
 #test{
     position: absolute;
     right: 3.1%;
@@ -491,8 +507,7 @@ li > p {
 .option_audio{
     width: 55px;
     height: 55px;
-    margin-left: 25px;
-    margin-right: 120px;
+    margin-bottom: 15px;
     cursor: pointer;
 }
 
@@ -548,8 +563,8 @@ li > p {
     align-items: center;
     left: 3.18%;
     width: 55%;
-    height: 17.3%;
-    padding: 0.5% 1.5%;
+    height: 25%;
+    padding: 0.5% 2%;
     border-radius: 30px;
     font-family: 'GothamRoundedMedium';
     cursor: pointer;
@@ -574,6 +589,7 @@ li > p {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    justify-content: center;
 }
 
 #question_a_text,#question_b_text,#question_c_text,#question_d_text {

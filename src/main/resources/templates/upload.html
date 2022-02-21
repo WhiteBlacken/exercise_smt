@@ -157,7 +157,7 @@
                     <div v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen' || radioType === 'kantuxuanyin'" style="width: 650px">
                         <h3>选项：options</h3>
                         <h4>A.</h4>
-                        <el-form-item label="文字部分" v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen'">
+                        <el-form-item label="文字部分" v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen' || radioType === 'kantuxuanyin'">
                             <el-input v-model="formData.optionA"></el-input>
                         </el-form-item>
                         <el-form-item label="图片部分" v-if="radioType === 'tingyinxuanci'">
@@ -188,7 +188,7 @@
                         </el-form-item>
 
                         <h4>B.</h4>
-                        <el-form-item label="文字部分" v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen'">
+                        <el-form-item label="文字部分" v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen' || radioType === 'kantuxuanyin'">
                             <el-input v-model="formData.optionB"></el-input>
                         </el-form-item>
                         <el-form-item label="图片部分" v-if="radioType === 'tingyinxuanci'">
@@ -219,7 +219,7 @@
                         </el-form-item>
 
                         <h4>C.</h4>
-                        <el-form-item label="文字部分" v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen'">
+                        <el-form-item label="文字部分" v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen' || radioType === 'kantuxuanyin'">
                             <el-input v-model="formData.optionC" placeholder="无 C 选项可不填"></el-input>
                         </el-form-item>
                         <el-form-item label="图片部分" v-if="radioType === 'tingyinxuanci'">
@@ -250,7 +250,7 @@
                         </el-form-item>
 
                         <h4>D.</h4>
-                        <el-form-item label="文字部分" v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen'">
+                        <el-form-item label="文字部分" v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen' || radioType === 'kantuxuanyin'">
                             <el-input v-model="formData.optionD" placeholder="无 D 选项可不填"></el-input>
                         </el-form-item>
                         <el-form-item label="图片部分" v-if="radioType === 'tingyinxuanci'">
