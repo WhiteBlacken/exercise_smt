@@ -119,7 +119,7 @@
                     </div>
 
                     <h3>题干：prob_text</h3>
-                    <el-form-item label="" prop="prob_text" v-if="radioType === 'Choice' || radioType === 'panduanzhengwu'">
+                    <el-form-item label="" prop="prob_text">
                     <h4>文字部分</h4>
                         <el-input label-width="800px" type="textarea" :rows="3" v-model="formData.prob_text"></el-input>
                     </el-form-item>
@@ -131,6 +131,7 @@
                             action="fileUpload1"
                             :limit="1"
                             :on-success="uploadImgAfter"
+                            accept=".jpg,.jpeg,.png,.gif"
                             :data="{fileType:'image',info:'stem'}"
                             >
                         <i class="el-icon-upload"></i>
@@ -146,6 +147,7 @@
                             :on-success="uploadAudioAfter"
                             multiple
                             :limit="1"
+                            accept=".mp3,.m4a,.flac,.wma,.wav"
                             :data="{fileType:'audio',info:'stem'}"
                             >
                         <el-button size="small" type="primary">点击上传</el-button>
@@ -165,6 +167,7 @@
                                     :on-success="uploadImgAfter"
                                     multiple
                                     :limit="1"
+                                    accept=".jpg,.jpeg,.png,.gif"
                                     :data="{fileType:'image',info:'option',option:'A'}"
                             >
                                 <el-button size="small" type="primary">点击上传</el-button>
@@ -177,6 +180,7 @@
                                     :on-success="uploadAudioAfter"
                                     multiple
                                     :limit="1"
+                                    accept=".mp3,.m4a,.flac,.wma,.wav"
                                     :data="{fileType:'audio',info:'option',option:'A'}"
                             >
                                 <el-button size="small" type="primary">点击上传</el-button>
@@ -194,6 +198,7 @@
                                     :on-success="uploadImgAfter"
                                     multiple
                                     :limit="1"
+                                    accept=".jpg,.jpeg,.png,.gif"
                                     :data="{fileType:'image',info:'option',option:'B'}"
                             >
                                 <el-button size="small" type="primary">点击上传</el-button>
@@ -206,6 +211,7 @@
                                     :on-success="uploadAudioAfter"
                                     multiple
                                     :limit="1"
+                                    accept=".mp3,.m4a,.flac,.wma,.wav"
                                     :data="{fileType:'audio',info:'option',option:'B'}"
                             >
                                 <el-button size="small" type="primary">点击上传</el-button>
@@ -223,6 +229,7 @@
                                     :on-success="uploadImgAfter"
                                     multiple
                                     :limit="1"
+                                    accept=".jpg,.jpeg,.png,.gif"
                                     :data="{fileType:'image',info:'option',option:'C'}"
                             >
                                 <el-button size="small" type="primary">点击上传</el-button>
@@ -235,6 +242,7 @@
                                     :on-success="uploadImgAfter"
                                     multiple
                                     :limit="1"
+                                    accept=".mp3,.m4a,.flac,.wma,.wav"
                                     :data="{fileType:'audio',info:'option',option:'D'}"
                             >
                                 <el-button size="small" type="primary">点击上传</el-button>
@@ -252,6 +260,7 @@
                                     :on-success="uploadImgAfter"
                                     multiple
                                     :limit="1"
+                                    accept=".jpg,.jpeg,.png,.gif"
                                     :data="{fileType:'image',info:'option',option:'D'}"
                             >
                                 <el-button size="small" type="primary">点击上传</el-button>
@@ -264,6 +273,7 @@
                                     :on-success="uploadAudioAfter"
                                     multiple
                                     :limit="1"
+                                    accept=".mp3,.m4a,.flac,.wma,.wav"
                                     :data="{fileType:'audio',info:'option',option:'D'}"
                             >
                                 <el-button size="small" type="primary">点击上传</el-button>
