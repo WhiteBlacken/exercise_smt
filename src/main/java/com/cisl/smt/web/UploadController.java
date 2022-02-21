@@ -440,7 +440,9 @@ public class UploadController {
                         break;
 
                 }
-
+                if(prob_text!=null&&prob_text.length()>1){
+                    problem.setProb_text(prob_text);
+                }
                 Options now_options = optionsRepository.save(options);
                 problem.setOptions_id(now_options.getOptions_id());
 
