@@ -663,9 +663,18 @@
                     var prob_id = $.cookie("prob_id");
                     this.formData["prob_id"] = prob_id;
                     this.problem = await this.getProblemDetail(prob_id);
+                    console.log(this.problem["prob_attr"])
                     if (this.problem["prob_attr"] === "Choice")
                         this.radioType = "Choice";
-                    else {
+                    else if(this.problem["prob_attr"] === "tingyinxuanwen")
+                        this.radioType = "tingyinxuanwen";
+                    else if(this.problem["prob_attr"] === "kantuxuanyin")
+                        this.radioType = "kantuxuanyin";
+                    else if(this.problem["prob_attr"] === "tingyinxuanci")
+                        this.radioType = "tingyinxuanci";
+                    else if(this.problem["prob_attr"] === "panduanzhengwu")
+                        this.radioType = "panduanzhengwu";
+                    else{
                         this.radioType = "txt";
                         this.formData["txt_type"] = this.problem["prob_attr"];
                     }
