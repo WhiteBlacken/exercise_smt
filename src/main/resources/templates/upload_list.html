@@ -258,8 +258,10 @@
             if($.cookie("search_mode") === "考点") {
                 this.search();
             }else {
-                this.lesson_id = $.cookie("lesson_id");
-                this.level = $.cookie("level");
+                if($.cookie("lesson_id"))
+                    this.lesson_id = $.cookie("lesson_id");
+                if($.cookie("level"))
+                    this.level = $.cookie("level");
                 this.select();
             }
         },
