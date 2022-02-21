@@ -11,7 +11,7 @@
     <script src="/js/index.js"></script>
     <script src="/js/jquery.min.js"></script>
 </head>
-<body onload="pauseMusic()">
+<body>
         <div id="pop_container">
             <img id="popBox" src="/image/pop_box.png"></img>
             <div id="pop_msg">
@@ -74,7 +74,7 @@
                                 </div>
                                 <div id="question_text">
 
-                                    <p><span style="line-height: 55px">{{ prob_text }}</span><img v-if="stem_aud && stem_aud != ''" id="stem_audio" src="/image/audio-unchecked.png" @click="playAudio('stem')"></p>
+                                    <p><span style="line-height: 55px">{{ prob_text }}</span><img v-if="stem_aud && stem_aud != ''" id="stem_audio" src="/image/audio-unchecked.png" @click="playAudio('stem')"><img v-if="stem_aud && stem_aud != ''" src="/image/finger.png" class="finger"></p>
 
                                 </div>
                                 <div id="opt_part">
@@ -113,20 +113,34 @@
                                 </div>
                                 <div id="kantuxuanyin_part" style="display: none">
                                     <div class="option_2" >
-
-                                        <div class="optionBox" id="option_A" style="float:left"><span>A.</span><img src="/image/audio-unselected.png" class="option_audio" id="option_a_audio" @click="playAudio('A')"></div>
-                                        <div class="optionBox" id="option_B" style="float:left"><span>B.</span><img src="/image/audio-unselected.png" class="option_audio" id="option_b_audio" @click="playAudio('B')"></div>
+                                        <div class="optionBox" id="option_A2" style="float:left;width: 220px;margin-right: 100px">
+                                            <img src="/image/audio-unselected.png" class="option_audio" id="option_a_audio" @click="playAudio('A')">
+                                            <img src="/image/finger.png" class="finger" style="margin-left: 55px !important;">
+                                            <div id="problem_a_text" @click="chooseOption3('a')">A. {{ options.A }}</div>
+                                        </div>
+                                        <div class="optionBox" id="option_B2" style="float:left;width: 220px;">
+                                            <img src="/image/audio-unselected.png" class="option_audio" id="option_b_audio" @click="playAudio('B')">
+                                            <img src="/image/finger.png" class="finger" style="margin-left: 55px !important;">
+                                            <div id="problem_b_text" @click="chooseOption3('b')">B. {{ options.B }}</div>
+                                        </div>
                                     </div>
                                     <div class="option_2">
-                                        <div class="optionBox" id="option_C" style="float:left;display: none"><span v-if="option_c_aud != ''">C.</span><img  src="/image/audio-unselected.png" id="option_c_audio" class="option_audio" @click="playAudio('C')"></div>
-                                        <div class="optionBox" id="option_D" style="float:left;display: none"><span v-if="option_d_aud != ''">D.</span><img  src="/image/audio-unselected.png" id="option_d_audio" class="option_audio" @click="playAudio('D')"></div>
-
+                                        <div class="optionBox" id="option_C2" style="float:left;display: none;margin-right: 100px;width: 220px">
+                                            <img  src="/image/audio-unselected.png" id="option_c_audio" class="option_audio" @click="playAudio('C')">
+                                            <img src="/image/finger.png" class="finger" style="margin-left: 55px !important;">
+                                            <div id="problem_c_text" v-if="option_c_aud != ''" @click="chooseOption3('c')">C. {{ options.C }}</div>
+                                        </div>
+                                        <div class="optionBox" id="option_D2" style="float:left;display: none;width: 220px">
+                                            <img  src="/image/audio-unselected.png" id="option_d_audio" class="option_audio" @click="playAudio('D')">
+                                            <img src="/image/finger.png" class="finger" style="margin-left: 55px !important;">
+                                            <div id="problem_d_text" v-if="option_d_aud != ''" @click="chooseOption3('d')">D. {{ options.D }}</div>
+                                        </div>
                                     </div>
                                     <button type="button" id="last_button" @click="lastProblem"></button>
                                     <button type="button" id="next_button" @click="nextProblem"></button>
                                 </div>
                                 <div id="tingyinxuanci_part" style="display: none">
-                                    <div id="option_A" class="option_3" @click="chooseOption3('a')">
+                                    <div id="option_A3" class="option_3" @click="chooseOption2('a')">
                                         <div class="option_img_container" v-if="option_a_img&&option_a_img != ''">
                                             <div class="imgSize1">
                                                 <img class="option_img" id="option_a_img" :src=option_a_img onload="changeSize(this,'option','a')">
@@ -134,7 +148,7 @@
                                         </div>
                                         <div id="problem_a_text">A. {{ options.A }}</div>
                                     </div>
-                                    <div id="option_B" class="option_3" @click="chooseOption3('b')">
+                                    <div id="option_B3" class="option_3" @click="chooseOption2('b')">
 
                                         <div class="option_img_container" v-if="option_b_img&&option_b_img != ''">
                                             <div class="imgSize1">
@@ -143,7 +157,7 @@
                                         </div>
                                         <div id="problem_b_text">B. {{ options.B }}</div>
                                     </div>
-                                    <div id="option_C" class="option_3" style="display: none;" @click="chooseOption3('c')">
+                                    <div id="option_C3" class="option_3" style="display: none;" @click="chooseOption2('c')">
                                         <div class="option_img_container" v-if="option_c_img && option_c_img != ''">
                                             <div class="imgSize1">
                                                 <img class="option_img" id="option_c_img" :src=option_c_img onload="changeSize(this,'option','c')">
@@ -151,7 +165,7 @@
                                         </div>
                                         <div id="problem_c_text">C. {{ options.C }}</div>
                                     </div>
-                                    <div id="option_D" class="option_3" style="display: none;" @click="chooseOption3('d')">
+                                    <div id="option_D3" class="option_3" style="display: none;" @click="chooseOption2('d')">
                                         <div class="option_img_container" v-if="option_d_img && option_d_img != ''">
                                             <div class="imgSize1">
                                                 <img class="option_img" id="option_d_img" :src=option_d_img onload="changeSize(this,'option','d')">
@@ -230,14 +244,6 @@
 
 
         }
-    }
-
-    function pauseMusic () {
-        document.getElementById('stem_music').pause();
-        document.getElementById('option_a_music').pause();
-        document.getElementById('option_b_music').pause();
-        document.getElementById('option_c_music').pause();
-        document.getElementById('option_d_music').pause();
     }
 
     function audioFlicker (el) {
@@ -420,53 +426,61 @@
             option_b_aud: "",
             option_c_aud: "",
             option_d_aud: "",
+            a_play: "/image/audio-unselected.png",
+            b_play: "/image/audio-unselected.png",
+            c_play: "/image/audio-unselected.png",
+            d_play: "/image/audio-unselected.png",
         },
         methods: {
             musicEnd: function (num) {
                 switch(num){
                     case 0: {
                         clearInterval(this.intervals[0]);
+
                         document.getElementById('stem_audio').src= "/image/audio-unchecked.png";
                         break;
                     }
                     case 1: {
                         clearInterval(this.intervals[1]);
-
-                        document.getElementById('option_a_audio').src= "/image/audio-checked.png";
-
+                        document.getElementById('option_a_audio').src= this.a_play;
                         break;
                     }
                     case 2: {
                         clearInterval(this.intervals[2]);
-
-                        document.getElementById('option_b_audio').src= "/image/audio-checked.png";
-
+                        document.getElementById('option_b_audio').src= this.b_play;
                         break;
                     }
                     case 3: {
                         clearInterval(this.intervals[3]);
-
-                        document.getElementById('option_c_audio').src= "/image/audio-checked.png";
-
+                        document.getElementById('option_c_audio').src= this.c_play;
                         break;
                     }
                     case 4: {
                         clearInterval(this.intervals[4]);
-
-                        document.getElementById('option_d_audio').src= "/image/audio-checked.png";
-
+                        document.getElementById('option_d_audio').src= this.d_play;
                         break;
                     }
                 }
             },
 
-            playAudio: function (problem) {
+            pauseMusic: function () {
+                document.getElementById('stem_music').pause();
+                document.getElementById('option_a_music').pause();
+                document.getElementById('option_b_music').pause();
+                document.getElementById('option_c_music').pause();
+                document.getElementById('option_d_music').pause();
+                for(let i = 0; i < 5; i++){
+                    clearInterval(this.intervals[i])
+                    this.intervals[i] = 0;
+                }
+            },
 
+            playAudio: function (problem) {
                 if(problem == 'stem') {
                     let el = document.getElementById('stem_audio');
                     let music = document.getElementById('stem_music');
                     if (music.paused) {
-                        pauseMusic();
+                        this.pauseMusic();
                         for(let i = 0; i < this.intervals.length; i++){
                             if(this.intervals[i] != 0){
                                 if(i == 1)
@@ -499,137 +513,128 @@
 
                     if(document.getElementById('stem_audio'))
                         document.getElementById('stem_audio').src = "/image/audio-unchecked.png";
-                    document.getElementById('option_a_audio').src = "/image/audio-unselected.png";
-                    document.getElementById('option_b_audio').src = "/image/audio-unselected.png";
+                    document.getElementById('option_a_audio').src = this.a_play;
+                    document.getElementById('option_b_audio').src = this.b_play;
                     if(document.getElementById('option_c_audio'))
-                        document.getElementById('option_c_audio').src = "/image/audio-unselected.png";
+                        document.getElementById('option_c_audio').src = this.c_play;
                     if(document.getElementById('option_d_audio'))
-
-                    document.getElementById('option_d_audio').src = "/image/audio-unselected.png";
+                        document.getElementById('option_d_audio').src = this.d_play;
                     let el = document.getElementById('option_a_audio');
                     let music = document.getElementById('option_a_music');
                     if (music.paused) {
-                        pauseMusic();
+                        this.pauseMusic();
                         for(let i = 0; i < this.intervals.length; i++){
                             clearInterval(this.intervals[i]);
                             this.intervals[i] = 0;
                         }
 
                         music.src = this.option_a_aud;
-
                         music.play();
                         this.intervals[1] = setInterval(function () {
                             audioFlicker(el);
                         },500);
-                        this.chooseOption2('A');
                     }else{
                         music.pause();
                         music.currentTime = 0;
                         clearInterval(this.intervals[1]);
                         this.intervals[0] = 0;
-                        el.src = "/image/audio-checked.png";
+                        el.src = this.a_play;
                     }
                 }else if(problem == 'B'){
 
                     if(document.getElementById('stem_audio'))
                         document.getElementById('stem_audio').src = "/image/audio-unchecked.png";
-                    document.getElementById('option_a_audio').src = "/image/audio-unselected.png";
-                    document.getElementById('option_b_audio').src = "/image/audio-unselected.png";
+                    document.getElementById('option_a_audio').src = this.a_play;
+                    document.getElementById('option_b_audio').src = this.b_play;
                     if(document.getElementById('option_c_audio'))
-                        document.getElementById('option_c_audio').src = "/image/audio-unselected.png";
+                        document.getElementById('option_c_audio').src = this.c_play;
                     if(document.getElementById('option_d_audio'))
-                        document.getElementById('option_d_audio').src = "/image/audio-unselected.png";
+                        document.getElementById('option_d_audio').src = this.d_play;
 
                     let el = document.getElementById('option_b_audio');
                     let music = document.getElementById('option_b_music');
                     if (music.paused) {
-                        pauseMusic();
+                        this.pauseMusic();
                         for(let i = 0; i < this.intervals.length; i++){
                             clearInterval(this.intervals[i]);
                             this.intervals[i] = 0;
                         }
 
                         music.src = this.option_b_aud;
-
                         music.play();
                         this.intervals[2] = setInterval(function () {
                             audioFlicker(el);
                         },500);
-                        this.chooseOption2('B');
                     }else{
                         music.pause();
                         music.currentTime = 0;
                         clearInterval(this.intervals[2]);
                         this.intervals[2] = 0;
-                        el.src = "/image/audio-checked.png";
+                        el.src = this.b_play;
                     }
                 }else if(problem == 'C'){
 
                     if(document.getElementById('stem_audio'))
                         document.getElementById('stem_audio').src = "/image/audio-unchecked.png";
-                    document.getElementById('option_a_audio').src = "/image/audio-unselected.png";
-                    document.getElementById('option_b_audio').src = "/image/audio-unselected.png";
+                    document.getElementById('option_a_audio').src = this.a_play;
+                    document.getElementById('option_b_audio').src = this.b_play;
                     if(document.getElementById('option_c_audio'))
-                        document.getElementById('option_c_audio').src = "/image/audio-unselected.png";
+                        document.getElementById('option_c_audio').src = this.c_play;
                     if(document.getElementById('option_d_audio'))
-                        document.getElementById('option_d_audio').src = "/image/audio-unselected.png";
+                        document.getElementById('option_d_audio').src = this.d_play;
 
                     let el = document.getElementById('option_c_audio');
                     let music = document.getElementById('option_c_music');
                     if (music.paused) {
-                        pauseMusic();
+                        this.pauseMusic();
                         for(let i = 0; i < this.intervals.length; i++){
                             clearInterval(this.intervals[i]);
                             this.intervals[i] = 0;
                         }
 
                         music.src = this.option_c_aud;
-
                         music.play();
                         this.intervals[3] = setInterval(function () {
                             audioFlicker(el);
                         },500);
-                        this.chooseOption2('C');
                     }else{
                         music.pause();
                         music.currentTime = 0;
                         clearInterval(this.intervals[3]);
                         this.intervals[3] = 0;
-                        el.src = "/image/audio-checked.png";
+                        el.src = this.c_play;
                     }
                 }else if(problem == 'D'){
 
                     if(document.getElementById('stem_audio'))
                         document.getElementById('stem_audio').src = "/image/audio-unchecked.png";
-                    document.getElementById('option_a_audio').src = "/image/audio-unselected.png";
-                    document.getElementById('option_b_audio').src = "/image/audio-unselected.png";
+                    document.getElementById('option_a_audio').src = this.a_play;
+                    document.getElementById('option_b_audio').src = this.b_play;
                     if(document.getElementById('option_c_audio'))
-                        document.getElementById('option_c_audio').src = "/image/audio-unselected.png";
+                        document.getElementById('option_c_audio').src = this.c_play;
                     if(document.getElementById('option_d_audio'))
-                        document.getElementById('option_d_audio').src = "/image/audio-unselected.png";
+                        document.getElementById('option_d_audio').src = this.d_play;
 
                     let el = document.getElementById('option_d_audio');
                     let music = document.getElementById('option_d_music');
                     if (music.paused) {
-                        pauseMusic();
+                        this.pauseMusic();
                         for(let i = 0; i < this.intervals.length; i++){
                             clearInterval(this.intervals[i]);
                             this.intervals[i] = 0;
                         }
 
                         music.src = this.option_d_aud;
-
                         music.play();
                         this.intervals[4] = setInterval(function () {
                             audioFlicker(el);
                         },500);
-                        this.chooseOption2('D');
                     }else{
                         music.pause();
                         music.currentTime = 0;
                         clearInterval(this.intervals[4]);
                         this.intervals[4] = 0;
-                        el.src = "/image/audio-checked.png";
+                        el.src = this.d_play;
                     }
                 }
             },
@@ -696,7 +701,19 @@
             },
 
             chooseOption2: function (option) {
-                this.formData.choice = option.toLowerCase();
+                this.refreshAnswer2();
+                document.getElementById('problem_' + option + '_text').style.background = "#00D87E";
+                document.getElementById('problem_' + option + '_text').style.color = "white";
+                this.formData.choice = option;
+                if (option === 'a') {
+                    this.formData.choice_text = this.options.A;
+                } else if (option === 'b') {
+                    this.formData.choice_text = this.options.B;
+                } else if (option === 'c') {
+                    this.formData.choice_text = this.options.C;
+                } else if (option === 'd') {
+                    this.formData.choice_text = this.options.D;
+                }
                 if(this.done_list.indexOf(this.num) === -1) {
                     this.remain = this.totalNum-(this.done_list.push(this.num));
                 }
@@ -711,18 +728,31 @@
             },
 
             chooseOption3: function (option) {
+                console.log('chooseOption:'+option)
+                this.pauseMusic();
+                document.getElementById('option_a_audio').src='image/audio-unselected.png';
+                document.getElementById('option_b_audio').src='image/audio-unselected.png';
+                document.getElementById('option_c_audio').src='image/audio-unselected.png';
+                document.getElementById('option_d_audio').src='image/audio-unselected.png';
+                document.getElementById('option_'+option+'_audio').src='/image/audio-checked.png';
+
                 this.refreshAnswer2();
                 document.getElementById('problem_' + option + '_text').style.background = "#00D87E";
                 document.getElementById('problem_' + option + '_text').style.color = "white";
                 this.formData.choice = option;
+                this.refreshMusic();
                 if (option === 'a') {
                     this.formData.choice_text = this.options.A;
+                    this.a_play = "/image/audio-checked.png";
                 } else if (option === 'b') {
                     this.formData.choice_text = this.options.B;
+                    this.b_play = "/image/audio-checked.png";
                 } else if (option === 'c') {
                     this.formData.choice_text = this.options.C;
+                    this.c_play = "/image/audio-checked.png";
                 } else if (option === 'd') {
                     this.formData.choice_text = this.options.D;
+                    this.d_play = "/image/audio-checked.png";
                 }
                 if(this.done_list.indexOf(this.num) === -1) {
                     this.remain = this.totalNum-(this.done_list.push(this.num));
@@ -806,6 +836,13 @@
                 el.src = 'image/false-unselected.png';
                 el.style.width = "65px";
                 el.style.height = "65px";
+            },
+
+            refreshMusic: function () {
+                this.a_play = "/image/audio-unselected.png";
+                this.b_play = "/image/audio-unselected.png";
+                this.c_play = "/image/audio-unselected.png";
+                this.d_play = "/image/audio-unselected.png";
             },
 
             getIndex: function (option) {
@@ -1067,7 +1104,8 @@
             // },
 
             lastProblem: function () {
-                pauseMusic();
+                this.pauseMusic();
+                this.refreshMusic();
                 for(let i = 0 ;i < 5; i++){
                     if(this.intervals[i] != 0){
                         clearInterval(this.intervals[i]);
@@ -1116,7 +1154,8 @@
             },
 
             nextProblem: function () {
-                pauseMusic();
+                this.pauseMusic();
+                this.refreshMusic();
                 for(let i = 0 ;i < 5; i++){
                     if(this.intervals[i] != 0){
                         clearInterval(this.intervals[i]);
@@ -1382,6 +1421,8 @@
                         if(!prob.data.image_url || prob.data.image_url == ""){
                             tmp = document.getElementById('image');
                             tmp.src = "/image/logo.png";
+                            tmp.style.width = "100%";
+                            tmp.style.height = "100%";
                             tmp = document.getElementsByClassName('imgSize')[0];
                             tmp.style.borderRadius = "0";
                             tmp = document.getElementById('image_container');
@@ -1390,6 +1431,7 @@
                             this.stem_img = prob.data.image_url;
                             document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
                             document.getElementById('image').src = this.stem_img;
+                            document.getElementsByClassName('imgSize')[0].style.borderRadius = "16px";
                         }
                         this.options_id = prob.data.options_id;
                         var option = await axios.get("/getOptions?id=" + this.options_id);
@@ -1422,17 +1464,17 @@
                         this.options.B = option.data.option_b;
                         if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null) && (option.data.option_c.length > 0)) {
                             this.options.C = option.data.option_c;
-                            document.getElementById('option_C').style.display = "";
+                            document.getElementById('option-C').style.display = "";
                         } else {
                             this.options.C = "";
-                            document.getElementById('option_C').style.display = "none";
+                            document.getElementById('option-C').style.display = "none";
                         }
                         if (option.data.hasOwnProperty('option_d') && (option.data.option_d !== null) && (option.data.option_d.length > 0)) {
                             this.options.D = option.data.option_d;
-                            document.getElementById('option_D').style.display = "";
+                            document.getElementById('option-D').style.display = "";
                         } else {
                             this.options.D = "";
-                            document.getElementById('option_D').style.display = "none";
+                            document.getElementById('option-D').style.display = "none";
                         }
                         break;
                     }
@@ -1446,6 +1488,8 @@
                         if(!prob.data.image_url || prob.data.image_url == ""){
                             tmp = document.getElementById('image');
                             tmp.src = "/image/logo.png";
+                            tmp.style.width = "100%";
+                            tmp.style.height = "100%";
                             tmp = document.getElementsByClassName('imgSize')[0];
                             tmp.style.borderRadius = "0";
                             tmp = document.getElementById('image_container');
@@ -1458,23 +1502,25 @@
                         }
                         this.options_id = prob.data.options_id;
                         var option = await axios.get("/getOptions?id=" + this.options_id);
+                        console.log(option)
                         this.option_a_aud = option.data.a_audio_url;
                         this.option_b_aud = option.data.b_audio_url;
+
                         if (option.data.hasOwnProperty('c_audio_url') && (option.data.c_audio_url !== null) && (option.data.c_audio_url.length > 0)) {
                             this.option_c_aud = option.data.c_audio_url;
-                            document.getElementById('option_C').style.display = "";
+                            document.getElementById('option_C2').style.display = "";
                         } else {
                             this.options.C = "";
                             this.option_c_aud = "";
-                            document.getElementById('option_C').style.display = "none";
+                            document.getElementById('option_C2').style.display = "none";
                         }
                         if (option.data.hasOwnProperty('d_audio_url') && (option.data.d_audio_url !== null) && (option.data.d_audio_url.length > 0)) {
                             this.option_d_aud = option.data.d_audio_url;
-                            document.getElementById('option_D').style.display = "";
+                            document.getElementById('option_D2').style.display = "";
                         } else {
                             this.options.D = "";
                             this.option_d_aud = "";
-                            document.getElementById('option_D').style.display = "none";
+                            document.getElementById('option_D2').style.display = "none";
                         }
                         break;
                     }
@@ -1489,17 +1535,17 @@
                         this.options.B = option.data.option_b;
                         if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null) && (option.data.option_c.length > 0)) {
                             this.options.C = option.data.option_c;
-                            document.getElementById('option_C').style.display = "";
+                            document.getElementById('option_C3').style.display = "";
                         } else {
                             this.options.C = "";
-                            document.getElementById('option_C').style.display = "none";
+                            document.getElementById('option_C3').style.display = "none";
                         }
                         if (option.data.hasOwnProperty('option_d') && (option.data.option_d !== null) && (option.data.option_d.length > 0)) {
                             this.options.D = option.data.option_d;
-                            document.getElementById('option_D').style.display = "";
+                            document.getElementById('option_D3').style.display = "";
                         } else {
                             this.options.D = "";
-                            document.getElementById('option_D').style.display = "none";
+                            document.getElementById('option_D3').style.display = "none";
                         }
                         if (option.data.hasOwnProperty('a_image_url') && (option.data.a_image_url !== null) && (option.data.a_image_url.length > 0)) {
                             this.option_a_img = option.data.a_image_url;
@@ -1532,6 +1578,8 @@
                         if(!prob.data.image_url || prob.data.image_url == ""){
                             tmp = document.getElementById('image');
                             tmp.src = "/image/logo.png";
+                            tmp.style.width = "100%";
+                            tmp.style.height = "100%";
                             tmp = document.getElementsByClassName('imgSize')[0];
                             tmp.style.borderRadius = "0";
                             tmp = document.getElementById('image_container');
@@ -1557,8 +1605,9 @@
                         tmp.style.display = "";
                         if(!prob.data.image_url || prob.data.image_url == ""){
                             tmp = document.getElementById('image');
-                            tmp.style.borderRadius = "0";
                             tmp.src = "/image/logo.png";
+                            tmp.style.width = "100%";
+                            tmp.style.height = "100%";
                             tmp = document.getElementsByClassName('imgSize')[0];
                             tmp.style.borderRadius = "0";
                             tmp = document.getElementById('image_container');
@@ -1567,7 +1616,7 @@
                             this.stem_img = prob.data.image_url;
                             document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
                             document.getElementById('image').src = this.stem_img;
-                            document.getElementById('image').style.borderRadius = "16px";
+                            document.getElementsByClassName('imgSize')[0].style.borderRadius = "16px";
                         }
                         if(prob.data.audio_url && prob.data.audio_url != "")
                             this.stem_aud = prob.data.audio_url;
