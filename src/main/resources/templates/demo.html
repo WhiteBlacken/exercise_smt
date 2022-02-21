@@ -1503,9 +1503,20 @@
                         this.options_id = prob.data.options_id;
                         var option = await axios.get("/getOptions?id=" + this.options_id);
                         console.log(option)
+                        this.options.A = option.data.option_a;
+                        this.options.B = option.data.option_b;
+                        if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null) && (option.data.option_c.length > 0)) {
+                            this.options.C = option.data.option_c;
+                        } else {
+                            this.options.C = "";
+                        }
+                        if (option.data.hasOwnProperty('option_d') && (option.data.option_d !== null) && (option.data.option_d.length > 0)) {
+                            this.options.D = option.data.option_d;
+                        } else {
+                            this.options.D = "";
+                        }
                         this.option_a_aud = option.data.a_audio_url;
                         this.option_b_aud = option.data.b_audio_url;
-
                         if (option.data.hasOwnProperty('c_audio_url') && (option.data.c_audio_url !== null) && (option.data.c_audio_url.length > 0)) {
                             this.option_c_aud = option.data.c_audio_url;
                             document.getElementById('option_C2').style.display = "";
