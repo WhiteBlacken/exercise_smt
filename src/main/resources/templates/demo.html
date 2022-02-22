@@ -146,7 +146,7 @@
                                                 <img class="option_img" id="option_a_img" :src=option_a_img onload="changeSize(this,'option','a')">
                                             </div>
                                         </div>
-                                        <div id="problem_a_text">A. {{ options.A }}</div>
+                                        <div id="prob_a_text">A. {{ options.A }}</div>
                                     </div>
                                     <div id="option_B3" class="option_3" @click="chooseOption2('b')">
 
@@ -155,7 +155,7 @@
                                                 <img class="option_img" id="option_b_img" :src=option_b_img onload="changeSize(this,'option','b')">
                                             </div>
                                         </div>
-                                        <div id="problem_b_text">B. {{ options.B }}</div>
+                                        <div id="prob_b_text">B. {{ options.B }}</div>
                                     </div>
                                     <div id="option_C3" class="option_3" style="display: none;" @click="chooseOption2('c')">
                                         <div class="option_img_container" v-if="option_c_img && option_c_img != ''">
@@ -163,7 +163,7 @@
                                                 <img class="option_img" id="option_c_img" :src=option_c_img onload="changeSize(this,'option','c')">
                                             </div>
                                         </div>
-                                        <div id="problem_c_text">C. {{ options.C }}</div>
+                                        <div id="prob_c_text">C. {{ options.C }}</div>
                                     </div>
                                     <div id="option_D3" class="option_3" style="display: none;" @click="chooseOption2('d')">
                                         <div class="option_img_container" v-if="option_d_img && option_d_img != ''">
@@ -171,7 +171,7 @@
                                                 <img class="option_img" id="option_d_img" :src=option_d_img onload="changeSize(this,'option','d')">
                                             </div>
                                         </div>
-                                        <div id="problem_d_text">D. {{ options.D }}</div>
+                                        <div id="prob_d_text">D. {{ options.D }}</div>
                                     </div>
                                     <button type="button" id="last_button" @click="lastProblem"></button>
                                     <button type="button" id="next_button" @click="nextProblem"></button>
@@ -701,9 +701,9 @@
             },
 
             chooseOption2: function (option) {
-                this.refreshAnswer2();
-                document.getElementById('problem_' + option + '_text').style.background = "#00D87E";
-                document.getElementById('problem_' + option + '_text').style.color = "white";
+                this.refreshAnswer4();
+                document.getElementById('prob_' + option + '_text').style.background = "#00D87E";
+                document.getElementById('prob_' + option + '_text').style.color = "white";
                 this.formData.choice = option;
                 if (option === 'a') {
                     this.formData.choice_text = this.options.A;
@@ -795,36 +795,60 @@
             },
 
             refreshAnswer: function () {
-                document.getElementById('option_A').style.background = "#F0F0F0";
-                document.getElementById('option_A').style.color = "black";
-                document.getElementById('option_B').style.background = "#F0F0F0";
-                document.getElementById('option_B').style.color = "black";
-                document.getElementById('option_C').style.background = "#F0F0F0";
-                document.getElementById('option_C').style.color = "black";
-                document.getElementById('option_D').style.background = "#F0F0F0";
-                document.getElementById('option_D').style.color = "black";
+                if(document.getElementById('option_A')) {
+                    document.getElementById('option_A').style.background = "#F0F0F0";
+                    document.getElementById('option_A').style.color = "black";
+                }
+                if(document.getElementById('option_B')) {
+                    document.getElementById('option_B').style.background = "#F0F0F0";
+                    document.getElementById('option_B').style.color = "black";
+                }
+                if(document.getElementById('option_C')) {
+                    document.getElementById('option_C').style.background = "#F0F0F0";
+                    document.getElementById('option_C').style.color = "black";
+                }
+                if(document.getElementById('option_D')) {
+                    document.getElementById('option_D').style.background = "#F0F0F0";
+                    document.getElementById('option_D').style.color = "black";
+                }
             },
 
             refreshAnswer1: function () {
-                document.getElementById('option-A').style.background = "#F0F0F0";
-                document.getElementById('option-A').style.color = "black";
-                document.getElementById('option-B').style.background = "#F0F0F0";
-                document.getElementById('option-B').style.color = "black";
-                document.getElementById('option-C').style.background = "#F0F0F0";
-                document.getElementById('option-C').style.color = "black";
-                document.getElementById('option-D').style.background = "#F0F0F0";
-                document.getElementById('option-D').style.color = "black";
+                if(document.getElementById('option-A')) {
+                    document.getElementById('option-A').style.background = "#F0F0F0";
+                    document.getElementById('option-A').style.color = "black";
+                }
+                if(document.getElementById('option-B')) {
+                    document.getElementById('option-B').style.background = "#F0F0F0";
+                    document.getElementById('option-B').style.color = "black";
+                }
+                if(document.getElementById('option-C')) {
+                    document.getElementById('option-C').style.background = "#F0F0F0";
+                    document.getElementById('option-C').style.color = "black";
+                }
+                if(document.getElementById('option-D')) {
+                    document.getElementById('option-D').style.background = "#F0F0F0";
+                    document.getElementById('option-D').style.color = "black";
+                }
             },
 
             refreshAnswer2: function () {
-                document.getElementById('problem_a_text').style.background = "#F0F0F0";
-                document.getElementById('problem_a_text').style.color = "black";
-                document.getElementById('problem_b_text').style.background = "#F0F0F0";
-                document.getElementById('problem_b_text').style.color = "black";
-                document.getElementById('problem_c_text').style.background = "#F0F0F0";
-                document.getElementById('problem_c_text').style.color = "black";
-                document.getElementById('problem_d_text').style.background = "#F0F0F0";
-                document.getElementById('problem_d_text').style.color = "black";
+                if(document.getElementById('problem_a_text')) {
+                    document.getElementById('problem_a_text').style.background = "#F0F0F0";
+                    document.getElementById('problem_a_text').style.color = "black";
+                }
+                if(document.getElementById('problem_b_text')) {
+                    document.getElementById('problem_b_text').style.background = "#F0F0F0";
+                    document.getElementById('problem_b_text').style.color = "black";
+                }
+                if(document.getElementById('problem_c_text')) {
+                    document.getElementById('problem_c_text').style.background = "#F0F0F0";
+                    document.getElementById('problem_c_text').style.color = "black";
+                }
+                if(document.getElementById('problem_d_text')) {
+                    document.getElementById('problem_d_text').style.background = "#F0F0F0";
+                    document.getElementById('problem_d_text').style.color = "black";
+                }
             },
 
             refreshAnswer3: function () {
@@ -836,6 +860,25 @@
                 el.src = 'image/false-unselected.png';
                 el.style.width = "65px";
                 el.style.height = "65px";
+            },
+
+            refreshAnswer4: function () {
+                if (document.getElementById('prob_a_text')) {
+                    document.getElementById('prob_a_text').style.background = "#F0F0F0";
+                    document.getElementById('prob_a_text').style.color = "black";
+                }
+                if (document.getElementById('prob_b_text')) {
+                document.getElementById('prob_b_text').style.background = "#F0F0F0";
+                document.getElementById('prob_b_text').style.color = "black";
+                }
+                if(document.getElementById('prob_c_text')) {
+                    document.getElementById('prob_c_text').style.background = "#F0F0F0";
+                    document.getElementById('prob_c_text').style.color = "black";
+                }
+                if(document.getElementById('prob_d_text')) {
+                    document.getElementById('prob_d_text').style.background = "#F0F0F0";
+                    document.getElementById('prob_d_text').style.color = "black";
+                }
             },
 
             refreshMusic: function () {
@@ -1124,6 +1167,7 @@
                         this.refreshAnswer();
                         this.refreshAnswer2();
                         this.refreshAnswer3();
+                        this.refreshAnswer4();
                         this.rememberOpt(this.num);
                     }else if(this.num > (this.opt_num + 1)){
                         for(var i = 0;i < this.txt.length;i++) {
@@ -1139,6 +1183,7 @@
                         this.refreshAnswer();
                         this.refreshAnswer2();
                         this.refreshAnswer3();
+                        this.refreshAnswer4();
                         this.rememberOpt(this.num);
                     }
                     this.store();
@@ -1180,6 +1225,7 @@
                         this.refreshAnswer();
                         this.refreshAnswer2();
                         this.refreshAnswer3();
+                        this.refreshAnswer4();
                         this.rememberOpt(this.num);
                     }
                     this.store();
@@ -1860,13 +1906,15 @@
                             for(var j = 0 ;flag == false && j < this.opt_kantuxuanyin_box.length; j++) {
                                 if(this.opt_kantuxuanyin_box[j] == option){
                                     document.getElementById('option_'+response.data.sheet_list[i].choice.toLowerCase()+"_audio").src = "/image/audio-checked.png";
+                                    document.getElementById('problem_'+response.data.sheet_list[i].choice.toLowerCase()+"_text").style.background = "#00D87E";
+                                    document.getElementById('problem_'+response.data.sheet_list[i].choice.toLowerCase()+"_text").style.color = "white";
                                     flag = true;
                                 }
                             }
                             for(var j = 0 ;flag == false && j < this.opt_tingyinxuanci_box.length; j++) {
                                 if(this.opt_tingyinxuanci_box[j] == option){
-                                    document.getElementById('problem_'+response.data.sheet_list[i].choice.toLowerCase()+"_text").style.background = "#00D87E";
-                                    document.getElementById('problem_'+response.data.sheet_list[i].choice.toLowerCase()+"_text").style.color = "white";
+                                    document.getElementById('prob_'+response.data.sheet_list[i].choice.toLowerCase()+"_text").style.background = "#00D87E";
+                                    document.getElementById('prob_'+response.data.sheet_list[i].choice.toLowerCase()+"_text").style.color = "white";
                                     flag = true;
                                 }
                             }
