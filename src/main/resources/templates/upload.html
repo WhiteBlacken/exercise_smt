@@ -397,6 +397,7 @@
                 optionB: '',
                 optionC: '',
                 optionD: '',
+                prob_type: '',
                 prob_attr: '',
                 prob_text: '',
                 prob_diff: '',
@@ -535,12 +536,14 @@
 
                 else {
                     this.formData["prob_attr"] = this.radioType;
+                    this.formData["prob_type"] = 'opt';
                     console.log(this.radioType)
                     console.log(this.formData["prob_attr"])
                     if (this.formData["prob_attr"] !== "Choice" && this.formData["prob_attr"] !== "tingyinxuanwen" && this.formData["prob_attr"] !== "kantuxuanyin" && this.formData["prob_attr"] !== "tingyinxuanci" && this.formData["prob_attr"] !== "panduanzhengwu") {
                         this.formData["prob_attr"] = this.formData["txt_type"];
+                        this.formData["prob_type"] = 'txt';
                     }
-                console.log(this.formData["prob_attr"])
+                console.log(this.formData["prob_attr"]);
                     console.log("submit:", this.formData);
                     $.cookie("prob_id", null);
                     $.cookie("level", this.formData["prob_level"]);
