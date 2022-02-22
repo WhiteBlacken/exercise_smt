@@ -14,6 +14,13 @@
 </head>
 <body>
 <div id="app">
+    <div id="musicBox">
+        <audio id="stem_music" onended="musicEnd(0)"></audio>
+        <audio id="option_a_music" onended="musicEnd(1)"></audio>
+        <audio id="option_b_music" onended="musicEnd(2)"></audio>
+        <audio id="option_c_music" onended="musicEnd(3)"></audio>
+        <audio id="option_d_music" onended="musicEnd(4)"></audio>
+    </div>
     <div id="layer" v-show="handin"></div>
     <img id="popBox" v-show="handin" src="/image/pop_box.png"></img>
     <div id="pop_msg" v-show="handin">
@@ -47,17 +54,24 @@
             <div id="book_container">
                 <img src="/image/book.png" id="book">
                 <div id="question_area">
+                    <div id="image_container2" style="display: none">
+                        <div class="imgSize2">
+                            <img src="/image/logo.png" id="image2" onload="changeSize(this,'stem')">
+                            <!--                                        <img src="/image/testGif.gif" id="image">-->
+                            <!--                                        <img src="/image/testGif2.gif" id="test" width="100px" height="100px">-->
+                        </div>
+                    </div>
                     <div id="question_info">
                         <p style="font-family: 'GothamRoundedMedium';color: #2A7DE1;font-size: 42px;"><span>Q{{ num }}</span></p>
                         <div style="border-radius: 40px;background-color: #2A7DE1;font-family: 'Microsoft YaHei';color: white;font-weight: bold;font-size: 20px;margin-left: 10px;padding-left: 5px;padding-right: 5px;">
-                            <p><span>{{ prob_attr }}题</span></p>
+                            <p><span>{{ prob_attr }}</span></p>
                         </div>
                     </div>
                     <div id="question_text">
                         <p><span style="line-height: 55px">{{ prob_text }}</span><img v-if="stem_aud && stem_aud != ''" id="stem_audio" src="/image/audio-unchecked.png" @click="playAudio('stem')"><img v-if="stem_aud && stem_aud != ''" src="/image/finger.png" class="finger"></p>
                     </div>
                     <div id="opt_part" style="display: none">
-                        <div id="img_container">
+                        <div id="img_container" v-if="level != 1 || lesson != 1">
                             <img :src="imgSrc" id="image" onerror="this.src='/image/logo.png'">
                         </div>
                         <div id="option_A" class="option" @click="chooseOption('a')">
@@ -165,7 +179,7 @@
                         </div>
                     </div>
                     <div id="txt_part" style="display: none;">
-                        <div id="img_container">
+                        <div id="img_container" v-if="level != 1 || lesson != 1">
                             <img :src="imgSrc" id="image" onerror="this.src='/image/logo.png'">
                         </div>
                         <div id="input_box">
@@ -175,7 +189,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="analysis_area" v-if="level != 1 && lesson != 1">
+                <div id="analysis_area" v-if="level != 1 || lesson != 1">
                     <img id="analysis_background" src="/image/background.png">
                     <div id="analysis_text">
                         <p style="font-family: 'Microsoft YaHei';text-align: center;font-size: 1.5rem;font-weight: 600;"><span>本题解析</span></p>
@@ -188,6 +202,53 @@
 </div>
 </body>
 <script>
+    function changeSize (img,type,num='e') {
+        let image = new Image();
+        image.src = img.src;
+        if(image.width >= image.height){
+            let el;
+            if(type == 'stem'){
+                el = document.getElementById('image2');
+            }else if(type == 'option'){
+                el = document.getElementById('option_' + num + '_img');
+            }
+            el.style.width = "100%";
+            el.style.height = "auto";
+            console.log(image.width)
+            console.log(image.height)
+            if(image.height > image.width * 0.88){
+                el.style.width = "90%";
+                el.style.height = "auto";
+            }
+
+        }else {
+            let el;
+            if(type == 'stem'){
+                el = document.getElementById('image2');
+            }else if(type == 'option'){
+                el = document.getElementById('option_' + num + '_img');
+            }
+            el.style.width = "auto";
+            el.style.height = "100%";
+            console.log(image.width)
+            console.log(image.height)
+            if(image.width > image.height * 0.88){
+                el.style.width = "90%";
+                el.style.height = "auto";
+            }
+
+
+        }
+    }
+
+    function audioFlicker (el) {
+        let tmp = el.src.split('/');
+        if (tmp[tmp.length - 1] == 'audio-unchecked.png') {
+            el.src = "/image/audio-checked.png";
+        } else {
+            el.src = "/image/audio-unchecked.png";
+        };
+    }
     var app = new Vue({
         el: "#app",
         data: {
@@ -686,7 +747,7 @@
             },
 
             fetchProblem: async function () {
-                if(this.level != 1 || this.lesson_id != 1) {
+                if(this.level != 1 || this.lesson != 1) {
                     var prob_id = $.cookie("prob_id");
                     var prob = await axios.get("/getProblem?num=" + prob_id.toString());
                     console.log(prob.data);
@@ -787,32 +848,33 @@
                     this.options.B = "";
                     this.options.C = "";
                     this.options.D = "";
-                    var prob = await axios.get("/getProblem?num=" + this.prob_list[this.num - 1].toString());
+                    var prob_id = $.cookie("prob_id");
+                    var prob = await axios.get("/getProblem?num=" + prob_id.toString());
                     if(prob.data.prob_text && prob.data.prob_text != "")
                         this.prob_text = prob.data.prob_text;
                     document.getElementById('question_text').style.width = "94%";
-                    document.getElementById('image_container').style.display = "none";
+                    document.getElementById('image_container2').style.display = "none";
                     switch (prob.data.prob_attr) {
                         case "Choice": {
                             this.prob_attr = "选择题";
                             this.openView('opt');
                             document.getElementById('question_text').style.width = "66%";
-                            let tmp = document.getElementById('image_container');
+                            let tmp = document.getElementById('image_container2');
                             tmp.style.display = "";
                             if(!prob.data.image_url || prob.data.image_url == ""){
-                                tmp = document.getElementById('image');
+                                tmp = document.getElementById('image2');
                                 tmp.src = "/image/logo.png";
                                 tmp.style.width = "100%";
                                 tmp.style.height = "100%";
-                                tmp = document.getElementsByClassName('imgSize')[0];
+                                tmp = document.getElementsByClassName('imgSize2')[0];
                                 tmp.style.borderRadius = "0";
-                                tmp = document.getElementById('image_container');
+                                tmp = document.getElementById('image_container2');
                                 tmp.style.backgroundImage = "none";
                             }else {
                                 this.stem_img = prob.data.image_url;
-                                document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
-                                document.getElementById('image').src = this.stem_img;
-                                document.getElementsByClassName('imgSize')[0].style.borderRadius = "16px";
+                                document.getElementById('image_container2').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
+                                document.getElementById('image2').src = this.stem_img;
+                                document.getElementsByClassName('imgSize2')[0].style.borderRadius = "16px";
                             }
                             this.options_id = prob.data.options_id;
                             var option = await axios.get("/getOptions?id=" + this.options_id);
@@ -863,23 +925,23 @@
                             this.prob_attr = "看图选音";
                             this.openView('kantuxuanyin');
                             document.getElementById('question_text').style.width = "66%";
-                            let tmp = document.getElementById('image_container');
+                            let tmp = document.getElementById('image_container2');
                             tmp.style.display = "";
                             tmp.style.display = "";
                             if(!prob.data.image_url || prob.data.image_url == ""){
-                                tmp = document.getElementById('image');
+                                tmp = document.getElementById('image2');
                                 tmp.src = "/image/logo.png";
                                 tmp.style.width = "100%";
                                 tmp.style.height = "100%";
-                                tmp = document.getElementsByClassName('imgSize')[0];
+                                tmp = document.getElementsByClassName('imgSize2')[0];
                                 tmp.style.borderRadius = "0";
-                                tmp = document.getElementById('image_container');
+                                tmp = document.getElementById('image_container2');
                                 tmp.style.backgroundImage = "none";
                             }else {
                                 this.stem_img = prob.data.image_url;
-                                document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
-                                document.getElementById('image').src = this.stem_img;
-                                document.getElementsByClassName('imgSize')[0].style.borderRadius = "16px";
+                                document.getElementById('image_container2').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
+                                document.getElementById('image2').src = this.stem_img;
+                                document.getElementsByClassName('imgSize2')[0].style.borderRadius = "16px";
                             }
                             this.options_id = prob.data.options_id;
                             var option = await axios.get("/getOptions?id=" + this.options_id);
@@ -966,22 +1028,22 @@
                             this.prob_attr = "判断正误";
                             this.openView('panduanzhengwu');
                             document.getElementById('question_text').style.width = "66%";
-                            let tmp = document.getElementById('image_container');
+                            let tmp = document.getElementById('image_container2');
                             tmp.style.display = "";
                             if(!prob.data.image_url || prob.data.image_url == ""){
-                                tmp = document.getElementById('image');
+                                tmp = document.getElementById('image2');
                                 tmp.src = "/image/logo.png";
                                 tmp.style.width = "100%";
                                 tmp.style.height = "100%";
-                                tmp = document.getElementsByClassName('imgSize')[0];
+                                tmp = document.getElementsByClassName('imgSize2')[0];
                                 tmp.style.borderRadius = "0";
-                                tmp = document.getElementById('image_container');
+                                tmp = document.getElementById('image_container2');
                                 tmp.style.backgroundImage = "none";
                             }else {
                                 this.stem_img = prob.data.image_url;
-                                document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
-                                document.getElementById('image').src = this.stem_img;
-                                document.getElementsByClassName('imgSize')[0].style.borderRadius = "16px";
+                                document.getElementById('image_container2').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
+                                document.getElementById('image2').src = this.stem_img;
+                                document.getElementsByClassName('imgSize2')[0].style.borderRadius = "16px";
                             }
                             if(prob.data.audio_url && prob.data.audio_url != "")
                                 this.stem_aud = prob.data.audio_url;
@@ -994,22 +1056,22 @@
                             this.txt = [];
                             this.openView('txt');
                             document.getElementById('question_text').style.width = "66%";
-                            let tmp = document.getElementById('image_container');
+                            let tmp = document.getElementById('image_container2');
                             tmp.style.display = "";
                             if(!prob.data.image_url || prob.data.image_url == ""){
-                                tmp = document.getElementById('image');
+                                tmp = document.getElementById('image2');
                                 tmp.src = "/image/logo.png";
                                 tmp.style.width = "100%";
                                 tmp.style.height = "100%";
-                                tmp = document.getElementsByClassName('imgSize')[0];
+                                tmp = document.getElementsByClassName('imgSize2')[0];
                                 tmp.style.borderRadius = "0";
-                                tmp = document.getElementById('image_container');
+                                tmp = document.getElementById('image_container2');
                                 tmp.style.backgroundImage = "none";
                             }else {
                                 this.stem_img = prob.data.image_url;
-                                document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
-                                document.getElementById('image').src = this.stem_img;
-                                document.getElementsByClassName('imgSize')[0].style.borderRadius = "16px";
+                                document.getElementById('image_container2').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
+                                document.getElementById('image2').src = this.stem_img;
+                                document.getElementsByClassName('imgSize2')[0].style.borderRadius = "16px";
                             }
                             if(prob.data.audio_url && prob.data.audio_url != "")
                                 this.stem_aud = prob.data.audio_url;
@@ -1045,6 +1107,7 @@
                     }
                 }
             },
+
             openView: function (part) {
                 document.getElementById('opt_part').style.display = "none";
                 document.getElementById('tingyinxuanwen_part').style.display = "none";
@@ -1060,6 +1123,12 @@
             this.level = $.cookie('level');
             this.lesson = $.cookie('lesson_id');
             this.fetchProblem();
+        },
+
+        async mounted() {
+            window["musicEnd"] = (num) => {
+                this.musicEnd(num);
+            }
         },
     })
 </script>
