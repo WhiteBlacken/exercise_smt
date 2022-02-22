@@ -614,6 +614,19 @@ li > p {
     background-color: #F0F0F0;
 }
 
+#prob_a_text,#prob_b_text,#prob_c_text,#prob_d_text {
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    width: 100%;
+    height: 14%;
+    padding: 0.5% 9%;
+    word-break: break-all;
+    border-radius: 30px;
+    background-color: #F0F0F0;
+}
+
 #input_box {
     position: relative;
     font-size: 1.5rem;
