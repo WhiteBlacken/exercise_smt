@@ -220,7 +220,11 @@ public class UploadController {
                 case "panduanzhengwu":
                     options_text = "选项为 对、错";
                     break;
+                case "Rewrite":
+                case "Correct":
+                case "Translation":
                 case "Fill":
+                    options_text = "文本题无选项内容";
                     break;
             }
 
@@ -350,6 +354,7 @@ public class UploadController {
                                @RequestParam("stem_image") String stem_image, //add
                                @RequestParam("stem_audio") String stem_audio, //add
                                @RequestParam("prob_attr") String prob_attr,
+                               @RequestParam("prob_type") String prob_type,
                                @RequestParam("prob_diff") String prob_diff,
                                @RequestParam("prob_level") String prob_level,
                                @RequestParam("lesson_id") Long lesson_id,
@@ -383,6 +388,7 @@ public class UploadController {
                 Long grammar_id = calGrammar_id(lesson_id, prob_level);
                 Problem problem = new Problem(prob_text, prob_attr, prob_level, prob_diff, lesson_id, grammar_id, point_id, blank_num);
                 problem.setAnswer_id(now_answer.getAnswer_id());
+                problem.setProb_type(prob_type);
 
                 Options options = new Options(optionA, optionB, optionC, optionD);
                 switch (prob_attr) {
@@ -424,6 +430,9 @@ public class UploadController {
                         problem.setAudio_url(stem_audio);
                         problem.setImage_url(stem_image);
                         break;
+                    case "Rewrite":
+                    case "Correct":
+                    case "Translation":
                     case "Fill":
                         //处理选项-文本题没有选项
                         //处理题目-文字、音频和图片
@@ -433,7 +442,7 @@ public class UploadController {
                         break;
 
                 }
-                if(prob_text!=null&&prob_text.length()>1){
+                if (prob_text != null && prob_text.length() > 1) {
                     problem.setProb_text(prob_text);
                 }
                 Options now_options = optionsRepository.save(options);

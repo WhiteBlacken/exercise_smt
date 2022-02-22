@@ -19,6 +19,7 @@ public class Problem {
     private String prob_text;
     private String prob_attr;
     private String prob_level;
+    private String prob_type; //opt or txt
     private String prob_diff;
 
     private Long lesson_id;
@@ -154,5 +155,13 @@ public class Problem {
 
     public void setResource_flag(int resource_flag) {
         this.resource_flag = resource_flag;
+    }
+
+    public String getProb_type() {
+        return prob_type;
+    }
+
+    public void setProb_type(String prob_type) {
+        this.prob_type = prob_type;
     }
 }

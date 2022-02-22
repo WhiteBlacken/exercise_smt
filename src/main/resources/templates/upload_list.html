@@ -146,10 +146,11 @@
                                 'blank_num': prob_list[i]['blank_num'],
                                 'point_text': prob_list[i]['point_text'],
                                 // ?
-                                'level_lesson': prob_list[i]['prob_level'] + "-" + prob_list[i]['lesson_id'].toString(),
+                                'level_lesson': prob_list[i]['prob_level'].toString() + "-" + prob_list[i]['lesson_id'].toString(),
                                 'prob_level': prob_list[i]['prob_level'],
                                 'lesson_id': prob_list[i]['lesson_id'],
                             })
+
                     }
                     this.tableData.reverse();
                     this.loading = false;
@@ -194,6 +195,7 @@
                             'analysis': prob_list[i]['analysis'],
                             'blank_num': prob_list[i]['blank_num'],
                             'point_text': prob_list[i]['point_text'],
+                            'level_lesson': prob_list[i]['prob_level'].toString() + "-" + prob_list[i]['lesson_id'].toString(),
                         })
                     }
                     this.tableData.reverse();

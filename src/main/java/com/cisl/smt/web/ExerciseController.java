@@ -157,8 +157,8 @@ public class ExerciseController {
         for (ProblemAnsTemp pt : tmpList) {
             if (pt.getIdx().equals(idx)) {
                 System.out.println(idx.toString() + "choice_text: " + choice_text);
-                System.out.println("choice:"+choice);
-                System.out.println("type:"+pt.getType());
+                System.out.println("choice:" + choice);
+                System.out.println("type:" + pt.getType());
                 pt.setChoice(choice);
                 pt.setFinish(finish);
                 pt.setChoice_text(choice_text);
@@ -364,9 +364,9 @@ public class ExerciseController {
                 probList = new ArrayList<>();
 
         for (Problem p : tempList) {
-            if (p.getProb_diff().equals("Easy") && p.getProb_attr().equals("Choice")) {
+            if (p.getProb_diff().equals("Easy") && p.getProb_type().equals("opt")) {
                 easyChoiceProbList.add(p);
-            } else if (p.getProb_diff().equals("Easy") && !p.getProb_attr().equals("Choice")) {
+            } else if (p.getProb_diff().equals("Easy") && p.getProb_type().equals("txt")) {
                 easyTextProbList.add(p);
             } else if (p.getProb_diff().equals("Medium")) {
                 mediumProbList.add(p);
@@ -684,8 +684,6 @@ public class ExerciseController {
         } else if (settingTemp.getSrc().equals("lesson")) {
             //进入课课练做题，V2.0版本中，按照 4 个来源组合抽取, 此处 sys 代表lesson_id
             ArrayList<Long> tmpList = new ArrayList<>();
-
-            System.out.println("lesson_id:" + Long.valueOf(settingTemp.getSys()));
             Long lesson_id = Long.valueOf(settingTemp.getSys());
 //            tmpList.addAll(getFromNew(lesson_id, 20));  //2021.7.22: 校对期间，全部是该 lesson 的题目
 //            tmpList.addAll(getFromMedium(4));
@@ -767,78 +765,100 @@ public class ExerciseController {
         int opt_tingyinxuanci_num = 0;
         int opt_panduanzhengwu_num = 0;
         int txt_fill_num = 0;
+        int txt_rewrite_num = 0;
+        int txt_correct_num = 0;
+        int txt_translation_num = 0;
+
         for (Long probNum : probList) {  //将题目填入 sheet_list
             ProblemAnsTemp pt = new ProblemAnsTemp();
 
             Problem p = problemService.getProblemByProb_id(probNum);
             Options options = optionsService.getOptions(p.getOptions_id());
             pt.setLayoutType(p.getProb_attr());
-            switch (p.getProb_attr()) {
-                case "Choice":
-                    optNum++;
-                    opt_choice_num++;
-                    pt.setShowOrder(1);
-                    pt.setType("opt");
-                    //处理选项-选项无特殊资源
-                    //处理题目
-                    pt.setStem_image(p.getImage_url());
-                    break;
-                case "tingyinxuanwen":
-                    optNum++;
-                    opt_tingyinxuanwen_num++;
-                    pt.setShowOrder(2);
-                    pt.setType("opt");
-                    //处理选项-选项无特殊资源
-                    //处理题目
-                    pt.setStem_audio(p.getAudio_url());
-                    break;
-                case "kantuxuanyin":
-                    optNum++;
-                    opt_kantuxuanyin_num++;
-                    pt.setShowOrder(3);
-                    pt.setType("opt");
-                    //处理选项-仅音频资源
-                    pt.setOption_a_audio(options.getA_audio_url());
-                    pt.setOption_b_audio(options.getB_audio_url());
-                    pt.setOption_c_audio(options.getC_audio_url());
-                    pt.setOption_d_audio(options.getD_audio_url());
-                    //处理问题-仅图片资源
-                    pt.setStem_image(p.getImage_url());
-                    break;
-                case "tingyinxuanci":
-                    optNum++;
-                    opt_tingyinxuanci_num++;
-                    pt.setShowOrder(4);
-                    pt.setType("opt");
-                    //处理选项-文字和音频
-                    pt.setOption_a_image(options.getA_image_url());
-                    pt.setOption_b_image(options.getB_image_url());
-                    pt.setOption_c_image(options.getC_image_url());
-                    pt.setOption_d_image(options.getD_image_url());
-                    //处理题目-音频
-                    pt.setStem_audio(p.getAudio_url());
-                    break;
-                case "panduanzhengwu":
-                    optNum++;
-                    opt_panduanzhengwu_num++;
-                    pt.setShowOrder(5);
-                    pt.setType("opt");
-                    //处理选项-选项固定，无需处理
-                    //处理题目-音频和图片
-                    pt.setStem_audio(p.getAudio_url());
-                    pt.setStem_image(p.getImage_url());
-                    break;
-                case "Fill":
-                    txtNum++;
-                    txt_fill_num++;
-                    pt.setShowOrder(6);
-                    pt.setType("txt");
-                    //处理选项-文本题没有选项
-                    //处理题目-文字、音频和图片
-                    pt.setStem_image(p.getImage_url());
-                    pt.setStem_audio(p.getAudio_url());
-                    break;
+            if ("opt".equals(p.getProb_type())) {
+                switch (p.getProb_attr()) {
+                    case "Choice":
+                        optNum++;
+                        opt_choice_num++;
+                        pt.setShowOrder(1);
+                        pt.setType("opt");
+                        //处理选项-选项无特殊资源
+                        //处理题目
+                        pt.setStem_image(p.getImage_url());
+                        break;
+                    case "tingyinxuanwen":
+                        optNum++;
+                        opt_tingyinxuanwen_num++;
+                        pt.setShowOrder(2);
+                        pt.setType("opt");
+                        //处理选项-选项无特殊资源
+                        //处理题目
+                        pt.setStem_audio(p.getAudio_url());
+                        break;
+                    case "kantuxuanyin":
+                        optNum++;
+                        opt_kantuxuanyin_num++;
+                        pt.setShowOrder(3);
+                        pt.setType("opt");
+                        //处理选项-仅音频资源
+                        pt.setOption_a_audio(options.getA_audio_url());
+                        pt.setOption_b_audio(options.getB_audio_url());
+                        pt.setOption_c_audio(options.getC_audio_url());
+                        pt.setOption_d_audio(options.getD_audio_url());
+                        //处理问题-仅图片资源
+                        pt.setStem_image(p.getImage_url());
+                        break;
+                    case "tingyinxuanci":
+                        optNum++;
+                        opt_tingyinxuanci_num++;
+                        pt.setShowOrder(4);
+                        pt.setType("opt");
+                        //处理选项-文字和音频
+                        pt.setOption_a_image(options.getA_image_url());
+                        pt.setOption_b_image(options.getB_image_url());
+                        pt.setOption_c_image(options.getC_image_url());
+                        pt.setOption_d_image(options.getD_image_url());
+                        //处理题目-音频
+                        pt.setStem_audio(p.getAudio_url());
+                        break;
+                    case "panduanzhengwu":
+                        optNum++;
+                        opt_panduanzhengwu_num++;
+                        pt.setShowOrder(5);
+                        pt.setType("opt");
+                        //处理选项-选项固定，无需处理
+                        //处理题目-音频和图片
+                        pt.setStem_audio(p.getAudio_url());
+                        pt.setStem_image(p.getImage_url());
+                        break;
+                }
+            } else if ("txt".equals(p.getProb_type())) {
+                txtNum++;
+
+                pt.setShowOrder(6);
+                pt.setType("txt");
+                //处理选项-文本题没有选项
+                //处理题目-文字、音频和图片
+                pt.setStem_image(p.getImage_url());
+                pt.setStem_audio(p.getAudio_url());
+
+                switch (p.getProb_attr()) {
+                    case "Fill":
+                        txt_fill_num++;
+                        break;
+                    case "ReWrite":
+                        txt_rewrite_num++;
+                        break;
+                    case "Correct":
+                        txt_correct_num++;
+                        break;
+                    case "Translation":
+                        txt_translation_num++;
+                        break;
+                }
+
             }
+
 
             pt.setIdx(probNum);
             pt.setFinish((long) 0);   //默认未完成状态
@@ -979,8 +999,8 @@ public class ExerciseController {
             try {
 //                System.out.println("problem:"+problemService.getProblemByProb_id(tmpNum));
 //                System.out.println("problem_equals:"+problemService.getProblemByProb_id(tmpNum).getProb_attr().equals("Choice"));
-                String attr = problemService.getProblemByProb_id(tmpNum).getProb_attr();
-                if ("Choice".equals(attr)||"tingyinxuanwen".equals(attr)||"kantuxuanyin".equals(attr)||"tingyinxuanci".equals(attr)||"panduanzhengwu".equals(attr))
+                String prob_type = problemService.getProblemByProb_id(tmpNum).getProb_type();
+                if ("opt".equals(prob_type))
                     orderList.add(tmpNum);
             } catch (Exception e) {
                 System.out.println(tmpNum);
@@ -989,8 +1009,8 @@ public class ExerciseController {
             }
 
         for (Long tmpNum : tmpList) {
-            String attr = problemService.getProblemByProb_id(tmpNum).getProb_attr();
-            if ("Fill".equals(attr))
+            String prob_type = problemService.getProblemByProb_id(tmpNum).getProb_type();
+            if ("txt".equals(prob_type))
                 orderList.add(tmpNum);
         }
         return orderList;
@@ -1007,15 +1027,15 @@ public class ExerciseController {
         tmpList.addAll(set);
         int margin = origin - tmpList.size();
         if (margin > 0) System.out.println("uniq进入去重，补齐" + margin);
-        int loop = 30;
-        while (margin > 0 && loop > 0) {  //题目不够会陷入死循环
-            long newId = getOneRandom();
-            loop--;
-            if (!tmpList.contains(newId) && !problemService.getProblemByProb_id(newId).getProb_text().contains("题目已被删除")) {
-                tmpList.add(newId);
-                margin--;
-            }
-        }
+//        int loop = 30;
+//        while (margin > 0 && loop > 0) {  //题目不够会陷入死循环
+//            long newId = getOneRandom();
+//            loop--;
+//            if (!tmpList.contains(newId) && !problemService.getProblemByProb_id(newId).getProb_text().contains("题目已被删除")) {
+//                tmpList.add(newId);
+//                margin--;
+//            }
+//        }
         return checkDelete(tmpList);   //去重后还要检查一遍有没有被删除的题
 //        return tmpList;   //去重后还要检查一遍有没有被删除的题
     }
@@ -1035,7 +1055,7 @@ public class ExerciseController {
         }
         int margin = origin - newList.size();
         System.out.println(tmpList);
-        System.out.println("new_list:"+newList);
+        System.out.println("new_list:" + newList);
 //        if (margin > 0) System.out.println("有被删除的题目，补齐" + margin);
 //        int loop = 30;
 //        while (margin > 0 && loop > 0) {  //题目不够会陷入死循环
