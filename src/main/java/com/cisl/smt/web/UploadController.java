@@ -360,7 +360,8 @@ public class UploadController {
                                @RequestParam("lesson_id") Long lesson_id,
                                @RequestParam("point_id") Long point_id,
                                @RequestParam("blank_num") Long blank_num,
-                               @RequestParam("mode") Long mode) {
+                               @RequestParam("mode") Long mode,
+                               @RequestParam("choice_type") String choice_type) {
         try {
             if (mode == 0) {   //修改模式 //修改暂不进行更改
                 optionsRepository.updateOptions(prob_id, optionA, optionB, optionC, optionD);
@@ -388,60 +389,53 @@ public class UploadController {
                 Long grammar_id = calGrammar_id(lesson_id, prob_level);
                 Problem problem = new Problem(prob_text, prob_attr, prob_level, prob_diff, lesson_id, grammar_id, point_id, blank_num);
                 problem.setAnswer_id(now_answer.getAnswer_id());
-                problem.setProb_type(prob_type);
+
+
+                problem.setImage_url(stem_image);
+                problem.setAudio_url(stem_audio);
 
                 Options options = new Options(optionA, optionB, optionC, optionD);
                 switch (prob_attr) {
                     case "Choice":
-                        //处理选项-选项无特殊资源
-                        //处理题目
-                        problem.setImage_url(stem_image);
-                        break;
-                    case "tingyinxuanwen":
-                        //处理选项-选项无特殊资源
-                        //处理题目
-                        problem.setProb_text("从下面的音素中选出你听到的音素：");
-                        problem.setAudio_url(stem_audio);
-                        break;
-                    case "kantuxuanyin":
-                        //处理选项-仅音频资源
-                        options.setA_audio_url(option_a_audio);
-                        options.setB_audio_url(option_b_audio);
-                        options.setC_audio_url(option_c_audio);
-                        options.setD_audio_url(option_d_audio);
-                        //处理问题-仅图片资源
-                        problem.setProb_text("看图片，选出对应的句子");
-                        problem.setImage_url(stem_image);
-                        break;
-                    case "tingyinxuanci":
-                        //处理选项-文字和音频
-                        options.setA_image_url(option_a_image);
-                        options.setB_image_url(option_b_image);
-                        options.setC_image_url(option_c_image);
-                        options.setD_image_url(option_d_image);
-                        //处理题目-音频
-                        problem.setProb_text("听录音，选出图片对应的名词");
-                        problem.setAudio_url(stem_audio);
+                        problem.setProb_type("选择题");
+                        switch (choice_type) {
+                            case "text":
+                                //选项为纯文本
+                                break;
+                            case "image":
+                                //选项为图文
+                                options.setA_image_url(option_a_image);
+                                options.setB_image_url(option_b_image);
+                                options.setC_image_url(option_c_image);
+                                options.setD_image_url(option_d_image);
+                                break;
+                            case "audio":
+                                options.setA_audio_url(option_a_audio);
+                                options.setB_audio_url(option_b_audio);
+                                options.setC_audio_url(option_c_audio);
+                                options.setD_audio_url(option_d_audio);
+                                break;
+                        }
                         break;
                     case "panduanzhengwu":
+                        problem.setProb_type("判断题");
                         //处理选项-选项固定，无需处理
-                        //处理题目-音频和图片
                         problem.setProb_text("听录音，判读图文是否匹配");
-                        problem.setAudio_url(stem_audio);
-                        problem.setImage_url(stem_image);
+
                         break;
-                    case "Rewrite":
-                    case "Correct":
-                    case "Translation":
-                    case "Fill":
+                    case "txt":
+                        problem.setProb_type("文本题");
                         //处理选项-文本题没有选项
                         //处理题目-文字、音频和图片
                         problem.setProb_text("听录音，填写对应的句子");
-                        problem.setImage_url(stem_image);
-                        problem.setAudio_url(stem_audio);
-                        break;
 
+                        break;
                 }
+                if (prob_type != null && prob_type.length() > 1) {
+                    //这个prob_type可自己上传
+                    problem.setProb_type(prob_type);
+                }
+                problem.setProb_type(prob_type);
                 if (prob_text != null && prob_text.length() > 1) {
                     problem.setProb_text(prob_text);
                 }

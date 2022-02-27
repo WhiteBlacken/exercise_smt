@@ -363,6 +363,7 @@ public class ExerciseController {
                 mediumProbList = new ArrayList<>(),
                 probList = new ArrayList<>();
 
+        System.out.println("");
         for (Problem p : tempList) {
             if (p.getProb_diff().equals("Easy") && p.getProb_type().equals("opt")) {
                 easyChoiceProbList.add(p);
