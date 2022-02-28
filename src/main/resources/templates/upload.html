@@ -558,6 +558,7 @@
             problem: {},
             options: {},
             answer: {},
+            point: {},
             search: '',
             searchFlag: false,
             pointTableData: [],
@@ -943,6 +944,7 @@
                     this.problem = prob.problem;
                     this.options = prob.options;
                     this.answer = prob.answer;
+                    this.point = prob.point;
                     console.log(this.problem["prob_attr"])
                     console.log(this.options)
                     if (this.problem["prob_attr"] === "Choice") {
@@ -964,8 +966,8 @@
                         this.formData["blank_num"] = this.problem["blank_num"];
                     this.lesson_id = this.problem["lesson_id"];
                     this.level = this.problem["prob_level"];
-                    this.view_point_text = this.problem["point_text"];
-                    this.formData["point_id"] = this.problem["point_id"];
+                    this.view_point_text = this.point["point_text"];
+                    this.formData["point_id"] = this.point["point_id"];
                     this.formData["choice_type"] = this.options["choice_type"];
                     this.formData["optionA"] = this.options["option_a"];
                     this.formData["optionB"] = this.options["option_b"];
