@@ -1317,7 +1317,6 @@
                     this.prob_list = res.num_list;   //直接获取题号序列
                     this.opt_num = res.opt_num;
                     this.opt_choice_num = res.opt_choice_num;
-                    this.opt_tingyinxuanwen_num = res.opt_tingyinxuanwen_num;
                     this.opt_kantuxuanyin_num = res.opt_kantuxuanyin_num;
                     this.opt_tingyinxuanci_num = res.opt_tingyinxuanci_num;
                     this.opt_panduanzhengwu_num = res.opt_panduanzhengwu_num;
@@ -1326,7 +1325,6 @@
                     this.opt_box = [];
                     this.txt_box = [];
                     this.opt_choice_box = [];
-                    this.opt_tingyinxuanwen_box = [];
                     this.opt_kantuxuanyin_box = [];
                     this.opt_tingyinxuanci_box = [];
                     this.opt_panduanzhengwu_box = [];
@@ -1337,12 +1335,8 @@
                         activityTemp.index = j;
                         activityTemp.src = '/image/grey-star.png';
                         this.activities.push(activityTemp);
-                        if(res.sheet_list[j-1].layoutType == "Choice") {
+                        if(res.sheet_list[j-1].layoutType == "text") {
                             this.opt_choice_box.push(j);
-                            this.opt_box.push(j);
-                        }
-                        else if(res.sheet_list[j-1].layoutType == "tingyinxuanwen") {
-                            this.opt_tingyinxuanwen_box.push(j);
                             this.opt_box.push(j);
                         }
                         else if(res.sheet_list[j-1].layoutType == "kantuxuanyin") {
@@ -1388,7 +1382,6 @@
 
             openView: function (part) {
                 document.getElementById('opt_part').style.display = "none";
-                document.getElementById('tingyinxuanwen_part').style.display = "none";
                 document.getElementById('kantuxuanyin_part').style.display = "none";
                 document.getElementById('tingyinxuanci_part').style.display = "none";
                 document.getElementById('panduanzhengwu_part').style.display = "none";

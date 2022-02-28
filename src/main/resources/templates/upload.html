@@ -178,9 +178,9 @@
                     </el-form-item>
 
 
-                    <div v-if="radioType === 'Choice'" style="width: 650px">
-                        <h3>选项类型：choice_type</h3>
-                        <el-form-item prop="choice_type">
+                    <div style="width: 650px">
+                        <h3  v-if="radioType === 'Choice'">选项类型：choice_type</h3>
+                        <el-form-item prop="choice_type"  v-if="radioType === 'Choice'">
                             <el-select v-model="formData.choice_type" placeholder="选项类型" @change="clearChoice">
                                 <el-option label="纯文本" value="text"></el-option>
                                 <el-option label="图文" value="image"></el-option>
@@ -188,13 +188,13 @@
                             </el-select>
                         </el-form-item>
 
-                        <h3>选项：options</h3>
-                        <h4>A.</h4>
-                        <el-form-item label="文字部分">
+                        <h3  v-if="radioType === 'Choice'">选项：options</h3>
+                        <h4  v-if="radioType === 'Choice'">A.</h4>
+                        <el-form-item label="文字部分"  v-if="radioType === 'Choice'">
                             <el-input v-model="formData.optionA"></el-input>
                         </el-form-item>
 
-                        <el-form-item label="图片部分" v-if="formData.choice_type === 'image'">
+                        <el-form-item label="图片部分" v-if="radioType === 'Choice' && formData.choice_type === 'image'">
                             <el-upload
                                     :file-list="optionAImageFileList"
                                     ref="optionAImageUpload"
@@ -218,11 +218,11 @@
                                 </span>
                                 </div>
                             </el-upload>
-                            <el-dialog :visible.sync="visibleData.optionAVisible">
+                            <el-dialog :visible.sync="visibleData.optionAVisible" >
                                 <img width="100%" :src="formData.option_a_image" alt="">
                             </el-dialog>
                         </el-form-item>
-                        <el-form-item label="音频部分" v-if="formData.choice_type === 'audio'">
+                        <el-form-item label="音频部分" v-if="radioType === 'Choice' && formData.choice_type === 'audio'">
                             <el-upload
                                     :file-list="optionAAudioFileList"
                                     ref="optionAAudioUpload"
@@ -237,14 +237,14 @@
                             >
                                 <el-button size="small" type="primary">点击上传</el-button>
                             </el-upload>
-                            <div id="optionAAudio"></div>
                         </el-form-item>
+                        <div id="optionAAudio"></div>
 
-                        <h4>B.</h4>
-                        <el-form-item label="文字部分">
+                        <h4 v-if="radioType === 'Choice'">B.</h4>
+                        <el-form-item label="文字部分" v-if="radioType === 'Choice'">
                             <el-input v-model="formData.optionB"></el-input>
                         </el-form-item>
-                        <el-form-item label="图片部分" v-if="formData.choice_type === 'image'">
+                        <el-form-item label="图片部分" v-if="radioType === 'Choice'&&formData.choice_type === 'image'">
                             <el-upload
                                     :file-list="optionBImageFileList"
                                     ref="optionBImageUpload"
@@ -272,7 +272,7 @@
                                 <img width="100%" :src="formData.option_b_image" alt="">
                             </el-dialog>
                         </el-form-item>
-                        <el-form-item label="音频部分" v-if="formData.choice_type === 'audio'">
+                        <el-form-item label="音频部分" v-if="radioType === 'Choice'&&formData.choice_type === 'audio'">
                             <el-upload
                                     :file-list="optionBAudioFileList"
                                     ref="optionBAudioUpload"
@@ -287,14 +287,14 @@
                             >
                                 <el-button size="small" type="primary">点击上传</el-button>
                             </el-upload>
-                            <div id="optionBAudio"></div>
                         </el-form-item>
+                        <div id="optionBAudio"></div>
 
-                        <h4>C.</h4>
-                        <el-form-item label="文字部分">
+                        <h4 v-if="radioType === 'Choice'">C.</h4>
+                        <el-form-item label="文字部分" v-if="radioType === 'Choice'">
                             <el-input v-model="formData.optionC" placeholder="无 C 选项可不填"></el-input>
                         </el-form-item>
-                        <el-form-item label="图片部分" v-if="formData.choice_type === 'image'">
+                        <el-form-item label="图片部分" v-if="radioType === 'Choice'&&formData.choice_type === 'image'">
                             <el-upload
                                     :file-list="optionCImageFileList"
                                     ref="optionCImageUpload"
@@ -322,7 +322,7 @@
                                 <img width="100%" :src="formData.option_c_image" alt="">
                             </el-dialog>
                         </el-form-item>
-                        <el-form-item label="音频部分" v-if="formData.choice_type === 'audio'">
+                        <el-form-item label="音频部分" v-if="radioType === 'Choice'&&formData.choice_type === 'audio'">
                             <el-upload
                                     :file-list="optionCAudioFileList"
                                     ref="optionCAudioUpload"
@@ -337,14 +337,13 @@
                             >
                                 <el-button size="small" type="primary">点击上传</el-button>
                             </el-upload>
-                            <div id="optionCAudio"></div>
                         </el-form-item>
-
-                        <h4>D.</h4>
-                        <el-form-item label="文字部分">
+                        <div id="optionCAudio"></div>
+                        <h4 v-if="radioType === 'Choice'">D.</h4>
+                        <el-form-item label="文字部分" v-if="radioType === 'Choice'">
                             <el-input v-model="formData.optionD" placeholder="无 D 选项可不填"></el-input>
                         </el-form-item>
-                        <el-form-item label="图片部分" v-if="formData.choice_type === 'image'">
+                        <el-form-item label="图片部分" v-if="radioType === 'Choice'&&formData.choice_type === 'image'">
                             <el-upload
                                     :file-list="optionDImageFileList"
                                     ref="optionDImageUpload"
@@ -372,7 +371,7 @@
                                 <img width="100%" :src="formData.option_d_image" alt="">
                             </el-dialog>
                         </el-form-item>
-                        <el-form-item label="音频部分" v-if="formData.choice_type === 'audio'">
+                        <el-form-item label="音频部分" v-if="radioType === 'Choice'&&formData.choice_type === 'audio'">
                             <el-upload
                                     :file-list="optionDAudioFileList"
                                     ref="optionDAudioUpload"
@@ -387,8 +386,8 @@
                             >
                                 <el-button size="small" type="primary">点击上传</el-button>
                             </el-upload>
-                            <div id="optionDAudio"></div>
                         </el-form-item>
+                        <div id="optionDAudio"></div>
                     </div>
 
                     <div v-if="radioType === 'Choice'" style="width: 650px">
@@ -929,7 +928,7 @@
 
             getProblemDetail: function (prob_id) {
                 return new Promise(resolve => {
-                    axios.get("/getProblemDetail?prob_id=" + prob_id).then((response) => {
+                    axios.get("/editProblem?prob_id=" + prob_id).then((response) => {
                         resolve(response.data);
                     });
                 })
@@ -948,6 +947,7 @@
                     this.options = prob.options;
                     this.answer = prob.answer;
                     console.log(this.problem["prob_attr"])
+                    console.log(this.options)
                     if (this.problem["prob_attr"] === "Choice") {
                         this.radioType = "Choice";
                         this.formData["prob_type"] = this.problem["prob_type"];
@@ -981,6 +981,11 @@
                     if(this.problem["audio_url"]&&this.problem["audio_url"] != ""){
                         var tmp_name = this.problem["audio_url"].split('/')[this.problem["audio_url"].split('/')-1];
                         this.stemAudioFileList.push({name: tmp_name , url: this.problem["audio_url"]});
+                        var audio = document.createElement('audio');
+                        audio.src = this.problem["audio_url"];
+                        audio.controls = true;
+                        audio.volume = '0.2';
+                        $('#stemAudio').append(audio);
                     }
                     if(this.formData["choice_type"] == 'image'){
                         var tmp_name = this.options["a_image_url"].split('/')[this.options["a_image_url"].split('/')-1];
@@ -998,15 +1003,35 @@
                     }else if(this.formData["choice_type"] == 'audio'){
                         var tmp_name = this.options["a_audio_url"].split('/')[this.options["a_audio_url"].split('/')-1];
                         this.optionAAudioFileList.push({name: tmp_name , url: this.options["a_audio_url"]});
+                        var audio = document.createElement('audio');
+                        audio.src = this.options["a_audio_url"];
+                        audio.controls = true;
+                        audio.volume = '0.2';
+                        $('#optionAAudio').append(audio);
                         tmp_name = this.options["b_audio_url"].split('/')[this.options["b_audio_url"].split('/')-1];
                         this.optionBAudioFileList.push({name: tmp_name , url: this.options["b_audio_url"]});
+                        audio = document.createElement('audio');
+                        audio.src = this.options["b_audio_url"];
+                        audio.controls = true;
+                        audio.volume = '0.2';
+                        $('#optionBAudio').append(audio);
                         if(this.options["c_audio_url"]&&this.options["c_audio_url"] != ""){
                             tmp_name = this.options["c_audio_url"].split('/')[this.options["c_audio_url"].split('/')-1];
                             this.optionCAudioFileList.push({name: tmp_name , url: this.options["c_audio_url"]});
+                            audio = document.createElement('audio');
+                            audio.src = this.options["c_audio_url"];
+                            audio.controls = true;
+                            audio.volume = '0.2';
+                            $('#optionCAudio').append(audio);
                         }
                         if(this.options["d_audio_url"]&&this.options["d_audio_url"] != ""){
                             tmp_name = this.options["d_audio_url"].split('/')[this.options["d_audio_url"].split('/')-1];
                             this.optionDAudioFileList.push({name: tmp_name , url: this.options["d_audio_url"]});
+                            audio = document.createElement('audio');
+                            audio.src = this.options["d_audio_url"];
+                            audio.controls = true;
+                            audio.volume = '0.2';
+                            $('#optionDAudio').append(audio);
                         }
                     }
                 }
