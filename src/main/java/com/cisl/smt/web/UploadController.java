@@ -266,6 +266,7 @@ public class UploadController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println(problemAllDetail);
         return problemAllDetail;
     }
 
