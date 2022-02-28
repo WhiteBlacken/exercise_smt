@@ -50,4 +50,14 @@ public class ProblemAllDetail {
     public void setPoint(Point point) {
         this.point = point;
     }
+
+    @Override
+    public String toString() {
+        return "ProblemAllDetail{" +
+                "problem=" + problem +
+                ", options=" + options +
+                ", answer=" + answer +
+                ", point=" + point +
+                '}';
+    }
 }
