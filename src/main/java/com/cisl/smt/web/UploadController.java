@@ -12,6 +12,7 @@ import com.cisl.smt.service.OptionsService;
 
 
 import com.cisl.smt.web.Temp.FileInfo;
+import com.cisl.smt.web.Temp.ProblemAllDetail;
 import com.cisl.smt.web.Temp.ProblemDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -221,6 +222,7 @@ public class UploadController {
                 case "panduanzhengwu":
                     options_text = "选项为 对、错";
                     break;
+                case "txt":
                 case "Rewrite":
                 case "Correct":
                 case "Translation":
@@ -245,6 +247,26 @@ public class UploadController {
             e.printStackTrace();
         }
         return problemDetail;
+    }
+
+
+    @GetMapping("/editProblem")
+    public ProblemAllDetail editProblem(@RequestParam("prob_id") Long prob_id) {
+        ProblemAllDetail problemAllDetail = new ProblemAllDetail();
+
+        try {
+            Problem problem = problemRepository.findOne(prob_id);
+            Options options = optionsRepository.findOne(problem.getOptions_id());
+            Answer answer = answerRepository.findOne(problem.getAnswer_id());
+            Point point = pointRepository.findOne(problem.getAnswer_id());
+            problemAllDetail.setProblem(problem);
+            problemAllDetail.setOptions(options);
+            problemAllDetail.setAnswer(answer);
+            problemAllDetail.setPoint(point);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return problemAllDetail;
     }
 
     public String purify(String raw) {
