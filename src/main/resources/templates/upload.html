@@ -627,8 +627,6 @@
                 this.formData.option_b_audio = '';
                 this.formData.option_c_audio = '';
                 this.formData.option_d_audio = '';
-                if($('#stemAudio').children().length > 0)
-                    $('#stemAudio').empty();
                 if($('#optionAAudio').children().length > 0)
                     $('#optionAAudio').empty();
                 if($('#optionBAudio').children().length > 0)
@@ -642,21 +640,20 @@
             handleRemove(file,type) {
                 let uploadFiles;
                 if(type == 'stem')
-                    uploadFiles = this.$refs.stemImageUpload.uploadFiles;
+                    uploadFiles = this.$refs.stemImageUpload.clearFiles();
                 else if(type == 'A')
-                    uploadFiles = this.$refs.optionAImageUpload.uploadFiles;
+                    uploadFiles = this.$refs.optionAImageUpload.clearFiles();
                 else if(type == 'B')
-                    uploadFiles = this.$refs.optionBImageUpload.uploadFiles;
+                    uploadFiles = this.$refs.optionBImageUpload.clearFiles();
                 else if(type == 'C')
-                    uploadFiles = this.$refs.optionCImageUpload.uploadFiles;
+                    uploadFiles = this.$refs.optionCImageUpload.clearFiles();
                 else if(type == 'D')
-                    uploadFiles = this.$refs.optionDImageUpload.uploadFiles;
-                consoel.log(uploadFiles)
-                for (var i = 0; i < uploadFiles.length; i++) {
-                    if (uploadFiles[i]['url'] == file.url) {
-                        uploadFiles.splice(i, 1)
-                    }
-                }
+                    uploadFiles = this.$refs.optionDImageUpload.clearFiles();
+                // for (var i = 0; i < uploadFiles.length; i++) {
+                //     if (uploadFiles[i]['url'] == file.url) {
+                //         uploadFiles.splice(i, 1)
+                //     }
+                // }
                 if(type == 'stem')
                     this.formData.stem_image = "";
                 else if(type == 'A')
@@ -998,7 +995,7 @@
                         }
                         if(this.options["d_image_url"]&&this.options["d_image_url"] != ""){
                             tmp_name = this.options["d_image_url"].split('/')[this.options["d_image_url"].split('/')-1];
-                            this.optionCImageFileList.push({name: tmp_name , url: this.options["d_image_url"]});
+                            this.optionDImageFileList.push({name: tmp_name , url: this.options["d_image_url"]});
                         }
                     }else if(this.formData["choice_type"] == 'audio'){
                         var tmp_name = this.options["a_audio_url"].split('/')[this.options["a_audio_url"].split('/')-1];
