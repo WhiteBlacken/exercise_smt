@@ -15,6 +15,13 @@
     <div id="top_bar1"></div>
     <div id="top_bar2"></div>
     <div id="app">
+        <div id="musicBox">
+            <audio id="stem_music" onended="musicEnd(0)"></audio>
+            <audio id="option_a_music" onended="musicEnd(1)"></audio>
+            <audio id="option_b_music" onended="musicEnd(2)"></audio>
+            <audio id="option_c_music" onended="musicEnd(3)"></audio>
+            <audio id="option_d_music" onended="musicEnd(4)"></audio>
+        </div>
         <button type="button" id="back_button" v-show="finishWrong" @click="goBack"></button>
         <div id="main">
                 <div id="header">
@@ -57,6 +64,13 @@
                     <div id="book_container">
                         <img src="/image/book.png" id="book">
                         <div id="question_area">
+                            <div id="image_container2" style="display: none">
+                                <div class="imgSize2">
+                                    <img src="/image/logo.png" id="image2" onload="changeSize(this,'stem')">
+                                    <!--                                        <img src="/image/testGif.gif" id="image">-->
+                                    <!--                                        <img src="/image/testGif2.gif" id="test" width="100px" height="100px">-->
+                                </div>
+                            </div>
                             <div id="question_info">
                                 <div id="container4">
                                     <p><span>Q{{ num }}</span></p>
@@ -65,13 +79,13 @@
                                 </div>
                             </div>
                             <div id="question_text">
-                                <p><span>{{ prob_text }}</span></p>
+                                <p><span>{{ prob_text }}</span><img v-if="stem_aud && stem_aud != ''" id="stem_audio" src="/image/audio-unchecked.png" @click="playAudio('stem')"><img v-if="stem_aud && stem_aud != ''" src="/image/finger.png" class="finger"></p>
                             </div>
                             <div id="congrats" style="display: none;">
                                 <p><span>恭喜你，全部做对啦！</span></p>
                             </div>
-                            <div id="opt_part">
-                                <div id="img_container">
+                            <div id="opt_part" style="display: none">
+                                <div id="img_container" display="none">
                                     <div id="img_size">
                                         <img :src="imgSrc" id="image" onerror="this.src='/image/logo.png'">
                                     </div>
@@ -89,8 +103,93 @@
                                         D. {{ options.D }}
                                 </div>
                             </div>
+                            <div id="tingyinxuanwen_part" style="display: none">
+
+                                <div id="option-A" class="option_1">
+                                    <div id="question_a_text">A. {{ options.A }}</div>
+                                </div>
+                                <div id="option-B" class="option_1">
+                                    <div id="question_b_text">B. {{ options.B }}</div>
+                                </div>
+                                <div id="option-C" class="option_1" style="display: none;">
+                                    <div id="question_c_text">C. {{ options.C }}</div>
+                                </div>
+                                <div id="option-D" class="option_1" style="display: none;">
+
+                                    <div id="question_d_text">D. {{ options.D }}</div>
+                                </div>
+
+                            </div>
+                            <div id="kantuxuanyin_part" style="display: none">
+                                <div class="option_2" >
+                                    <div class="optionBox" id="option_A2" style="float:left;width: 220px;margin-right: 100px">
+                                        <img src="/image/audio-unselected.png" class="option_audio" id="option_a_audio" @click="playAudio('A')">
+                                        <img src="/image/finger.png" class="finger" style="margin-left: 55px !important;">
+                                        <div id="problem_a_text">A. {{ options.A }}</div>
+                                    </div>
+                                    <div class="optionBox" id="option_B2" style="float:left;width: 220px;">
+                                        <img src="/image/audio-unselected.png" class="option_audio" id="option_b_audio" @click="playAudio('B')">
+                                        <img src="/image/finger.png" class="finger" style="margin-left: 55px !important;">
+                                        <div id="problem_b_text">B. {{ options.B }}</div>
+                                    </div>
+                                </div>
+                                <div class="option_2">
+                                    <div class="optionBox" id="option_C2" style="float:left;display: none;margin-right: 100px;width: 220px">
+                                        <img  src="/image/audio-unselected.png" id="option_c_audio" class="option_audio" @click="playAudio('C')">
+                                        <img src="/image/finger.png" class="finger" style="margin-left: 55px !important;">
+                                        <div id="problem_c_text" v-if="option_c_aud != ''">C. {{ options.C }}</div>
+                                    </div>
+                                    <div class="optionBox" id="option_D2" style="float:left;display: none;width: 220px">
+                                        <img  src="/image/audio-unselected.png" id="option_d_audio" class="option_audio" @click="playAudio('D')">
+                                        <img src="/image/finger.png" class="finger" style="margin-left: 55px !important;">
+                                        <div id="problem_d_text" v-if="option_d_aud != ''">D. {{ options.D }}</div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div id="tingyinxuanci_part" style="display: none">
+                                <div id="option_A3" class="option_3">
+                                    <div class="option_img_container" v-if="option_a_img&&option_a_img != ''">
+                                        <div class="imgSize1">
+                                            <img class="option_img" id="option_a_img" :src=option_a_img onload="changeSize(this,'option','a')">
+                                        </div>
+                                    </div>
+                                    <div id="prob_a_text">A. {{ options.A }}</div>
+                                </div>
+                                <div id="option_B3" class="option_3">
+
+                                    <div class="option_img_container" v-if="option_b_img&&option_b_img != ''">
+                                        <div class="imgSize1">
+                                            <img class="option_img" id="option_b_img" :src=option_b_img onload="changeSize(this,'option','b')">
+                                        </div>
+                                    </div>
+                                    <div id="prob_b_text">B. {{ options.B }}</div>
+                                </div>
+                                <div id="option_C3" class="option_3" style="display: none;">
+                                    <div class="option_img_container" v-if="option_c_img && option_c_img != ''">
+                                        <div class="imgSize1">
+                                            <img class="option_img" id="option_c_img" :src=option_c_img onload="changeSize(this,'option','c')">
+                                        </div>
+                                    </div>
+                                    <div id="prob_c_text">C. {{ options.C }}</div>
+                                </div>
+                                <div id="option_D3" class="option_3" style="display: none;">
+                                    <div class="option_img_container" v-if="option_d_img && option_d_img != ''">
+                                        <div class="imgSize1">
+                                            <img class="option_img" id="option_d_img" :src=option_d_img onload="changeSize(this,'option','d')">
+                                        </div>
+                                    </div>
+                                    <div id="prob_d_text">D. {{ options.D }}</div>
+                                </div>
+                            </div>
+                            <div id="panduanzhengwu_part" style="display: none">
+                                <div class="option_2">
+                                    <div class="optionBox" id="option_A" style="float:left"><span>A.</span><img :src=judge_true class="option_judge" id="option_a_judge"></div>
+                                    <div class="optionBox" id="option_B" style="float:left"><span>B.</span><img :src=judge_false class="option_judge" id="option_b_judge"></div>
+                                </div>
+                            </div>
                             <div id="txt_part" style="display: none;">
-                                <div id="img_container">
+                                <div id="img_container" display="none">
                                     <div id="img_size">
                                         <img :src="imgSrc" id="image" onerror="this.src='/image/logo.png'">
                                     </div>
@@ -103,11 +202,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="analysis_area">
+                        <div id="analysis_area" style="display: none">
                             <img id="analysis_background" src="/image/background.png">
                             <div id="analysis_text">
-                                <img id="play_button" src="/image/play.png"  @click="playAnalysis">
-                                <audio id="audio" :src="audio_src"></audio>
+<!--                                <img id="play_button" src="/image/play.png"  @click="playAnalysis">-->
+<!--                                <audio id="audio" :src="audio_src"></audio>-->
                                 <p style="font-family: 'Microsoft YaHei';text-align: center;font-size: 1.5rem;font-weight: 600;"><span>本题解析</span></p>
                                 <div style="position: relative;display: flex;align-items: center;z-index: inherit;margin: 0;padding: 0;width: 100%;height: 90%;"><p id="analysis_content"><span></span></p></div>
                             </div>
@@ -132,6 +231,54 @@
     </div>
 </body>
 <script>
+    function changeSize (img,type,num='e') {
+        let image = new Image();
+        image.src = img.src;
+        if(image.width >= image.height){
+            let el;
+            if(type == 'stem'){
+                el = document.getElementById('image2');
+            }else if(type == 'option'){
+                el = document.getElementById('option_' + num + '_img');
+            }
+            el.style.width = "100%";
+            el.style.height = "auto";
+            console.log(image.width)
+            console.log(image.height)
+            if(image.height > image.width * 0.88){
+                el.style.width = "90%";
+                el.style.height = "auto";
+            }
+
+        }else {
+            let el;
+            if(type == 'stem'){
+                el = document.getElementById('image2');
+            }else if(type == 'option'){
+                el = document.getElementById('option_' + num + '_img');
+            }
+            el.style.width = "auto";
+            el.style.height = "100%";
+            console.log(image.width)
+            console.log(image.height)
+            if(image.width > image.height * 0.88){
+                el.style.width = "90%";
+                el.style.height = "auto";
+            }
+
+
+        }
+    }
+
+    function audioFlicker (el) {
+        let tmp = el.src.split('/');
+        if (tmp[tmp.length - 1] == 'audio-unchecked.png') {
+            el.src = "/image/audio-checked.png";
+        } else {
+            el.src = "/image/audio-unchecked.png";
+        };
+    }
+
     function setCookie(cname,cvalue) {
         document.cookie = cname + "=" + cvalue + "; ";
     }
@@ -249,11 +396,21 @@
             num: 0,
             totalNum: 0,
             opt_num: 0,
+            opt_choice_num: 0,
+            opt_tingyinxuanwen_num: 0,
+            opt_kantuxuanyin_num: 0,
+            opt_tingyinxuanci_num: 0,
+            opt_panduanzhengwu_num: 0,
             id: 0,    //全局的 this.id 指的是一份试卷 sheetTemp 的 id
             is_show: 0,
             show: 0,
             prob_list: [],
             opt_box: [],
+            opt_choice_box: [],
+            opt_tingyinxuanwen_box: [],
+            opt_kantuxuanyin_box: [],
+            opt_tingyinxuanci_box: [],
+            opt_panduanzhengwu_box: [],
             txt_box: [],
             src: "",
             imgSrc: "",
@@ -287,9 +444,232 @@
             wrong_list: [],
             correct_list: [],
             show_analysis: [],
-
+            intervals: [0,0,0,0,0],
+            stem_img: "",
+            option_a_img: "",
+            option_b_img: "",
+            option_c_img: "",
+            option_d_img: "",
+            stem_aud: "",
+            option_a_aud: "",
+            option_b_aud: "",
+            option_c_aud: "",
+            option_d_aud: "",
+            a_play: "/image/audio-unselected.png",
+            b_play: "/image/audio-unselected.png",
+            c_play: "/image/audio-unselected.png",
+            d_play: "/image/audio-unselected.png",
+            judge_true: "",
+            judge_false: "",
         },
         methods: {
+            musicEnd: function (num) {
+                switch(num){
+                    case 0: {
+                        clearInterval(this.intervals[0]);
+
+                        document.getElementById('stem_audio').src= "/image/audio-unchecked.png";
+                        break;
+                    }
+                    case 1: {
+                        clearInterval(this.intervals[1]);
+                        document.getElementById('option_a_audio').src= this.a_play;
+                        break;
+                    }
+                    case 2: {
+                        clearInterval(this.intervals[2]);
+                        document.getElementById('option_b_audio').src= this.b_play;
+                        break;
+                    }
+                    case 3: {
+                        clearInterval(this.intervals[3]);
+                        document.getElementById('option_c_audio').src= this.c_play;
+                        break;
+                    }
+                    case 4: {
+                        clearInterval(this.intervals[4]);
+                        document.getElementById('option_d_audio').src= this.d_play;
+                        break;
+                    }
+                }
+            },
+
+            pauseMusic: function () {
+                document.getElementById('stem_music').pause();
+                document.getElementById('option_a_music').pause();
+                document.getElementById('option_b_music').pause();
+                document.getElementById('option_c_music').pause();
+                document.getElementById('option_d_music').pause();
+                for(let i = 0; i < 5; i++){
+                    clearInterval(this.intervals[i])
+                    this.intervals[i] = 0;
+                }
+            },
+
+            playAudio: function (problem) {
+                if(problem == 'stem') {
+                    let el = document.getElementById('stem_audio');
+                    let music = document.getElementById('stem_music');
+                    if (music.paused) {
+                        this.pauseMusic();
+                        for(let i = 0; i < this.intervals.length; i++){
+                            if(this.intervals[i] != 0){
+                                if(i == 1)
+                                    document.getElementById('option_a_audio').src = "/image/audio-checked.png";
+                                else if(i == 2)
+                                    document.getElementById('option_b_audio').src = "/image/audio-checked.png";
+                                else if(i == 3)
+                                    document.getElementById('option_c_audio').src = "/image/audio-checked.png";
+                                else if(i == 4)
+                                    document.getElementById('option_d_audio').src = "/image/audio-checked.png";
+                                clearInterval(this.intervals[i]);
+                                this.intervals[i] = 0;
+                            }
+                        }
+
+                        music.src = this.stem_aud;
+
+                        music.play();
+                        this.intervals[0] = setInterval(function () {
+                            audioFlicker(el);
+                        },500);
+                    }else{
+                        music.pause();
+                        music.currentTime = 0;
+                        clearInterval(this.intervals[0]);
+                        this.intervals[0] = 0;
+                        el.src = "/image/audio-unchecked.png";
+                    }
+                }else if(problem == 'A'){
+
+                    if(document.getElementById('stem_audio'))
+                        document.getElementById('stem_audio').src = "/image/audio-unchecked.png";
+                    document.getElementById('option_a_audio').src = this.a_play;
+                    document.getElementById('option_b_audio').src = this.b_play;
+                    if(document.getElementById('option_c_audio'))
+                        document.getElementById('option_c_audio').src = this.c_play;
+                    if(document.getElementById('option_d_audio'))
+                        document.getElementById('option_d_audio').src = this.d_play;
+                    let el = document.getElementById('option_a_audio');
+                    let music = document.getElementById('option_a_music');
+                    if (music.paused) {
+                        this.pauseMusic();
+                        for(let i = 0; i < this.intervals.length; i++){
+                            clearInterval(this.intervals[i]);
+                            this.intervals[i] = 0;
+                        }
+
+                        music.src = this.option_a_aud;
+                        music.play();
+                        this.intervals[1] = setInterval(function () {
+                            audioFlicker(el);
+                        },500);
+                    }else{
+                        music.pause();
+                        music.currentTime = 0;
+                        clearInterval(this.intervals[1]);
+                        this.intervals[0] = 0;
+                        el.src = this.a_play;
+                    }
+                }else if(problem == 'B'){
+
+                    if(document.getElementById('stem_audio'))
+                        document.getElementById('stem_audio').src = "/image/audio-unchecked.png";
+                    document.getElementById('option_a_audio').src = this.a_play;
+                    document.getElementById('option_b_audio').src = this.b_play;
+                    if(document.getElementById('option_c_audio'))
+                        document.getElementById('option_c_audio').src = this.c_play;
+                    if(document.getElementById('option_d_audio'))
+                        document.getElementById('option_d_audio').src = this.d_play;
+
+                    let el = document.getElementById('option_b_audio');
+                    let music = document.getElementById('option_b_music');
+                    if (music.paused) {
+                        this.pauseMusic();
+                        for(let i = 0; i < this.intervals.length; i++){
+                            clearInterval(this.intervals[i]);
+                            this.intervals[i] = 0;
+                        }
+
+                        music.src = this.option_b_aud;
+                        music.play();
+                        this.intervals[2] = setInterval(function () {
+                            audioFlicker(el);
+                        },500);
+                    }else{
+                        music.pause();
+                        music.currentTime = 0;
+                        clearInterval(this.intervals[2]);
+                        this.intervals[2] = 0;
+                        el.src = this.b_play;
+                    }
+                }else if(problem == 'C'){
+
+                    if(document.getElementById('stem_audio'))
+                        document.getElementById('stem_audio').src = "/image/audio-unchecked.png";
+                    document.getElementById('option_a_audio').src = this.a_play;
+                    document.getElementById('option_b_audio').src = this.b_play;
+                    if(document.getElementById('option_c_audio'))
+                        document.getElementById('option_c_audio').src = this.c_play;
+                    if(document.getElementById('option_d_audio'))
+                        document.getElementById('option_d_audio').src = this.d_play;
+
+                    let el = document.getElementById('option_c_audio');
+                    let music = document.getElementById('option_c_music');
+                    if (music.paused) {
+                        this.pauseMusic();
+                        for(let i = 0; i < this.intervals.length; i++){
+                            clearInterval(this.intervals[i]);
+                            this.intervals[i] = 0;
+                        }
+
+                        music.src = this.option_c_aud;
+                        music.play();
+                        this.intervals[3] = setInterval(function () {
+                            audioFlicker(el);
+                        },500);
+                    }else{
+                        music.pause();
+                        music.currentTime = 0;
+                        clearInterval(this.intervals[3]);
+                        this.intervals[3] = 0;
+                        el.src = this.c_play;
+                    }
+                }else if(problem == 'D'){
+
+                    if(document.getElementById('stem_audio'))
+                        document.getElementById('stem_audio').src = "/image/audio-unchecked.png";
+                    document.getElementById('option_a_audio').src = this.a_play;
+                    document.getElementById('option_b_audio').src = this.b_play;
+                    if(document.getElementById('option_c_audio'))
+                        document.getElementById('option_c_audio').src = this.c_play;
+                    if(document.getElementById('option_d_audio'))
+                        document.getElementById('option_d_audio').src = this.d_play;
+
+                    let el = document.getElementById('option_d_audio');
+                    let music = document.getElementById('option_d_music');
+                    if (music.paused) {
+                        this.pauseMusic();
+                        for(let i = 0; i < this.intervals.length; i++){
+                            clearInterval(this.intervals[i]);
+                            this.intervals[i] = 0;
+                        }
+
+                        music.src = this.option_d_aud;
+                        music.play();
+                        this.intervals[4] = setInterval(function () {
+                            audioFlicker(el);
+                        },500);
+                    }else{
+                        music.pause();
+                        music.currentTime = 0;
+                        clearInterval(this.intervals[4]);
+                        this.intervals[4] = 0;
+                        el.src = this.d_play;
+                    }
+                }
+            },
+
             goBack: function () {
                 window.location.href = "/start";
             },
@@ -487,109 +867,112 @@
             },
 
             lastProblem: function () {
-                if(this.wrong_list.indexOf(this.num) > -1) {
-                    var tempIndex = this.wrong_list.indexOf(this.num);
-                    if(this.num > this.wrong_list[0]){
-                        if(this.num > this.opt_num && this.wrong_list[tempIndex - 1] <= this.opt_num){
-                            document.getElementById("num" + this.num).style.color = "#FFFFFF";
-                            document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
-                            document.getElementById("num" + this.num).style.border = "0.125rem solid white";
-                            this.num = this.wrong_list[tempIndex - 1];
-                            document.getElementById('opt_part').style.display = "";
-                            document.getElementById('txt_part').style.display = "none";
-                            document.getElementById("num" + this.num).style.color = "#2A7DE1";
-                            document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
-                            document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
-                            this.refreshAnswer();
-                        }else if(this.num > this.opt_num) {
-                            document.getElementById("num" + this.num).style.color = "#FFFFFF";
-                            document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
-                            document.getElementById("num" + this.num).style.border = "0.125rem solid white";
-                            this.num = this.wrong_list[tempIndex - 1];
-                            document.getElementById("num" + this.num).style.color = "#2A7DE1";
-                            document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
-                            document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
-                        }else {
-                            document.getElementById("num" + this.num).style.color = "#FFFFFF";
-                            document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
-                            document.getElementById("num" + this.num).style.border = "0.125rem solid white";
-                            this.num = this.wrong_list[tempIndex - 1];
-                            document.getElementById("num" + this.num).style.color = "#2A7DE1";
-                            document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
-                            document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
-                            this.refreshAnswer();
+
+                if(this.level != 1 || this.lesson != 1){
+                    if (this.wrong_list.indexOf(this.num) > -1) {
+                        var tempIndex = this.wrong_list.indexOf(this.num);
+                        if (this.num > this.wrong_list[0]) {
+                            if (this.num > this.opt_num && this.wrong_list[tempIndex - 1] <= this.opt_num) {
+                                document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                                document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                                document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                                this.num = this.wrong_list[tempIndex - 1];
+                                document.getElementById('opt_part').style.display = "";
+                                document.getElementById('txt_part').style.display = "none";
+                                document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                                document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                                document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                                this.refreshAnswer();
+                            } else if (this.num > this.opt_num) {
+                                document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                                document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                                document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                                this.num = this.wrong_list[tempIndex - 1];
+                                document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                                document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                                document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                            } else {
+                                document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                                document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                                document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                                this.num = this.wrong_list[tempIndex - 1];
+                                document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                                document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                                document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                                this.refreshAnswer();
+                            }
+                            if (this.num === this.wrong_list[0])
+                                document.getElementById("last_button").style.display = "none";
+                            this.no_next = false;
+                            /*if(this.num === this.wrong_list[this.wrong_list.length - 1] && this.is_show === 0 && this.correct_list.length !== 0)
+                                    this.show = 1;
+                                else {
+                                    this.show = 0;
+                                }*/
+                            this.flag = true;
+                            this.store();
+                            this.$nextTick(() => {
+                                this.fetchProblem();
+                                this.showResult();
+                                this.showAlready();
+                            });
+                        } else {
+                            this.$message({
+                                type: 'info',
+                                message: '这是第一道错题'
+                            });
                         }
-                        if(this.num === this.wrong_list[0])
-                            document.getElementById("last_button").style.display = "none";
-                        this.no_next = false;
-                        /*if(this.num === this.wrong_list[this.wrong_list.length - 1] && this.is_show === 0 && this.correct_list.length !== 0)
-                            this.show = 1;
-                        else {
-                            this.show = 0;
-                        }*/
-                        this.flag = true;
-                        this.store();
-                        this.$nextTick(() => {
-                            this.fetchProblem();
-                            this.showResult();
-                            this.showAlready();
-                        });
-                    }
-                    else {
-                        this.$message({
-                            type: 'info',
-                            message: '这是第一道错题'
-                        });
-                    }
-                }else {
-                    var tempIndex = this.correct_list.indexOf(this.num);
-                    if(this.num > this.correct_list[0]){
-                        if(this.num > this.opt_num && this.correct_list[tempIndex - 1] <= this.opt_num){
-                            document.getElementById("num" + this.num).style.color = "#FFFFFF";
-                            document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
-                            document.getElementById("num" + this.num).style.border = "0.125rem solid white";
-                            this.num = this.correct_list[tempIndex - 1];
-                            document.getElementById('opt_part').style.display = "";
-                            document.getElementById('txt_part').style.display = "none";
-                            document.getElementById("num" + this.num).style.color = "#2A7DE1";
-                            document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
-                            document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
-                            this.refreshAnswer();
-                        }else if(this.num > this.opt_num) {
-                            document.getElementById("num" + this.num).style.color = "#FFFFFF";
-                            document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
-                            document.getElementById("num" + this.num).style.border = "0.125rem solid white";
-                            this.num = this.correct_list[tempIndex - 1];
-                            document.getElementById("num" + this.num).style.color = "#2A7DE1";
-                            document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
-                            document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
-                        }else {
-                            document.getElementById("num" + this.num).style.color = "#FFFFFF";
-                            document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
-                            document.getElementById("num" + this.num).style.border = "0.125rem solid white";
-                            this.num = this.correct_list[tempIndex - 1];
-                            document.getElementById("num" + this.num).style.color = "#2A7DE1";
-                            document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
-                            document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
-                            this.refreshAnswer();
+                    } else {
+                        var tempIndex = this.correct_list.indexOf(this.num);
+                        if (this.num > this.correct_list[0]) {
+                            if (this.num > this.opt_num && this.correct_list[tempIndex - 1] <= this.opt_num) {
+                                document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                                document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                                document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                                this.num = this.correct_list[tempIndex - 1];
+                                document.getElementById('opt_part').style.display = "";
+                                document.getElementById('txt_part').style.display = "none";
+                                document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                                document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                                document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                                this.refreshAnswer();
+                            } else if (this.num > this.opt_num) {
+                                document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                                document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                                document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                                this.num = this.correct_list[tempIndex - 1];
+                                document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                                document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                                document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                            } else {
+                                document.getElementById("num" + this.num).style.color = "#FFFFFF";
+                                document.getElementById("num" + this.num).style.backgroundColor = "#2A7DE1";
+                                document.getElementById("num" + this.num).style.border = "0.125rem solid white";
+                                this.num = this.correct_list[tempIndex - 1];
+                                document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                                document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                                document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                                this.refreshAnswer();
+                            }
+                            this.no_next = false;
+                            this.flag = true;
+                            this.store();
+                            this.$nextTick(() => {
+                                this.fetchProblem();
+                                this.showResult();
+                                this.showAlready();
+                            });
+                        } else {
+                            this.jumpProblem(this.wrong_list[this.wrong_list.length - 1]);
                         }
-                        this.no_next = false;
-                        this.flag = true;
-                        this.store();
-                        this.$nextTick(() => {
-                            this.fetchProblem();
-                            this.showResult();
-                            this.showAlready();
-                        });
                     }
-                    else {
-                        this.jumpProblem(this.wrong_list[this.wrong_list.length - 1]);
-                    }
+                }else{
+
                 }
-                
             },
 
             nextProblem: function () {
+                console.log(this.num)
                 if(this.wrong_list.indexOf(this.num) > -1) {
                     var len = this.wrong_list.length - 1;
                     var tempIndex = this.wrong_list.indexOf(this.num);
@@ -709,19 +1092,35 @@
                     this.show_analysis = new Array(this.totalNum).fill(0);
                 }
                 this.opt_num = res.opt_num;
-                for (var i = 1; i <= this.totalNum; i++) {
-                    if(i > this.opt_num){
-                        this.txt_box.push(i);
-                    }else {
-                        this.opt_box.push(i);
+                this.opt_choice_num = res.opt_choice_num;
+                this.opt_tingyinxuanwen_num = res.opt_tingyinxuanwen_num;
+                this.opt_kantuxuanyin_num = res.opt_kantuxuanyin_num;
+                this.opt_tingyinxuanci_num = res.opt_tingyinxuanci_num;
+                this.opt_panduanzhengwu_num = res.opt_panduanzhengwu_num;
+                for (var j = 1; j <= this.totalNum; j++) {
+                    if(res.sheet_list[j-1].layoutType == "Choice") {
+                        this.opt_choice_box.push(j);
+                        this.opt_box.push(j);
                     }
-                }
-                if(this.num <= this.opt_num) {
-                    document.getElementById('opt_part').style.display = "";
-                    document.getElementById('txt_part').style.display = "none";
-                }else {
-                    document.getElementById('opt_part').style.display = "none";
-                    document.getElementById('txt_part').style.display = "";
+                    else if(res.sheet_list[j-1].layoutType == "tingyinxuanwen") {
+                        this.opt_tingyinxuanwen_box.push(j);
+                        this.opt_box.push(j);
+                    }
+                    else if(res.sheet_list[j-1].layoutType == "kantuxuanyin") {
+                        this.opt_kantuxuanyin_box.push(j);
+                        this.opt_box.push(j);
+                    }
+                    else if(res.sheet_list[j-1].layoutType == "tingyinxuanci") {
+                        this.opt_tingyinxuanci_box.push(j);
+                        this.opt_box.push(j);
+                    }
+                    else if(res.sheet_list[j-1].layoutType == "panduanzhengwu") {
+                        this.opt_panduanzhengwu_box.push(j);
+                        this.opt_box.push(j);
+                    }
+                    else if(res.sheet_list[j-1].layoutType == "txt") {
+                        this.txt_box.push(j);
+                    }
                 }
                 if(this.is_show === 1) {
                     this.show = 0;
@@ -790,6 +1189,11 @@
                         document.getElementById("question_info").style.display = "none";
                         document.getElementById("question_text").style.display = "none";
                         document.getElementById("opt_part").style.display = "none";
+                        document.getElementById('tingyinxuanwen_part').style.display = "none";
+                        document.getElementById('kantuxuanyin_part').style.display = "none";
+                        document.getElementById('tingyinxuanci_part').style.display = "none";
+                        document.getElementById('panduanzhengwu_part').style.display = "none";
+                        document.getElementById('txt_part').style.display = "none";
                         document.getElementById("congrats").style.display = "flex";
                         this.show = 1;
                         this.finishWrong = true;
@@ -806,7 +1210,7 @@
                 }else {
                     if(this.num === 0)
                         this.num = this.wrong_list[0];
-                    if(this.num > this.opt_num) {
+                    if(this.num > this.opt_num) {                  //要变成在fetchProblem里
                         document.getElementById('opt_part').style.display = "none";
                         document.getElementById('txt_part').style.display = "";
                     }
@@ -820,7 +1224,7 @@
 
             getImage: function (str) {
                 var img = new Image();
-                img.src = "/image/_prob/" + str + ".png";
+                img.src = str;
                 if(img.complete){
                     document.getElementById("img_size").style.width = "100%";
                     document.getElementById("img_size").style.height = "100%";
@@ -844,47 +1248,337 @@
             },
 
             fetchProblem: async function () {
-                if(this.num <= this.opt_num) {
-                    var prob = await axios.get("/getProblem?num="+this.prob_list[this.num-1].toString());
-                    this.prob_text = prob.data.prob_text;
-                    this.audio_src = "/audio/" + this.prob_list[this.num-1].toString() + ".mp3";
-                    this.options_id = prob.data.options_id;
-                    this.getImage(this.prob_list[this.num-1].toString());
-                    var option = await axios.get("/getOptions?id="+this.options_id);
-                    this.options.A = option.data.option_a;
-                    this.options.B = option.data.option_b;
-                    this.options.C = option.data.option_c;
-                    if(option.data.hasOwnProperty('option_c') && (option.data.option_c !== null && option.data.option_c !== "")) {
+                document.getElementById('question_area').style.width = "40%";
+                document.getElementById('question_area').style.width = "70%";
+                if(this.level != 1 || this.lesson != 1) {
+                    document.getElementById('analysis_area').style.display="";
+                    if (this.num <= this.opt_num) {
+                        this.openView('opt');
+                        document.getElementById('img_container').style.display="";
+                        var prob = await axios.get("/getProblem?num=" + this.prob_list[this.num - 1].toString());
+                        this.prob_text = prob.data.prob_text;
+                        //this.audio_src = "/audio/" + this.prob_list[this.num - 1].toString() + ".mp3";
+                        this.options_id = prob.data.options_id;
+                        this.stem_img = prob.data.image_url;
+                        this.getImage(this.stem_img);
+                        var option = await axios.get("/getOptions?id=" + this.options_id);
+                        this.options.A = option.data.option_a;
+                        this.options.B = option.data.option_b;
                         this.options.C = option.data.option_c;
-                        document.getElementById('option_C').style.display = "";
-                    }else {
-                        this.options.C = "";
-                        document.getElementById('option_C').style.display = "none";
+                        if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null && option.data.option_c !== "")) {
+                            this.options.C = option.data.option_c;
+                            document.getElementById('option_C').style.display = "";
+                        } else {
+                            this.options.C = "";
+                            document.getElementById('option_C').style.display = "none";
+                        }
+                        if (option.data.hasOwnProperty('option_d') && (option.data.option_d !== null && option.data.option_d !== "")) {
+                            this.options.D = option.data.option_d;
+                            document.getElementById('option_D').style.display = "";
+                        } else {
+                            this.options.D = "";
+                            document.getElementById('option_D').style.display = "none";
+                        }
+                        document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                        document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                        document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
+                    } else {
+                        this.openView('txt');
+                        document.getElementById('img_container').style.display="";
+                        this.txt = [];
+                        var prob = await axios.get("/getProblem?num=" + this.prob_list[this.num - 1].toString());
+                        this.prob_text = prob.data.prob_text;
+                        this.stem_img = prob.data.image_url;
+                        this.getImage(this.stem_img);
+                        for (var i = 0; i < prob.data.blank_num; i++) {//2记得改为prob.data.blank_num
+                            this.txt.push("");
+                        }
+                        this.input_num = [...Array(prob.data.blank_num).keys()];//2记得改为prob.data.blank_num
+                        this.prob_text = prob.data.prob_text;
+                        document.getElementById("num" + this.num).style.color = "#2A7DE1";
+                        document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
+                        document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
                     }
-                    if(option.data.hasOwnProperty('option_d') && (option.data.option_d !== null && option.data.option_d !== "")) {
-                        this.options.D = option.data.option_d;
-                        document.getElementById('option_D').style.display = "";
-                    }else {
-                        this.options.D = "";
-                        document.getElementById('option_D').style.display = "none";
-                    }
-                    document.getElementById("num" + this.num).style.color = "#2A7DE1";
-                    document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
-                    document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
                 }else {
-                    this.txt = [];
-                    var prob = await axios.get("/getProblem?num="+this.prob_list[this.num-1].toString());
-                    this.prob_text = prob.data.prob_text;
-                    this.getImage(this.prob_list[this.num-1].toString());
-                    for(var i = 0;i < prob.data.blank_num;i++) {//2记得改为prob.data.blank_num
-                        this.txt.push("");
+                    this.stem_img = "";
+                    this.option_a_img = "";
+                    this.option_b_img = "";
+                    this.option_c_img = "";
+                    this.option_d_img = "";
+                    this.stem_aud = "";
+                    this.option_a_aud = "";
+                    this.option_b_aud = "";
+                    this.option_c_aud = "";
+                    this.option_d_aud = "";
+                    this.imgSrc = "";
+                    this.prob_text = "";
+                    this.prob_attr =  "";
+                    this.options_id = 0;
+                    this.options.A = "";
+                    this.options.B = "";
+                    this.options.C = "";
+                    this.options.D = "";
+                    document.getElementById('analysis_area').style.display="none";
+                    document.getElementById('question_area').style.width = "79%";
+                    document.getElementById('question_area').style.width = "83%";
+                    var prob = await axios.get("/getProblem?num=" + this.prob_list[this.num - 1].toString());
+                    if(prob.data.prob_text && prob.data.prob_text != "")
+                        this.prob_text = prob.data.prob_text;
+                    document.getElementById('question_text').style.width = "94%";
+                    document.getElementById('image_container2').style.display = "none";
+                    switch (prob.data.prob_attr) {
+                        case "Choice": {
+                            this.prob_attr = "选择题";
+                            this.openView('opt');
+                            document.getElementById('question_text').style.width = "66%";
+                            document.getElementById('img_container').style.display = "none";
+                            let tmp = document.getElementById('image_container2');
+                            tmp.style.display = "";
+                            if(!prob.data.image_url || prob.data.image_url == ""){
+                                tmp = document.getElementById('image');
+                                tmp.src = "/image/logo.png";
+                                tmp.style.width = "100%";
+                                tmp.style.height = "100%";
+                                tmp = document.getElementsByClassName('imgSize')[0];
+                                tmp.style.borderRadius = "0";
+                                tmp = document.getElementById('image_container');
+                                tmp.style.backgroundImage = "none";
+                            }else {
+                                this.stem_img = prob.data.image_url;
+                                document.getElementById('image_container2').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
+                                document.getElementById('image2').src = this.stem_img;
+                                document.getElementsByClassName('imgSize2')[0].style.borderRadius = "16px";
+                            }
+                            this.options_id = prob.data.options_id;
+                            var option = await axios.get("/getOptions?id=" + this.options_id);
+                            this.options.A = option.data.option_a;
+                            this.options.B = option.data.option_b;
+                            if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null) && (option.data.option_c.length > 0)) {
+                                this.options.C = option.data.option_c;
+                                document.getElementById('option_C').style.display = "";
+                            } else {
+                                this.options.C = "";
+                                document.getElementById('option_C').style.display = "none";
+                            }
+                            if (option.data.hasOwnProperty('option_d') && (option.data.option_d !== null) && (option.data.option_d.length > 0)) {
+                                this.options.D = option.data.option_d;
+                                document.getElementById('option_D').style.display = "";
+                            } else {
+                                this.options.D = "";
+                                document.getElementById('option_D').style.display = "none";
+                            }
+                            break;
+                        }
+                        case "tingyinxuanwen": {
+                            this.prob_attr = "听音选文";
+                            this.openView('tingyinxuanwen');
+                            if(prob.data.audio_url && prob.data.audio_url != "")
+                                this.stem_aud = prob.data.audio_url;
+                            this.options_id = prob.data.options_id;
+                            var option = await axios.get("/getOptions?id=" + this.options_id);
+                            this.options.A = option.data.option_a;
+                            this.options.B = option.data.option_b;
+                            if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null) && (option.data.option_c.length > 0)) {
+                                this.options.C = option.data.option_c;
+                                document.getElementById('option-C').style.display = "";
+                            } else {
+                                this.options.C = "";
+                                document.getElementById('option-C').style.display = "none";
+                            }
+                            if (option.data.hasOwnProperty('option_d') && (option.data.option_d !== null) && (option.data.option_d.length > 0)) {
+                                this.options.D = option.data.option_d;
+                                document.getElementById('option-D').style.display = "";
+                            } else {
+                                this.options.D = "";
+                                document.getElementById('option-D').style.display = "none";
+                            }
+                            break;
+                        }
+                        case "kantuxuanyin": {
+                            this.prob_attr = "看图选音";
+                            this.openView('kantuxuanyin');
+                            document.getElementById('question_text').style.width = "66%";
+                            let tmp = document.getElementById('image_container');
+                            tmp.style.display = "";
+                            tmp.style.display = "";
+                            if(!prob.data.image_url || prob.data.image_url == ""){
+                                tmp = document.getElementById('image');
+                                tmp.src = "/image/logo.png";
+                                tmp.style.width = "100%";
+                                tmp.style.height = "100%";
+                                tmp = document.getElementsByClassName('imgSize')[0];
+                                tmp.style.borderRadius = "0";
+                                tmp = document.getElementById('image_container');
+                                tmp.style.backgroundImage = "none";
+                            }else {
+                                this.stem_img = prob.data.image_url;
+                                document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
+                                document.getElementById('image').src = this.stem_img;
+                                document.getElementsByClassName('imgSize')[0].style.borderRadius = "16px";
+                            }
+                            this.options_id = prob.data.options_id;
+                            var option = await axios.get("/getOptions?id=" + this.options_id);
+                            console.log(option)
+                            this.options.A = option.data.option_a;
+                            this.options.B = option.data.option_b;
+                            if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null) && (option.data.option_c.length > 0)) {
+                                this.options.C = option.data.option_c;
+                            } else {
+                                this.options.C = "";
+
+                            }
+                            if (option.data.hasOwnProperty('option_d') && (option.data.option_d !== null) && (option.data.option_d.length > 0)) {
+                                this.options.D = option.data.option_d;
+                            } else {
+                                this.options.D = "";
+                            }
+                            this.option_a_aud = option.data.a_audio_url;
+                            this.option_b_aud = option.data.b_audio_url;
+                            if (option.data.hasOwnProperty('c_audio_url') && (option.data.c_audio_url !== null) && (option.data.c_audio_url.length > 0)) {
+                                this.option_c_aud = option.data.c_audio_url;
+                                document.getElementById('option_C2').style.display = "";
+                            } else {
+                                this.options.C = "";
+                                this.option_c_aud = "";
+                                document.getElementById('option_C2').style.display = "none";
+                            }
+                            if (option.data.hasOwnProperty('d_audio_url') && (option.data.d_audio_url !== null) && (option.data.d_audio_url.length > 0)) {
+                                this.option_d_aud = option.data.d_audio_url;
+                                document.getElementById('option_D2').style.display = "";
+                            } else {
+                                this.options.D = "";
+                                this.option_d_aud = "";
+                                document.getElementById('option_D2').style.display = "none";
+                            }
+                            break;
+                        }
+                        case "tingyinxuanci": {
+                            this.prob_attr = "听音选词";
+                            this.openView('tingyinxuanci');
+                            if(prob.data.audio_url && prob.data.audio_url != "")
+                                this.stem_aud = prob.data.audio_url;
+                            this.options_id = prob.data.options_id;
+                            var option = await axios.get("/getOptions?id=" + this.options_id);
+                            this.options.A = option.data.option_a;
+                            this.options.B = option.data.option_b;
+                            if (option.data.hasOwnProperty('option_c') && (option.data.option_c !== null) && (option.data.option_c.length > 0)) {
+                                this.options.C = option.data.option_c;
+                                document.getElementById('option_C3').style.display = "";
+                            } else {
+                                this.options.C = "";
+                                document.getElementById('option_C3').style.display = "none";
+                            }
+                            if (option.data.hasOwnProperty('option_d') && (option.data.option_d !== null) && (option.data.option_d.length > 0)) {
+                                this.options.D = option.data.option_d;
+                                document.getElementById('option_D3').style.display = "";
+                            } else {
+                                this.options.D = "";
+                                document.getElementById('option_D3').style.display = "none";
+                            }
+                            if (option.data.hasOwnProperty('a_image_url') && (option.data.a_image_url !== null) && (option.data.a_image_url.length > 0)) {
+                                this.option_a_img = option.data.a_image_url;
+                            } else {
+                                this.option_a_img = "";
+                            }
+                            if (option.data.hasOwnProperty('b_image_url') && (option.data.b_image_url !== null) && (option.data.b_image_url.length > 0)) {
+                                this.option_b_img = option.data.b_image_url;
+                            } else {
+                                this.option_b_img = "";
+                            }
+                            if (option.data.hasOwnProperty('c_image_url') && (option.data.c_image_url !== null) && (option.data.c_image_url.length > 0)) {
+                                this.option_c_img = option.data.c_image_url;
+                            } else {
+                                this.option_c_img = "";
+                            }
+                            if (option.data.hasOwnProperty('d_image_url') && (option.data.d_image_url !== null) && (option.data.d_image_url.length > 0)) {
+                                this.option_d_img = option.data.d_image_url;
+                            } else {
+                                this.option_d_img = "";
+                            }
+                            break;
+                        }
+                        case "panduanzhengwu": {
+                            this.prob_attr = "判断正误";
+                            this.openView('panduanzhengwu');
+                            document.getElementById('question_text').style.width = "66%";
+                            let tmp = document.getElementById('image_container');
+                            tmp.style.display = "";
+                            if(!prob.data.image_url || prob.data.image_url == ""){
+                                tmp = document.getElementById('image');
+                                tmp.src = "/image/logo.png";
+                                tmp.style.width = "100%";
+                                tmp.style.height = "100%";
+                                tmp = document.getElementsByClassName('imgSize')[0];
+                                tmp.style.borderRadius = "0";
+                                tmp = document.getElementById('image_container');
+                                tmp.style.backgroundImage = "none";
+                            }else {
+                                this.stem_img = prob.data.image_url;
+                                document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
+                                document.getElementById('image').src = this.stem_img;
+                                document.getElementsByClassName('imgSize')[0].style.borderRadius = "16px";
+                            }
+                            if(prob.data.audio_url && prob.data.audio_url != "")
+                                this.stem_aud = prob.data.audio_url;
+                            break;
+                        }
+                        case "Correct":
+                        case "Fill":
+                        case "Rewrite":
+                        case "Translation": {
+                            this.txt = [];
+                            this.openView('txt');
+                            document.getElementById('question_text').style.width = "66%";
+                            let tmp = document.getElementById('image_container');
+                            tmp.style.display = "";
+                            if(!prob.data.image_url || prob.data.image_url == ""){
+                                tmp = document.getElementById('image');
+                                tmp.src = "/image/logo.png";
+                                tmp.style.width = "100%";
+                                tmp.style.height = "100%";
+                                tmp = document.getElementsByClassName('imgSize')[0];
+                                tmp.style.borderRadius = "0";
+                                tmp = document.getElementById('image_container');
+                                tmp.style.backgroundImage = "none";
+                            }else {
+                                this.stem_img = prob.data.image_url;
+                                document.getElementById('image_container').style.backgroundImage = "repeating-linear-gradient(60deg,RGB(255,149,60), RGB(255,200,0))"
+                                document.getElementById('image').src = this.stem_img;
+                                document.getElementsByClassName('imgSize')[0].style.borderRadius = "16px";
+                            }
+                            if(prob.data.audio_url && prob.data.audio_url != "")
+                                this.stem_aud = prob.data.audio_url;
+                            if(prob.data.prob_attr === "Correct") {
+                                this.prob_attr = "改错题";
+                            }else if(prob.data.prob_attr === "Fill") {
+                                this.prob_attr = "填空题";
+                            }else if(prob.data.prob_attr === "Rewrite") {
+                                this.prob_attr = "改写题";
+                            }else if(prob.data.prob_attr === "Translation") {
+                                this.prob_attr = "翻译题";
+                            }
+                            for(var i = 0;i < prob.data.blank_num;i++) {//2记得改为prob.data.blank_num
+                                this.txt.push("");
+                            }
+                            this.input_num = [...Array(prob.data.blank_num).keys()];//2记得改为prob.data.blank_num
+                            this.prob_text = prob.data.prob_text;
+                            break;
+                        }
                     }
-                    this.input_num = [...Array(prob.data.blank_num).keys()];//2记得改为prob.data.blank_num
-                    this.prob_text = prob.data.prob_text;
                     document.getElementById("num" + this.num).style.color = "#2A7DE1";
                     document.getElementById("num" + this.num).style.backgroundColor = "#FFFFFF";
                     document.getElementById("num" + this.num).style.border = "0.125rem solid #2A7DE1";
                 }
+            },
+
+            openView: function (part) {
+                document.getElementById('opt_part').style.display = "none";
+                document.getElementById('tingyinxuanwen_part').style.display = "none";
+                document.getElementById('kantuxuanyin_part').style.display = "none";
+                document.getElementById('tingyinxuanci_part').style.display = "none";
+                document.getElementById('panduanzhengwu_part').style.display = "none";
+                document.getElementById('txt_part').style.display = "none";
+                document.getElementById(part + '_part').style.display = "";
             },
 
             showResult: function () {
@@ -902,7 +1596,8 @@
                         var subChoice = this.submit_list[this.num - 1];
                         if(subChoice !== null){
                             this.is_correct = 'Wrong';
-                            document.getElementById('option_' + subChoice.toUpperCase()).style.background = "#FF5554";
+                            //document.getElementById('option_' + subChoice.toUpperCase()).style.background = "#FF5554";
+                            document.getElementById('option_' + subChoice.toUpperCase()).style.backgroundImage = "url('/image/false-choice.png')";
                             document.getElementById('option_' + subChoice.toUpperCase()).style.color = "white";
                         }
                         else this.is_correct = 'Not Finished';
@@ -1009,6 +1704,9 @@
         },
 
         mounted() {
+            window["musicEnd"] = (num) => {
+                this.musicEnd(num);
+            }
             if(window.location.search.indexOf('strengthen') > -1) {
                 document.getElementById('recomnd_button').style.display = "none";
                 document.getElementById('score').style.display = "none";
@@ -1044,5 +1742,6 @@
             this.id = parseInt(window.location.search.substr(window.location.search.indexOf('id')+3));
             this.setSheet();
         },
+
     })
 </script>

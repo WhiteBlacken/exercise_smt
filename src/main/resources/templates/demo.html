@@ -93,24 +93,24 @@
                                 <button type="button" id="last_button" @click="lastProblem"></button>
                                 <button type="button" id="next_button" @click="nextProblem"></button>
                             </div>
-                                <div id="tingyinxuanwen_part" style="display: none">
+<!--                                <div id="tingyinxuanwen_part" style="display: none">-->
 
-                                    <div id="option-A" class="option_1" @click="chooseOption4('a')">
-                                        <div id="question_a_text">A. {{ options.A }}</div>
-                                    </div>
-                                    <div id="option-B" class="option_1" @click="chooseOption4('b')">
-                                        <div id="question_b_text">B. {{ options.B }}</div>
-                                    </div>
-                                    <div id="option-C" class="option_1" style="display: none;" @click="chooseOption4('c')">
-                                        <div id="question_c_text">C. {{ options.C }}</div>
-                                    </div>
-                                    <div id="option-D" class="option_1" style="display: none;" @click="chooseOption4('d')">
+<!--                                    <div id="option-A" class="option_1" @click="chooseOption4('a')">-->
+<!--                                        <div id="question_a_text">A. {{ options.A }}</div>-->
+<!--                                    </div>-->
+<!--                                    <div id="option-B" class="option_1" @click="chooseOption4('b')">-->
+<!--                                        <div id="question_b_text">B. {{ options.B }}</div>-->
+<!--                                    </div>-->
+<!--                                    <div id="option-C" class="option_1" style="display: none;" @click="chooseOption4('c')">-->
+<!--                                        <div id="question_c_text">C. {{ options.C }}</div>-->
+<!--                                    </div>-->
+<!--                                    <div id="option-D" class="option_1" style="display: none;" @click="chooseOption4('d')">-->
 
-                                        <div id="question_d_text">D. {{ options.D }}</div>
-                                    </div>
-                                    <button type="button" id="last_button" @click="lastProblem"></button>
-                                    <button type="button" id="next_button" @click="nextProblem"></button>
-                                </div>
+<!--                                        <div id="question_d_text">D. {{ options.D }}</div>-->
+<!--                                    </div>-->
+<!--                                    <button type="button" id="last_button" @click="lastProblem"></button>-->
+<!--                                    <button type="button" id="next_button" @click="nextProblem"></button>-->
+<!--                                </div>-->
                                 <div id="kantuxuanyin_part" style="display: none">
                                     <div class="option_2" >
                                         <div class="optionBox" id="option_A2" style="float:left;width: 220px;margin-right: 100px">
@@ -1317,7 +1317,6 @@
                     this.prob_list = res.num_list;   //直接获取题号序列
                     this.opt_num = res.opt_num;
                     this.opt_choice_num = res.opt_choice_num;
-                    this.opt_tingyinxuanwen_num = res.opt_tingyinxuanwen_num;
                     this.opt_kantuxuanyin_num = res.opt_kantuxuanyin_num;
                     this.opt_tingyinxuanci_num = res.opt_tingyinxuanci_num;
                     this.opt_panduanzhengwu_num = res.opt_panduanzhengwu_num;
@@ -1326,7 +1325,6 @@
                     this.opt_box = [];
                     this.txt_box = [];
                     this.opt_choice_box = [];
-                    this.opt_tingyinxuanwen_box = [];
                     this.opt_kantuxuanyin_box = [];
                     this.opt_tingyinxuanci_box = [];
                     this.opt_panduanzhengwu_box = [];
@@ -1337,12 +1335,8 @@
                         activityTemp.index = j;
                         activityTemp.src = '/image/grey-star.png';
                         this.activities.push(activityTemp);
-                        if(res.sheet_list[j-1].layoutType == "Choice") {
+                        if(res.sheet_list[j-1].layoutType == "text") {
                             this.opt_choice_box.push(j);
-                            this.opt_box.push(j);
-                        }
-                        else if(res.sheet_list[j-1].layoutType == "tingyinxuanwen") {
-                            this.opt_tingyinxuanwen_box.push(j);
                             this.opt_box.push(j);
                         }
                         else if(res.sheet_list[j-1].layoutType == "kantuxuanyin") {
@@ -1388,7 +1382,6 @@
 
             openView: function (part) {
                 document.getElementById('opt_part').style.display = "none";
-                document.getElementById('tingyinxuanwen_part').style.display = "none";
                 document.getElementById('kantuxuanyin_part').style.display = "none";
                 document.getElementById('tingyinxuanci_part').style.display = "none";
                 document.getElementById('panduanzhengwu_part').style.display = "none";
