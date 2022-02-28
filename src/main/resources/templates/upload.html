@@ -20,6 +20,7 @@
             margin-left: 100px;
         }
 
+
         body {
             width: 860px;
         }
@@ -85,26 +86,21 @@
                         </el-select>
                     </div>
 
-                    <h3>类型：prob_attr</h3>
+                    <h3>类型：prob_type</h3>
                     <el-form-item>
-                        <el-radio-group v-model="radioType">
+                        <el-radio-group v-model="radioType" @change="clearAll">
                             <el-radio label="Choice">选择题</el-radio>
-                            <el-radio label="tingyinxuanwen">听音选文</el-radio>
-                            <el-radio label="kantuxuanyin">看图选音</el-radio>
-                            <el-radio label="tingyinxuanci">听音选词</el-radio>
-                            <el-radio label="panduanzhengwu">判断正误</el-radio>
+                            <el-radio label="panduanzhengwu">判断题</el-radio>
                             <el-radio label="txt">文本题</el-radio>
                         </el-radio-group>
                     </el-form-item>
 
-                    <h3>难度：prob_diff</h3>
-                    <el-form-item prop="account">
-                        <el-select v-model="formData.prob_diff" placeholder="选择难度">
-                            <el-option label="Easy" value="Easy"></el-option>
-                            <el-option label="Medium" value="Medium"></el-option>
-                            <el-option label="Hard" value="Hard"></el-option>
-                        </el-select>
-                    </el-form-item>
+                    <div v-if="radioType === 'Choice'">
+                        <h3>选择题类型：</h3>
+                        <el-form-item prop="prob_attr">
+                            <el-input label-width="300px" type="textarea" :rows="1" v-model="formData.prob_attr"></el-input>
+                        </el-form-item>
+                    </div>
 
                     <div v-if="radioType === 'txt'">
                         <h3>文本题类型：txt_type</h3>
@@ -118,14 +114,25 @@
                         </el-form-item>
                     </div>
 
+                    <h3>难度：prob_diff</h3>
+                    <el-form-item prop="account">
+                        <el-select v-model="formData.prob_diff" placeholder="选择难度">
+                            <el-option label="Easy" value="Easy"></el-option>
+                            <el-option label="Medium" value="Medium"></el-option>
+                            <el-option label="Hard" value="Hard"></el-option>
+                        </el-select>
+                    </el-form-item>
+
                     <h3>题干：prob_text</h3>
                     <el-form-item label="" prop="prob_text">
                     <h4>文字部分</h4>
                         <el-input label-width="800px" type="textarea" :rows="3" v-model="formData.prob_text"></el-input>
                     </el-form-item>
-                    <el-form-item label="" v-if="radioType === 'Choice' || radioType === 'kantuxuanyin' || radioType === 'panduanzhengwu' || radioType === 'txt'">
+                    <el-form-item label="">
+
                     <h4>图片部分</h4>
                     <el-upload
+                            :show-file-list=showFile
                             class="upload-demo"
                             drag
                             action="fileUpload1"
@@ -139,9 +146,11 @@
                         <div class="el-upload__tip" slot="tip">只能上传单个jpg/png文件</div>
                     </el-upload>
                     </el-form-item>
-                    <el-form-item label="" v-if="radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen' || radioType === 'panduanzhengwu' || radioType === 'txt'">
+
+                    <el-form-item label="">
                     <h4>音频部分</h4>
                     <el-upload
+                            :show-file-list=showFile
                             class="upload-demo"
                             action="fileUpload1"
                             :on-success="uploadAudioAfter"
@@ -154,14 +163,26 @@
                     </el-upload>
                     </el-form-item>
 
-                    <div v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen' || radioType === 'kantuxuanyin'" style="width: 650px">
+
+                    <div v-if="radioType === 'Choice'" style="width: 650px">
+                        <h3>选项类型：choice_type</h3>
+                        <el-form-item prop="choice_type">
+                            <el-select v-model="formData.choice_type" placeholder="选项类型" @change="clearChoice">
+                                <el-option label="纯文本" value="text"></el-option>
+                                <el-option label="图文" value="image"></el-option>
+                                <el-option label="音文" value="audio"></el-option>
+                            </el-select>
+                        </el-form-item>
+
                         <h3>选项：options</h3>
                         <h4>A.</h4>
-                        <el-form-item label="文字部分" v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen' || radioType === 'kantuxuanyin'">
+                        <el-form-item label="文字部分">
                             <el-input v-model="formData.optionA"></el-input>
                         </el-form-item>
-                        <el-form-item label="图片部分" v-if="radioType === 'tingyinxuanci'">
+
+                        <el-form-item label="图片部分" v-if="formData.choice_type === 'image'">
                             <el-upload
+                                    :show-file-list=showFile
                                     class="upload-demo"
                                     action="fileUpload1"
                                     :on-success="uploadImgAfter"
@@ -173,8 +194,9 @@
                                 <el-button size="small" type="primary">点击上传</el-button>
                             </el-upload>
                         </el-form-item>
-                        <el-form-item label="音频部分" v-if="radioType === 'kantuxuanyin'">
+                        <el-form-item label="音频部分" v-if="formData.choice_type === 'audio'">
                             <el-upload
+                                    :show-file-list=showFile
                                     class="upload-demo"
                                     action="fileUpload1"
                                     :on-success="uploadAudioAfter"
@@ -188,11 +210,12 @@
                         </el-form-item>
 
                         <h4>B.</h4>
-                        <el-form-item label="文字部分" v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen' || radioType === 'kantuxuanyin'">
+                        <el-form-item label="文字部分">
                             <el-input v-model="formData.optionB"></el-input>
                         </el-form-item>
-                        <el-form-item label="图片部分" v-if="radioType === 'tingyinxuanci'">
+                        <el-form-item label="图片部分" v-if="formData.choice_type === 'image'">
                             <el-upload
+                                    :show-file-list=showFile
                                     class="upload-demo"
                                     action="fileUpload1"
                                     :on-success="uploadImgAfter"
@@ -204,8 +227,9 @@
                                 <el-button size="small" type="primary">点击上传</el-button>
                             </el-upload>
                         </el-form-item>
-                        <el-form-item label="音频部分" v-if="radioType === 'kantuxuanyin'">
+                        <el-form-item label="音频部分" v-if="formData.choice_type === 'audio'">
                             <el-upload
+                                    :show-file-list=showFile
                                     class="upload-demo"
                                     action="fileUpload1"
                                     :on-success="uploadAudioAfter"
@@ -219,11 +243,12 @@
                         </el-form-item>
 
                         <h4>C.</h4>
-                        <el-form-item label="文字部分" v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen' || radioType === 'kantuxuanyin'">
+                        <el-form-item label="文字部分">
                             <el-input v-model="formData.optionC" placeholder="无 C 选项可不填"></el-input>
                         </el-form-item>
-                        <el-form-item label="图片部分" v-if="radioType === 'tingyinxuanci'">
+                        <el-form-item label="图片部分" v-if="formData.choice_type === 'image'">
                             <el-upload
+                                    :show-file-list=showFile
                                     class="upload-demo"
                                     action="fileUpload1"
                                     :on-success="uploadImgAfter"
@@ -235,8 +260,9 @@
                                 <el-button size="small" type="primary">点击上传</el-button>
                             </el-upload>
                         </el-form-item>
-                        <el-form-item label="音频部分" v-if="radioType === 'kantuxuanyin'">
+                        <el-form-item label="音频部分" v-if="formData.choice_type === 'audio'">
                             <el-upload
+                                    :show-file-list=showFile
                                     class="upload-demo"
                                     action="fileUpload1"
                                     :on-success="uploadAudioAfter"
@@ -250,11 +276,12 @@
                         </el-form-item>
 
                         <h4>D.</h4>
-                        <el-form-item label="文字部分" v-if="radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen' || radioType === 'kantuxuanyin'">
+                        <el-form-item label="文字部分">
                             <el-input v-model="formData.optionD" placeholder="无 D 选项可不填"></el-input>
                         </el-form-item>
-                        <el-form-item label="图片部分" v-if="radioType === 'tingyinxuanci'">
+                        <el-form-item label="图片部分" v-if="formData.choice_type === 'image'">
                             <el-upload
+                                    :show-file-list=showFile
                                     class="upload-demo"
                                     action="fileUpload1"
                                     :on-success="uploadImgAfter"
@@ -266,8 +293,9 @@
                                 <el-button size="small" type="primary">点击上传</el-button>
                             </el-upload>
                         </el-form-item>
-                        <el-form-item label="音频部分" v-if="radioType === 'kantuxuanyin'">
+                        <el-form-item label="音频部分" v-if="formData.choice_type === 'audio'">
                             <el-upload
+                                    :show-file-list=showFile
                                     class="upload-demo"
                                     action="fileUpload1"
                                     :on-success="uploadAudioAfter"
@@ -280,7 +308,8 @@
                             </el-upload>
                         </el-form-item>
                     </div>
-                    <div v-if="radioType === 'panduanzhengwu' || radioType === 'Choice' || radioType === 'tingyinxuanci' || radioType === 'tingyinxuanwen' || radioType === 'kantuxuanyin'" style="width: 650px">
+
+                    <div v-if="radioType === 'panduanzhengwu' || radioType === 'Choice'" style="width: 650px">
                     <h4>正确答案</h4>
                     <el-form-item label="" prop="answer">
                         <el-select v-model="formData.answer" placeholder="选择选项">
@@ -389,9 +418,11 @@
         mixins: [rules],
         data: {
             mode: '新增',
+            showFile: false,
             radioType: 'Choice',
             levels: ['1', '2', '3', '4', '5', '6'],
             lessons: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            upload: [],
             formData: {
                 optionA: '',
                 optionB: '',
@@ -408,6 +439,7 @@
                 answer: '',
                 analysis: '',
                 blank_num: 0,
+                choice_type: 'text',
                 txt_type: '',
                 mode: 1,
                 stem_image: '',
@@ -456,6 +488,40 @@
                 this.formData.blank_num = value;
             },
 
+            clearAll: function () {
+                this.formData.prob_type = '';
+                this.formData.prob_attr = '';
+                this.formData.prob_text = '';
+                this.formData.prob_diff = '';
+                this.formData.point_id = -1;
+                this.formData.prob_id = 0;
+                this.formData.answer = '';
+                this.formData.analysis = '';
+                this.formData.blank_num = 0;
+                this.formData.choice_type = '';
+                this.formData.txt_type = '';
+                this.formData.stem_image = '';
+                this.formData.stem_audio = '';
+                this.formData.stem_flag = 0;
+                this.clearChoice();
+            },
+
+            clearChoice:function () {
+                this.formData.optionA = '';
+                this.formData.optionB = '';
+                this.formData.optionC = '';
+                this.formData.optionD = '';
+                this.formData.option_a_image = '';
+                this.formData.option_b_image = '';
+                this.formData.option_c_image = '';
+                this.formData.option_d_image = '';
+                this.formData.option_a_audio = '';
+                this.formData.option_b_audio = '';
+                this.formData.option_c_audio = '';
+                this.formData.option_d_audio = '';
+                this.formData.option_flag = 0;
+            },
+
             chooseFlag: function (type) {
                 if(type == 'stem'){
                     if(this.formData.stem_image != ''){
@@ -496,7 +562,6 @@
                     }
                     this.chooseFlag('option');
                 }
-                console.log(this.formData)
             },
 
             uploadAudioAfter(res){
@@ -535,50 +600,51 @@
                     });
 
                 else {
-                    this.formData["prob_attr"] = this.radioType;
                     this.formData["prob_type"] = 'opt';
-                    console.log(this.radioType)
-                    console.log(this.formData["prob_attr"])
-                    if (this.formData["prob_attr"] !== "Choice" && this.formData["prob_attr"] !== "tingyinxuanwen" && this.formData["prob_attr"] !== "kantuxuanyin" && this.formData["prob_attr"] !== "tingyinxuanci" && this.formData["prob_attr"] !== "panduanzhengwu") {
+
+                    if (this.radioType == 'panduanzhengwu') {
+                        this.formData["prob_attr"] = 'panduanzhengwu';
+                    }
+                    if (this.radioType == 'txt') {
                         this.formData["prob_attr"] = this.formData["txt_type"];
                         this.formData["prob_type"] = 'txt';
                     }
-                console.log(this.formData["prob_attr"]);
+                    console.log(this.formData["prob_attr"]);
                     console.log("submit:", this.formData);
                     $.cookie("prob_id", null);
                     $.cookie("level", this.formData["prob_level"]);
                     $.cookie("lesson_id", this.formData["lesson_id"]);
 
-                    axios.post("/postProblem1", $.param(this.formData) //引入jQuery的作用
-                    ).then((response) => {
-                        if (response.data === "OK") {
-                            if (this.mode === "编辑")
-                                this.$message({
-                                    type: 'success',
-                                    message: '题目编号' + this.formData["prob_id"].toString() + ' 修改成功！'
-                                });
-                            else
-                                this.$confirm('新增题目成功！请选择操作', '提示', {
-                                    confirmButtonText: '继续新增 →',
-                                    cancelButtonText: '← 返回列表',
-                                    type: 'warning'
-                                }).then(() => {
-                                    window.location.replace("/upload");
-                                }).catch(() => {
-                                    window.location.replace("/upload_list");
-                                });
-                        } else if (response.data === "Fail") {
-                            this.$message({
-                                type: 'error',
-                                message: '修改失败,请联系管理员'
-                            });
-                        } else {
-                            this.$message({
-                                type: 'error',
-                                message: response.data
-                            });
-                        }
-                    });
+                    // axios.post("/postProblem1", $.param(this.formData) //引入jQuery的作用
+                    // ).then((response) => {
+                    //     if (response.data === "OK") {
+                    //         if (this.mode === "编辑")
+                    //             this.$message({
+                    //                 type: 'success',
+                    //                 message: '题目编号' + this.formData["prob_id"].toString() + ' 修改成功！'
+                    //             });
+                    //         else
+                    //             this.$confirm('新增题目成功！请选择操作', '提示', {
+                    //                 confirmButtonText: '继续新增 →',
+                    //                 cancelButtonText: '← 返回列表',
+                    //                 type: 'warning'
+                    //             }).then(() => {
+                    //                 window.location.replace("/upload");
+                    //             }).catch(() => {
+                    //                 window.location.replace("/upload_list");
+                    //             });
+                    //     } else if (response.data === "Fail") {
+                    //         this.$message({
+                    //             type: 'error',
+                    //             message: '修改失败,请联系管理员'
+                    //         });
+                    //     } else {
+                    //         this.$message({
+                    //             type: 'error',
+                    //             message: response.data
+                    //         });
+                    //     }
+                    // });
                 }
             },
 
