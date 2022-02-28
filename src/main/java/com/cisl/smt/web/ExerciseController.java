@@ -759,22 +759,31 @@ public class ExerciseController {
             pt.setAnalysis(answerService.getAnswer(probNum).getAnalysis_text());
             pt.setAns(answerService.getAnswer(probNum).getAnswer_text());
 
-            switch (options.getChoice_type()) {
-                case "text":
-                    break;
-                case "image":
-                    pt.setOption_a_image(options.getA_image_url());
-                    pt.setOption_b_image(options.getB_image_url());
-                    pt.setOption_c_image(options.getC_image_url());
-                    pt.setOption_d_image(options.getD_image_url());
-                    break;
-                case "audio":
-                    pt.setOption_a_audio(options.getA_audio_url());
-                    pt.setOption_b_audio(options.getB_audio_url());
-                    pt.setOption_c_audio(options.getC_audio_url());
-                    pt.setOption_d_audio(options.getD_audio_url());
-                    break;
+            String attr = p.getProb_attr();
+            if("Choice".equals(attr)){
+                opt_num++;
+                switch (options.getChoice_type()) {
+                    case "text":
+                        break;
+                    case "image":
+                        pt.setOption_a_image(options.getA_image_url());
+                        pt.setOption_b_image(options.getB_image_url());
+                        pt.setOption_c_image(options.getC_image_url());
+                        pt.setOption_d_image(options.getD_image_url());
+                        break;
+                    case "audio":
+                        pt.setOption_a_audio(options.getA_audio_url());
+                        pt.setOption_b_audio(options.getB_audio_url());
+                        pt.setOption_c_audio(options.getC_audio_url());
+                        pt.setOption_d_audio(options.getD_audio_url());
+                        break;
+                }
+            }else if("panduanzhengwu".equals(attr)){
+                opt_num++;
+            }else if("txt".equals(attr)){
+                txt_num++;
             }
+
             st.addSheet_list(pt);
         }
 //        //确定次序
