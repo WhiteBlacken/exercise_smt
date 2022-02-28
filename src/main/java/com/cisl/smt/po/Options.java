@@ -29,6 +29,8 @@ public class Options {
     private String b_audio_url;
     private String c_audio_url;
     private String d_audio_url;
+
+    private String choice_type;
     private int resource_flag;
 
     public Options() {};
@@ -38,6 +40,22 @@ public class Options {
         this.option_b = option_b;
         this.option_c = option_c;
         this.option_d = option_d;
+    }
+
+    public Options(String option_a, String option_b, String option_c, String option_d, String a_image_url, String b_image_url, String c_image_url, String d_image_url, String a_audio_url, String b_audio_url, String c_audio_url, String d_audio_url, String choice_type) {
+        this.option_a = option_a;
+        this.option_b = option_b;
+        this.option_c = option_c;
+        this.option_d = option_d;
+        this.a_image_url = a_image_url;
+        this.b_image_url = b_image_url;
+        this.c_image_url = c_image_url;
+        this.d_image_url = d_image_url;
+        this.a_audio_url = a_audio_url;
+        this.b_audio_url = b_audio_url;
+        this.c_audio_url = c_audio_url;
+        this.d_audio_url = d_audio_url;
+        this.choice_type = choice_type;
     }
 
     public Long getOptions_id() {
@@ -150,5 +168,14 @@ public class Options {
 
     public void setResource_flag(int resource_flag) {
         this.resource_flag = resource_flag;
+    }
+
+
+    public String getChoice_type() {
+        return choice_type;
+    }
+
+    public void setChoice_type(String choice_type) {
+        this.choice_type = choice_type;
     }
 }

@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.swing.plaf.OptionPaneUI;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -363,10 +364,65 @@ public class UploadController {
                                @RequestParam("mode") Long mode,
                                @RequestParam("choice_type") String choice_type) {
         try {
-            if (mode == 0) {   //修改模式 //修改暂不进行更改
-                optionsRepository.updateOptions(prob_id, optionA, optionB, optionC, optionD);
-                answerRepository.updateAnswer(prob_id, analysis, answer_text);
-                problemRepository.updateProblemByPoint_id(prob_id, prob_text, prob_attr, prob_diff, prob_level, lesson_id, point_id, blank_num);
+            Long grammar_id = calGrammar_id(lesson_id, prob_level);
+            if (mode == 0) {   //修改模式
+                //修改的话需要知道problem、answer、options的id
+                //处理problem的更改
+                Problem problem = problemRepository.findOne(prob_id);
+                problem.setProb_level(prob_level);
+                problem.setProb_diff(prob_diff);
+                problem.setLesson_id(lesson_id);
+                problem.setGrammar_id(grammar_id);
+                problem.setPoint_id(point_id);
+                problem.setBlank_num(blank_num);
+                problem.setImage_url(stem_image);
+                problem.setAudio_url(stem_audio);
+                problem.setProb_attr(prob_attr);
+                switch (problem.getProb_attr()) {
+                    case "Choice":
+                        problem.setProb_type("选择题");
+                        break;
+                    case "panduanzhengwu":
+                        problem.setProb_type("判断题");
+                        //处理选项-选项固定，无需处理
+                        problem.setProb_text("听录音，判读图文是否匹配");
+                        break;
+                    case "txt":
+                        problem.setProb_type("文本题");
+                        //处理选项-文本题没有选项
+                        //处理题目-文字、音频和图片
+                        problem.setProb_text("听录音，填写对应的句子");
+                        break;
+                }
+                if (prob_text != null && prob_text.length() > 0) problem.setProb_text(prob_text);
+                if (prob_type != null && prob_type.length() > 0) problem.setProb_type(prob_type);
+                problemRepository.save(problem);
+
+                Options options = optionsRepository.findOne(problem.getOptions_id());
+                options.setOption_a(optionA);
+                options.setOption_b(optionB);
+                options.setOption_c(optionC);
+                options.setOption_d(optionD);
+
+                options.setChoice_type(choice_type);
+
+                options.setA_image_url(option_a_image);
+                options.setB_image_url(option_b_image);
+                options.setC_image_url(option_c_image);
+                options.setD_image_url(option_d_image);
+
+                options.setA_audio_url(option_a_audio);
+                options.setB_audio_url(option_b_audio);
+                options.setC_audio_url(option_c_audio);
+                options.setD_audio_url(option_d_audio);
+
+                optionsRepository.save(options);
+
+
+                Answer answer = answerRepository.findOne(problem.getAnswer_id());
+                answer.setAnswer_text(answer_text);
+                answer.setAnalysis_text(analysis);
+                answerRepository.save(answer);
             } else if (mode == 1) {   //新增模式
 //                if (!isContainChinese(prob_text)) {  //检查是否有重复题目, 有中文就不检测
 //                    List<Problem> probList = problemRepository.getAllProblem();
@@ -376,73 +432,26 @@ public class UploadController {
 //                            return "已有重复题目: " + prob.getProb_id().toString();
 //                    }
 //                }
-                System.out.println("prob_attr:" + prob_attr);
+
                 /*
                 需要做三件事
                 1. 处理answer
                 2. 处理options *
                 3. 处理problem *
                  */
+                //组装answer并持久化
                 Answer answer = new Answer(answer_text, analysis);
                 Answer now_answer = answerRepository.save(answer);
 
-                Long grammar_id = calGrammar_id(lesson_id, prob_level);
+                //组装problem
                 Problem problem = new Problem(prob_text, prob_attr, prob_level, prob_diff, lesson_id, grammar_id, point_id, blank_num);
-                problem.setAnswer_id(now_answer.getAnswer_id());
-
-
                 problem.setImage_url(stem_image);
                 problem.setAudio_url(stem_audio);
 
-                Options options = new Options(optionA, optionB, optionC, optionD);
-                switch (prob_attr) {
-                    case "Choice":
-                        problem.setProb_type("选择题");
-                        switch (choice_type) {
-                            case "text":
-                                //选项为纯文本
-                                break;
-                            case "image":
-                                //选项为图文
-                                options.setA_image_url(option_a_image);
-                                options.setB_image_url(option_b_image);
-                                options.setC_image_url(option_c_image);
-                                options.setD_image_url(option_d_image);
-                                break;
-                            case "audio":
-                                options.setA_audio_url(option_a_audio);
-                                options.setB_audio_url(option_b_audio);
-                                options.setC_audio_url(option_c_audio);
-                                options.setD_audio_url(option_d_audio);
-                                break;
-                        }
-                        break;
-                    case "panduanzhengwu":
-                        problem.setProb_type("判断题");
-                        //处理选项-选项固定，无需处理
-                        problem.setProb_text("听录音，判读图文是否匹配");
+                //组装options
+                Options options = new Options(optionA, optionB, optionC, optionD, option_a_image, option_b_image, option_c_image, option_d_image, option_a_audio, option_b_audio, option_c_audio, option_d_audio, choice_type);
 
-                        break;
-                    case "txt":
-                        problem.setProb_type("文本题");
-                        //处理选项-文本题没有选项
-                        //处理题目-文字、音频和图片
-                        problem.setProb_text("听录音，填写对应的句子");
-
-                        break;
-                }
-                if (prob_type != null && prob_type.length() > 1) {
-                    //这个prob_type可自己上传
-                    problem.setProb_type(prob_type);
-                }
-                problem.setProb_type(prob_type);
-                if (prob_text != null && prob_text.length() > 1) {
-                    problem.setProb_text(prob_text);
-                }
-                Options now_options = optionsRepository.save(options);
-                problem.setOptions_id(now_options.getOptions_id());
-
-                problemRepository.save(problem);
+                addProblem(problem, now_answer, options, prob_type, prob_text);
             }
 
         } catch (Exception e) {
@@ -450,6 +459,59 @@ public class UploadController {
             return "Fail";
         }
         return "OK";
+    }
+
+    /**
+     * 新增题目
+     *
+     * @param problem
+     * @param answer
+     * @param options
+     */
+    public void addProblem(Problem problem, Answer answer, Options options, String prob_type, String prob_text) {
+        switch (problem.getProb_attr()) {
+            case "Choice":
+                problem.setProb_type("选择题");
+                break;
+            case "panduanzhengwu":
+                problem.setProb_type("判断题");
+                //处理选项-选项固定，无需处理
+                problem.setProb_text("听录音，判读图文是否匹配");
+                break;
+            case "txt":
+                problem.setProb_type("文本题");
+                //处理选项-文本题没有选项
+                //处理题目-文字、音频和图片
+                problem.setProb_text("听录音，填写对应的句子");
+                break;
+        }
+        //设置自定义prob_type
+        if (prob_type != null && prob_type.length() > 1) {
+            //这个prob_type可自己上传
+            problem.setProb_type(prob_type);
+        }
+        if (prob_text != null && prob_text.length() > 1) {
+            //题目文本可自己上传
+            problem.setProb_text(prob_text);
+        }
+        //将options持久化
+        Options now_options = optionsRepository.save(options);
+        //将题目、选项、答案关联
+        problem.setAnswer_id(answer.getAnswer_id());
+        problem.setOptions_id(now_options.getOptions_id());
+        problemRepository.save(problem);
+
+    }
+
+    /**
+     * 修改题目
+     *
+     * @param problem
+     * @param answer
+     * @param options
+     */
+    public void updateProblem(Problem problem, Answer answer, Options options) {
+
     }
 
     @PostMapping("/deleteProb")
