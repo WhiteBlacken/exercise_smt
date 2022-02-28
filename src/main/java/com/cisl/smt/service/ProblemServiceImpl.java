@@ -5,6 +5,7 @@ import com.cisl.smt.po.Problem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -52,5 +53,11 @@ public class ProblemServiceImpl implements ProblemService {
     public void insertProblem(Long prob_id, Long grammar_id, Long point_id, String prob_attr, String prob_diff, String prob_level, String prob_text, Long options_id, Long answer_id, Long lesson_id, Long blank_num) {
         problemRepository.insertProblem(prob_id, grammar_id, point_id, prob_attr, prob_diff, prob_level, prob_text, options_id, answer_id, lesson_id, blank_num);
     }
+
+    @Override
+    public List<Problem> getByLevelAndLesson(String level, Long lesson_id, int num) {
+        return problemRepository.getByLevelAndLesson(level,lesson_id,num);
+    }
+
 
 }

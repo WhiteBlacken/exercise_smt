@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface ProblemRepository extends JpaRepository<Problem, Long> {  //Long表示主键的类型
@@ -49,4 +50,7 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {  //Lon
     @Query(value = "UPDATE t_problem SET prob_text=:prob_text WHERE prob_id=:prob_id", nativeQuery = true)
     void markDeleteProblem(@Param("prob_id") Long prob_id, @Param("prob_text") String prob_text);
 
+
+    @Query(value = "select * from t_problem where prob_level = ?1 and lesson_id = ?2 order by rand() limit ?3",nativeQuery = true)
+    List<Problem> getByLevelAndLesson(String level, Long lesson_id, int num);
 }
