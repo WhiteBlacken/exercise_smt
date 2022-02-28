@@ -12,6 +12,7 @@ import com.cisl.smt.service.OptionsService;
 
 
 import com.cisl.smt.web.Temp.FileInfo;
+import com.cisl.smt.web.Temp.ProblemAllDetail;
 import com.cisl.smt.web.Temp.ProblemDetail;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
@@ -25,6 +26,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.swing.plaf.OptionPaneUI;
+import javax.swing.text.html.Option;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -210,21 +212,13 @@ public class UploadController {
             switch (problem.getProb_attr()) {
                 case "Choice":
                     break;
-                case "tingyinxuanci":
-                    options_text = options_text + " 选项含图片";
-                    break;
-                case "kantuxuanyin":
-                    options_text = "选项为音频";
-                    break;
-                case "tingyinxuanwen":
-                    break;
                 case "panduanzhengwu":
                     options_text = "选项为 对、错";
                     break;
-                case "Rewrite":
-                case "Correct":
-                case "Translation":
                 case "Fill":
+                    options_text = "文本题无选项内容";
+                    break;
+                case "txt":
                     options_text = "文本题无选项内容";
                     break;
             }
@@ -245,6 +239,26 @@ public class UploadController {
             e.printStackTrace();
         }
         return problemDetail;
+    }
+    @GetMapping("/editProblem")
+    public ProblemAllDetail editProblem(@RequestParam("prob_id") Long prob_id) {
+        ProblemAllDetail problemAllDetail = new ProblemAllDetail();
+
+        try {
+            Problem problem = problemRepository.findOne(prob_id);
+            Options options = optionsRepository.findOne(problem.getOptions_id());
+            Answer answer = answerRepository.findOne(problem.getAnswer_id());
+            Point point = pointRepository.findOne(problem.getPoint_id());
+
+            problemAllDetail.setProblem(problem);
+            problemAllDetail.setOptions(options);
+            problemAllDetail.setAnswer(answer);
+            problemAllDetail.setPoint(point);
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return problemAllDetail;
     }
 
     public String purify(String raw) {
