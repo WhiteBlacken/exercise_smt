@@ -97,8 +97,8 @@
 
                     <div v-if="radioType === 'Choice'">
                         <h3>选择题类型：</h3>
-                        <el-form-item prop="prob_attr">
-                            <el-input label-width="300px" type="textarea" :rows="1" v-model="formData.prob_attr"></el-input>
+                        <el-form-item prop="prob_type">
+                            <el-input label-width="300px" type="textarea" :rows="1" v-model="formData.prob_type"></el-input>
                         </el-form-item>
                     </div>
 
@@ -128,39 +128,51 @@
                     <h4>文字部分</h4>
                         <el-input label-width="800px" type="textarea" :rows="3" v-model="formData.prob_text"></el-input>
                     </el-form-item>
-                    <el-form-item label="">
 
-                    <h4>图片部分</h4>
-                    <el-upload
-                            :show-file-list=showFile
-                            class="upload-demo"
-                            drag
-                            action="fileUpload1"
-                            :limit="1"
-                            :on-success="uploadImgAfter"
-                            accept=".jpg,.jpeg,.png,.gif"
-                            :data="{fileType:'image',info:'stem'}"
-                            >
-                        <i class="el-icon-upload"></i>
-                        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-                        <div class="el-upload__tip" slot="tip">只能上传单个jpg/png文件</div>
-                    </el-upload>
+                    <el-form-item label="">
+                        <h4>图片部分</h4>
+                        <el-upload
+                                ref="stemImageUpload"
+                                :limit="1"
+                                action="fileUpload1"
+                                list-type="picture-card"
+                                :on-success="uploadImgAfter"
+                                accept=".jpg,.jpeg,.png,.gif"
+                                :data="{fileType:'image',info:'stem'}"
+                                >
+                            <i slot="default" class="el-icon-plus"></i>
+                            <div slot="file" slot-scope="{file}">
+                                <img class="el-upload-list__item-thumbnail" :src="file.url" alt="">
+                                <span class="el-upload-list__item-actions">
+                                    <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file,'stem')">
+                                        <i class="el-icon-zoom-in"></i>
+                                    </span>
+                                    <span v-if="!disabled[0]" class="el-upload-list__item-delete" @click="handleRemove(file,'stem')">
+                                        <i class="el-icon-delete"></i>
+                                    </span>
+                                </span>
+                            </div>
+                        </el-upload>
+                        <el-dialog :visible.sync="visibleData.stemVisible">
+                            <img width="100%" :src="formData.stem_image" alt="">
+                        </el-dialog>
                     </el-form-item>
 
                     <el-form-item label="">
                     <h4>音频部分</h4>
                     <el-upload
+                            ref="stemAudioUpload"
                             :show-file-list=showFile
                             class="upload-demo"
                             action="fileUpload1"
                             :on-success="uploadAudioAfter"
-                            multiple
-                            :limit="1"
+                            :before-upload="showStemAudio"
                             accept=".mp3,.m4a,.flac,.wma,.wav"
                             :data="{fileType:'audio',info:'stem'}"
                             >
                         <el-button size="small" type="primary">点击上传</el-button>
                     </el-upload>
+                        <div id="stemAudio"></div>
                     </el-form-item>
 
 
@@ -182,31 +194,46 @@
 
                         <el-form-item label="图片部分" v-if="formData.choice_type === 'image'">
                             <el-upload
-                                    :show-file-list=showFile
-                                    class="upload-demo"
-                                    action="fileUpload1"
-                                    :on-success="uploadImgAfter"
-                                    multiple
+                                    ref="optionAImageUpload"
                                     :limit="1"
+                                    action="fileUpload1"
+                                    list-type="picture-card"
+                                    :on-success="uploadImgAfter"
                                     accept=".jpg,.jpeg,.png,.gif"
                                     :data="{fileType:'image',info:'option',option:'A'}"
                             >
-                                <el-button size="small" type="primary">点击上传</el-button>
+                                <i slot="default" class="el-icon-plus"></i>
+                                <div slot="file" slot-scope="{file}">
+                                    <img class="el-upload-list__item-thumbnail" :src="file.url" alt="">
+                                    <span class="el-upload-list__item-actions">
+                                    <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file,'A')">
+                                        <i class="el-icon-zoom-in"></i>
+                                    </span>
+                                    <span v-if="!disabled[1]" class="el-upload-list__item-delete" @click="handleRemove(file,'A')">
+                                        <i class="el-icon-delete"></i>
+                                    </span>
+                                </span>
+                                </div>
                             </el-upload>
+                            <el-dialog :visible.sync="visibleData.optionAVisible">
+                                <img width="100%" :src="formData.option_a_image" alt="">
+                            </el-dialog>
                         </el-form-item>
                         <el-form-item label="音频部分" v-if="formData.choice_type === 'audio'">
                             <el-upload
-                                    :show-file-list=showFile
+                                    ref="optionAAudioUpload"
+                                    :show-file-list="false"
                                     class="upload-demo"
                                     action="fileUpload1"
                                     :on-success="uploadAudioAfter"
                                     multiple
-                                    :limit="1"
+                                    :before-upload="showOptionAAudio"
                                     accept=".mp3,.m4a,.flac,.wma,.wav"
                                     :data="{fileType:'audio',info:'option',option:'A'}"
                             >
                                 <el-button size="small" type="primary">点击上传</el-button>
                             </el-upload>
+                            <div id="optionAAudio"></div>
                         </el-form-item>
 
                         <h4>B.</h4>
@@ -215,31 +242,46 @@
                         </el-form-item>
                         <el-form-item label="图片部分" v-if="formData.choice_type === 'image'">
                             <el-upload
-                                    :show-file-list=showFile
-                                    class="upload-demo"
-                                    action="fileUpload1"
-                                    :on-success="uploadImgAfter"
-                                    multiple
+                                    ref="optionBImageUpload"
                                     :limit="1"
+                                    action="fileUpload1"
+                                    list-type="picture-card"
+                                    :on-success="uploadImgAfter"
                                     accept=".jpg,.jpeg,.png,.gif"
                                     :data="{fileType:'image',info:'option',option:'B'}"
                             >
-                                <el-button size="small" type="primary">点击上传</el-button>
+                                <i slot="default" class="el-icon-plus"></i>
+                                <div slot="file" slot-scope="{file}">
+                                    <img class="el-upload-list__item-thumbnail" :src="file.url" alt="">
+                                    <span class="el-upload-list__item-actions">
+                                    <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file,'B')">
+                                        <i class="el-icon-zoom-in"></i>
+                                    </span>
+                                    <span v-if="!disabled[2]" class="el-upload-list__item-delete" @click="handleRemove(file,'B')">
+                                        <i class="el-icon-delete"></i>
+                                    </span>
+                                </span>
+                                </div>
                             </el-upload>
+                            <el-dialog :visible.sync="visibleData.optionBVisible">
+                                <img width="100%" :src="formData.option_b_image" alt="">
+                            </el-dialog>
                         </el-form-item>
                         <el-form-item label="音频部分" v-if="formData.choice_type === 'audio'">
                             <el-upload
+                                    ref="optionBAudioUpload"
                                     :show-file-list=showFile
                                     class="upload-demo"
                                     action="fileUpload1"
                                     :on-success="uploadAudioAfter"
                                     multiple
-                                    :limit="1"
+                                    :before-upload="showOptionBAudio"
                                     accept=".mp3,.m4a,.flac,.wma,.wav"
                                     :data="{fileType:'audio',info:'option',option:'B'}"
                             >
                                 <el-button size="small" type="primary">点击上传</el-button>
                             </el-upload>
+                            <div id="optionBAudio"></div>
                         </el-form-item>
 
                         <h4>C.</h4>
@@ -248,31 +290,46 @@
                         </el-form-item>
                         <el-form-item label="图片部分" v-if="formData.choice_type === 'image'">
                             <el-upload
-                                    :show-file-list=showFile
-                                    class="upload-demo"
-                                    action="fileUpload1"
-                                    :on-success="uploadImgAfter"
-                                    multiple
+                                    ref="optionCImageUpload"
                                     :limit="1"
+                                    action="fileUpload1"
+                                    list-type="picture-card"
+                                    :on-success="uploadImgAfter"
                                     accept=".jpg,.jpeg,.png,.gif"
                                     :data="{fileType:'image',info:'option',option:'C'}"
                             >
-                                <el-button size="small" type="primary">点击上传</el-button>
+                                <i slot="default" class="el-icon-plus"></i>
+                                <div slot="file" slot-scope="{file}">
+                                    <img class="el-upload-list__item-thumbnail" :src="file.url" alt="">
+                                    <span class="el-upload-list__item-actions">
+                                    <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file,'C')">
+                                        <i class="el-icon-zoom-in"></i>
+                                    </span>
+                                    <span v-if="!disabled[3]" class="el-upload-list__item-delete" @click="handleRemove(file,'C')">
+                                        <i class="el-icon-delete"></i>
+                                    </span>
+                                </span>
+                                </div>
                             </el-upload>
+                            <el-dialog :visible.sync="visibleData.optionCVisible">
+                                <img width="100%" :src="formData.option_c_image" alt="">
+                            </el-dialog>
                         </el-form-item>
                         <el-form-item label="音频部分" v-if="formData.choice_type === 'audio'">
                             <el-upload
+                                    ref="optionCAudioUpload"
                                     :show-file-list=showFile
                                     class="upload-demo"
                                     action="fileUpload1"
                                     :on-success="uploadAudioAfter"
                                     multiple
-                                    :limit="1"
+                                    :before-upload="showOptionCAudio"
                                     accept=".mp3,.m4a,.flac,.wma,.wav"
                                     :data="{fileType:'audio',info:'option',option:'C'}"
                             >
                                 <el-button size="small" type="primary">点击上传</el-button>
                             </el-upload>
+                            <div id="optionCAudio"></div>
                         </el-form-item>
 
                         <h4>D.</h4>
@@ -281,35 +338,50 @@
                         </el-form-item>
                         <el-form-item label="图片部分" v-if="formData.choice_type === 'image'">
                             <el-upload
-                                    :show-file-list=showFile
-                                    class="upload-demo"
-                                    action="fileUpload1"
-                                    :on-success="uploadImgAfter"
-                                    multiple
+                                    ref="optionDImageUpload"
                                     :limit="1"
+                                    action="fileUpload1"
+                                    list-type="picture-card"
+                                    :on-success="uploadImgAfter"
                                     accept=".jpg,.jpeg,.png,.gif"
                                     :data="{fileType:'image',info:'option',option:'D'}"
                             >
-                                <el-button size="small" type="primary">点击上传</el-button>
+                                <i slot="default" class="el-icon-plus"></i>
+                                <div slot="file" slot-scope="{file}">
+                                    <img class="el-upload-list__item-thumbnail" :src="file.url" alt="">
+                                    <span class="el-upload-list__item-actions">
+                                    <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file,'D')">
+                                        <i class="el-icon-zoom-in"></i>
+                                    </span>
+                                    <span v-if="!disabled[4]" class="el-upload-list__item-delete" @click="handleRemove(file,'D')">
+                                        <i class="el-icon-delete"></i>
+                                    </span>
+                                </span>
+                                </div>
                             </el-upload>
+                            <el-dialog :visible.sync="visibleData.optionDVisible">
+                                <img width="100%" :src="formData.option_d_image" alt="">
+                            </el-dialog>
                         </el-form-item>
                         <el-form-item label="音频部分" v-if="formData.choice_type === 'audio'">
                             <el-upload
+                                    ref="optionDAudioUpload"
                                     :show-file-list=showFile
                                     class="upload-demo"
                                     action="fileUpload1"
                                     :on-success="uploadAudioAfter"
                                     multiple
-                                    :limit="1"
+                                    :before-upload="showOptionDAudio"
                                     accept=".mp3,.m4a,.flac,.wma,.wav"
                                     :data="{fileType:'audio',info:'option',option:'D'}"
                             >
                                 <el-button size="small" type="primary">点击上传</el-button>
                             </el-upload>
+                            <div id="optionDAudio"></div>
                         </el-form-item>
                     </div>
 
-                    <div v-if="radioType === 'panduanzhengwu' || radioType === 'Choice'" style="width: 650px">
+                    <div v-if="radioType === 'Choice'" style="width: 650px">
                     <h4>正确答案</h4>
                     <el-form-item label="" prop="answer">
                         <el-select v-model="formData.answer" placeholder="选择选项">
@@ -319,6 +391,16 @@
                             <el-option label="D" value="D"></el-option>
                         </el-select>
                     </el-form-item>
+                    </div>
+
+                    <div v-if="radioType === 'panduanzhengwu'" style="width: 650px">
+                        <h4>正确答案</h4>
+                        <el-form-item label="" prop="answer">
+                            <el-select v-model="formData.answer" placeholder="选择选项">
+                                <el-option label="True" value="A"></el-option>
+                                <el-option label="False" value="B"></el-option>
+                            </el-select>
+                        </el-form-item>
                     </div>
 
                     <div v-if="radioType === 'txt'">
@@ -444,7 +526,6 @@
                 mode: 1,
                 stem_image: '',
                 stem_audio: '',
-                stem_flag:0,
                 option_a_image: '',
                 option_b_image: '',
                 option_c_image: '',
@@ -453,11 +534,11 @@
                 option_b_audio: '',
                 option_c_audio: '',
                 option_d_audio: '',
-                option_flag: 0,
             },
             level: '0',
             lesson_id: 0,
             grammar: 'Example: is/am/are',
+            disabled: [false,false,false,false,false],
             rules: {
                 answer: [{
                     required: true,
@@ -480,6 +561,13 @@
                 fileType: 'audio',
                 info: '',
                 option: '',
+            },
+            visibleData: {
+                stemVisible: false,
+                optionAVisible: false,
+                optionBVisible: false,
+                optionCVisible: false,
+                optionDVisible: false,
             }
         },
 
@@ -502,7 +590,6 @@
                 this.formData.txt_type = '';
                 this.formData.stem_image = '';
                 this.formData.stem_audio = '';
-                this.formData.stem_flag = 0;
                 this.clearChoice();
             },
 
@@ -519,39 +606,73 @@
                 this.formData.option_b_audio = '';
                 this.formData.option_c_audio = '';
                 this.formData.option_d_audio = '';
-                this.formData.option_flag = 0;
+                if($('#stemAudio').children().length > 0)
+                    $('#stemAudio').empty();
+                if($('#optionAAudio').children().length > 0)
+                    $('#optionAAudio').empty();
+                if($('#optionBAudio').children().length > 0)
+                    $('#optionBAudio').empty();
+                if($('#optionCAudio').children().length > 0)
+                    $('#optionCAudio').empty();
+                if($('#optionDAudio').children().length > 0)
+                    $('#optionDAudio').empty();
             },
 
-            chooseFlag: function (type) {
-                if(type == 'stem'){
-                    if(this.formData.stem_image != ''){
-                        this.formData.stem_flag = 2;
-                        if(this.formData.stem_audio != ''){
-                            this.formData.stem_flag = 4;
-                        }
-                    }else if(this.formData.stem_audio != ''){
-                        this.formData.stem_flag = 3;
-                    }else{
-                        this.formData.stem_flag = 1;
+            handleRemove(file,type) {
+                let uploadFiles;
+                if(type == 'stem')
+                    uploadFiles = this.$refs.stemImageUpload.uploadFiles;
+                else if(type == 'A')
+                    uploadFiles = this.$refs.optionAImageUpload.uploadFiles;
+                else if(type == 'B')
+                    uploadFiles = this.$refs.optionBImageUpload.uploadFiles;
+                else if(type == 'C')
+                    uploadFiles = this.$refs.optionCImageUpload.uploadFiles;
+                else if(type == 'D')
+                    uploadFiles = this.$refs.optionDImageUpload.uploadFiles;
+                for (var i = 0; i < uploadFiles.length; i++) {
+                    if (uploadFiles[i]['url'] == file.url) {
+                        uploadFiles.splice(i, 1)
                     }
-                }else if(type == 'option'){
-                    if(this.formData.option_a_image != ''){
-                        this.formData.option_flag = 2;
-                        if(this.formData.option_a_audio != ''){
-                            this.formData.option_flag = 4;
-                        }
-                    }else if(this.formData.option_a_audio != ''){
-                        this.formData.option_flag = 3;
-                    }else{
-                        this.formData.option_flag = 1;
-                    }
+                }
+                if(type == 'stem')
+                    this.formData.stem_image = "";
+                else if(type == 'A')
+                    this.formData.option_a_image = "";
+                else if(type == 'B')
+                    this.formData.option_b_image = "";
+                else if(type == 'C')
+                    this.formData.option_c_image = "";
+                else if(type == 'D')
+                    this.formData.option_d_image = "";
+            },
+
+            handlePictureCardPreview(file,type) {
+                if(type == 'stem') {
+                    this.formData.stem_image = file.url;
+                    this.visibleData.stemVisible = true;
+                }
+                else if(type == 'A') {
+                    this.formData.option_a_image = file.url;
+                    this.visibleData.optionAVisible = true;
+                }
+                else if(type == 'B') {
+                    this.formData.option_b_image = file.url;
+                    this.visibleData.optionBVisible = true;
+                }
+                else if(type == 'C') {
+                    this.formData.option_c_image = file.url;
+                    this.visibleData.optionCVisible = true;
+                }
+                else if(type == 'D') {
+                        this.formData.option_d_image = file.url;
+                        this.visibleData.optionDVisible = true;
                 }
             },
 
-            uploadImgAfter(res){
+            uploadImgAfter(res,file){
                 if(res['info'] == 'stem'){
                     this.formData.stem_image = res['url'];
-                    this.chooseFlag('stem');
                 }
                 else if(res['info'] == 'option'){
                     switch(res['option']){
@@ -560,27 +681,94 @@
                         case 'C': this.formData.option_c_image = res['url'];break;
                         case 'D': this.formData.option_d_image = res['url'];break;
                     }
-                    this.chooseFlag('option');
                 }
+            },
+
+            showStemAudio(fi){
+                if($('#stemAudio').children().length > 0)
+                    $('#stemAudio').empty();
+                var path = URL.createObjectURL(fi);
+                var audio = document.createElement('audio');
+                audio.src = path;
+                audio.controls = true;
+                audio.volume = '0.2';
+                $('#stemAudio').append(audio);
+            },
+
+            showOptionAAudio(fi){
+                if($('#optionAAudio').children().length > 0)
+                    $('#optionAAudio').empty();
+                var path = URL.createObjectURL(fi);
+                var audio = document.createElement('audio');
+                audio.src = path;
+                audio.controls = true;
+                audio.volume = '0.2';
+                $('#optionAAudio').append(audio);
+            },
+
+            showOptionBAudio(fi){
+                if($('#optionBAudio').children().length > 0)
+                    $('#optionBAudio').empty();
+                var path = URL.createObjectURL(fi);
+                var audio = document.createElement('audio');
+                audio.src = path;
+                audio.controls = true;
+                audio.volume = '0.2';
+                $('#optionBAudio').append(audio);
+            },
+
+            showOptionCAudio(fi){
+                if($('#optionCAudio').children().length > 0)
+                    $('#optionCAudio').empty();
+                var path = URL.createObjectURL(fi);
+                var audio = document.createElement('audio');
+                audio.src = path;
+                audio.controls = true;
+                audio.volume = '0.2';
+                $('#optionCAudio').append(audio);
+            },
+
+            showOptionDAudio(fi){
+                if($('#optionDAudio').children().length > 0)
+                    $('#optionDAudio').empty();
+                var path = URL.createObjectURL(fi);
+                var audio = document.createElement('audio');
+                audio.src = path;
+                audio.controls = true;
+                audio.volume = '0.2';
+                $('#optionDAudio').append(audio);
             },
 
             uploadAudioAfter(res){
                 if(res['info'] == 'stem'){
                     this.formData.stem_audio = res['url'];
-                    this.chooseFlag('stem');
+                    this.$refs.stemAudioUpload.clearFiles();
                 }
                 else if(res['info'] == 'option'){
                     switch(res['option']){
-                        case 'A': this.formData.option_a_audio = res['url'];break;
-                        case 'B': this.formData.option_b_audio = res['url'];break;
-                        case 'C': this.formData.option_c_audio = res['url'];break;
-                        case 'D': this.formData.option_d_audio = res['url'];break;
+                        case 'A': {
+                            this.formData.option_a_audio = res['url'];
+                            this.$refs.optionAAudioUpload.clearFiles();
+                            break;
+                        }
+                        case 'B': {
+                            this.formData.option_b_audio = res['url'];
+                            this.$refs.optionBAudioUpload.clearFiles();
+                            break;
+                        }
+                        case 'C': {
+                            this.formData.option_c_audio = res['url'];
+                            this.$refs.optionCAudioUpload.clearFiles();
+                            break;
+                        }
+                        case 'D': {
+                            this.formData.option_d_audio = res['url'];
+                            this.$refs.optionDAudioUpload.clearFiles();
+                            break;
+                        }
                     }
-                    this.chooseFlag('option');
                 }
-                console.log(this.formData)
             },
-
 
             back: function () {
                 window.location.replace("/upload_list");
@@ -600,51 +788,52 @@
                     });
 
                 else {
-                    this.formData["prob_type"] = 'opt';
+                    this.formData["prob_attr"] = 'Choice';
 
                     if (this.radioType == 'panduanzhengwu') {
                         this.formData["prob_attr"] = 'panduanzhengwu';
                     }
                     if (this.radioType == 'txt') {
-                        this.formData["prob_attr"] = this.formData["txt_type"];
-                        this.formData["prob_type"] = 'txt';
+                        this.formData["prob_type"] = this.formData["txt_type"];
+                        this.formData["prob_attr"] = 'txt';
                     }
                     console.log(this.formData["prob_attr"]);
+                    console.log(this.formData["prob_type"]);
                     console.log("submit:", this.formData);
                     $.cookie("prob_id", null);
                     $.cookie("level", this.formData["prob_level"]);
                     $.cookie("lesson_id", this.formData["lesson_id"]);
 
-                    // axios.post("/postProblem1", $.param(this.formData) //引入jQuery的作用
-                    // ).then((response) => {
-                    //     if (response.data === "OK") {
-                    //         if (this.mode === "编辑")
-                    //             this.$message({
-                    //                 type: 'success',
-                    //                 message: '题目编号' + this.formData["prob_id"].toString() + ' 修改成功！'
-                    //             });
-                    //         else
-                    //             this.$confirm('新增题目成功！请选择操作', '提示', {
-                    //                 confirmButtonText: '继续新增 →',
-                    //                 cancelButtonText: '← 返回列表',
-                    //                 type: 'warning'
-                    //             }).then(() => {
-                    //                 window.location.replace("/upload");
-                    //             }).catch(() => {
-                    //                 window.location.replace("/upload_list");
-                    //             });
-                    //     } else if (response.data === "Fail") {
-                    //         this.$message({
-                    //             type: 'error',
-                    //             message: '修改失败,请联系管理员'
-                    //         });
-                    //     } else {
-                    //         this.$message({
-                    //             type: 'error',
-                    //             message: response.data
-                    //         });
-                    //     }
-                    // });
+                    axios.post("/postProblem1", $.param(this.formData) //引入jQuery的作用
+                    ).then((response) => {
+                        if (response.data === "OK") {
+                            if (this.mode === "编辑")
+                                this.$message({
+                                    type: 'success',
+                                    message: '题目编号' + this.formData["prob_id"].toString() + ' 修改成功！'
+                                });
+                            else
+                                this.$confirm('新增题目成功！请选择操作', '提示', {
+                                    confirmButtonText: '继续新增 →',
+                                    cancelButtonText: '← 返回列表',
+                                    type: 'warning'
+                                }).then(() => {
+                                    window.location.replace("/upload");
+                                }).catch(() => {
+                                    window.location.replace("/upload_list");
+                                });
+                        } else if (response.data === "Fail") {
+                            this.$message({
+                                type: 'error',
+                                message: '修改失败,请联系管理员'
+                            });
+                        } else {
+                            this.$message({
+                                type: 'error',
+                                message: response.data
+                            });
+                        }
+                    });
                 }
             },
 
