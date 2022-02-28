@@ -258,7 +258,7 @@ public class UploadController {
             Problem problem = problemRepository.findOne(prob_id);
             Options options = optionsRepository.findOne(problem.getOptions_id());
             Answer answer = answerRepository.findOne(problem.getAnswer_id());
-            Point point = pointRepository.findOne(problem.getAnswer_id());
+            Point point = pointRepository.findOne(problem.getPoint_id());
             problemAllDetail.setProblem(problem);
             problemAllDetail.setOptions(options);
             problemAllDetail.setAnswer(answer);
@@ -266,6 +266,7 @@ public class UploadController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println(problemAllDetail);
         return problemAllDetail;
     }
 
