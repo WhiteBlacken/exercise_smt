@@ -3,6 +3,7 @@ package com.cisl.smt.web.Temp;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SheetTemp {
     /**
@@ -14,20 +15,15 @@ public class SheetTemp {
     private Long id;   //此处 id 为试卷 id，当前毫秒数
     private ArrayList<ProblemAnsTemp> sheet_list;
     private ArrayList<Long> num_list;
-    private Long opt_num;
-    private Long txt_num;
+    private int opt_num;
+    private int txt_num;
 
     private String exer_level;
     private String start_time;
     private String end_time;
     private boolean evaluated;
 
-    private int opt_choice_num;
-    private int opt_tingyinxuanwen_num;
-    private int opt_kantuxuanyin_num;
-    private int opt_tingyinxuanci_num;
-    private int opt_panduanzhengwu_num;
-    private int txt_fill_num;
+
 
     public SheetTemp(){
         ArrayList<ProblemAnsTemp> empty1 = new ArrayList<>();
@@ -75,19 +71,19 @@ public class SheetTemp {
         this.num_list = num_list;
     }
 
-    public Long getOpt_num() {
+    public int getOpt_num() {
         return opt_num;
     }
 
-    public void setOpt_num(Long opt_num) {
+    public void setOpt_num(int opt_num) {
         this.opt_num = opt_num;
     }
 
-    public Long getTxt_num() {
+    public int getTxt_num() {
         return txt_num;
     }
 
-    public void setTxt_num(Long txt_num) {
+    public void setTxt_num(int txt_num) {
         this.txt_num = txt_num;
     }
 
@@ -124,54 +120,6 @@ public class SheetTemp {
     }
 
 
-    public int getOpt_choice_num() {
-        return opt_choice_num;
-    }
-
-    public void setOpt_choice_num(int opt_choice_num) {
-        this.opt_choice_num = opt_choice_num;
-    }
-
-    public int getOpt_tingyinxuanwen_num() {
-        return opt_tingyinxuanwen_num;
-    }
-
-    public void setOpt_tingyinxuanwen_num(int opt_tingyinxuanwen_num) {
-        this.opt_tingyinxuanwen_num = opt_tingyinxuanwen_num;
-    }
-
-    public int getOpt_kantuxuanyin_num() {
-        return opt_kantuxuanyin_num;
-    }
-
-    public void setOpt_kantuxuanyin_num(int opt_kantuxuanyin_num) {
-        this.opt_kantuxuanyin_num = opt_kantuxuanyin_num;
-    }
-
-    public int getOpt_tingyinxuanci_num() {
-        return opt_tingyinxuanci_num;
-    }
-
-    public void setOpt_tingyinxuanci_num(int opt_tingyinxuanci_num) {
-        this.opt_tingyinxuanci_num = opt_tingyinxuanci_num;
-    }
-
-    public int getOpt_panduanzhengwu_num() {
-        return opt_panduanzhengwu_num;
-    }
-
-    public void setOpt_panduanzhengwu_num(int opt_panduanzhengwu_num) {
-        this.opt_panduanzhengwu_num = opt_panduanzhengwu_num;
-    }
-
-    public int getTxt_fill_num() {
-        return txt_fill_num;
-    }
-
-    public void setTxt_fill_num(int txt_fill_num) {
-        this.txt_fill_num = txt_fill_num;
-    }
-
     @Override
     public String toString() {
         return "SheetTemp{" +
@@ -184,12 +132,6 @@ public class SheetTemp {
                 ", start_time='" + start_time + '\'' +
                 ", end_time='" + end_time + '\'' +
                 ", evaluated=" + evaluated +
-                ", opt_choice_num=" + opt_choice_num +
-                ", opt_tingyinxuanwen_num=" + opt_tingyinxuanwen_num +
-                ", opt_kantuxuanyin_num=" + opt_kantuxuanyin_num +
-                ", opt_tingyinxuanci_num=" + opt_tingyinxuanci_num +
-                ", opt_panduanzhengwu_num=" + opt_panduanzhengwu_num +
-                ", txt_fill_num=" + txt_fill_num +
                 '}';
     }
 }

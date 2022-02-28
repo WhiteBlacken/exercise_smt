@@ -32,6 +32,7 @@ public class ProblemAnsTemp {
     //以下为新增布局相关
     private int showOrder;
     private String layoutType;
+    private String choice_type;
     private String stem_audio;
     private String stem_image;
     private String option_a_audio;
@@ -296,6 +297,14 @@ public class ProblemAnsTemp {
 
     public void setOption_d_image(String option_d_image) {
         this.option_d_image = option_d_image;
+    }
+
+    public String getChoice_type() {
+        return choice_type;
+    }
+
+    public void setChoice_type(String choice_type) {
+        this.choice_type = choice_type;
     }
 
     @Override

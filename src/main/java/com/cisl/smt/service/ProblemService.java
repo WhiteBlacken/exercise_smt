@@ -2,6 +2,7 @@ package com.cisl.smt.service;
 
 import com.cisl.smt.po.Problem;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface ProblemService {
@@ -19,4 +20,6 @@ public interface ProblemService {
 
     void insertProblem(Long prob_id, Long grammar_id, Long point_id, String prob_attr, String prob_diff, String prob_level, String prob_text, Long options_id, Long answer_id, Long lesson_id, Long blank_num);
 
+
+    List<Problem> getByLevelAndLesson(String toString, Long lesson_id, int num);
 }
