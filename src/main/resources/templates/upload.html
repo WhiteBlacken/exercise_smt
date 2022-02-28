@@ -132,6 +132,7 @@
                     <el-form-item label="">
                         <h4>图片部分</h4>
                         <el-upload
+                                :file-list="stemImageFileList"
                                 ref="stemImageUpload"
                                 :limit="1"
                                 action="fileUpload1"
@@ -161,8 +162,9 @@
                     <el-form-item label="">
                     <h4>音频部分</h4>
                     <el-upload
+                            :file-list="stemAudioFileList"
                             ref="stemAudioUpload"
-                            :show-file-list=showFile
+                            :show-file-list="false"
                             class="upload-demo"
                             action="fileUpload1"
                             :on-success="uploadAudioAfter"
@@ -194,6 +196,7 @@
 
                         <el-form-item label="图片部分" v-if="formData.choice_type === 'image'">
                             <el-upload
+                                    :file-list="optionAImageFileList"
                                     ref="optionAImageUpload"
                                     :limit="1"
                                     action="fileUpload1"
@@ -221,6 +224,7 @@
                         </el-form-item>
                         <el-form-item label="音频部分" v-if="formData.choice_type === 'audio'">
                             <el-upload
+                                    :file-list="optionAAudioFileList"
                                     ref="optionAAudioUpload"
                                     :show-file-list="false"
                                     class="upload-demo"
@@ -242,6 +246,7 @@
                         </el-form-item>
                         <el-form-item label="图片部分" v-if="formData.choice_type === 'image'">
                             <el-upload
+                                    :file-list="optionBImageFileList"
                                     ref="optionBImageUpload"
                                     :limit="1"
                                     action="fileUpload1"
@@ -269,6 +274,7 @@
                         </el-form-item>
                         <el-form-item label="音频部分" v-if="formData.choice_type === 'audio'">
                             <el-upload
+                                    :file-list="optionBAudioFileList"
                                     ref="optionBAudioUpload"
                                     :show-file-list=showFile
                                     class="upload-demo"
@@ -290,6 +296,7 @@
                         </el-form-item>
                         <el-form-item label="图片部分" v-if="formData.choice_type === 'image'">
                             <el-upload
+                                    :file-list="optionCImageFileList"
                                     ref="optionCImageUpload"
                                     :limit="1"
                                     action="fileUpload1"
@@ -317,6 +324,7 @@
                         </el-form-item>
                         <el-form-item label="音频部分" v-if="formData.choice_type === 'audio'">
                             <el-upload
+                                    :file-list="optionCAudioFileList"
                                     ref="optionCAudioUpload"
                                     :show-file-list=showFile
                                     class="upload-demo"
@@ -338,6 +346,7 @@
                         </el-form-item>
                         <el-form-item label="图片部分" v-if="formData.choice_type === 'image'">
                             <el-upload
+                                    :file-list="optionDImageFileList"
                                     ref="optionDImageUpload"
                                     :limit="1"
                                     action="fileUpload1"
@@ -365,6 +374,7 @@
                         </el-form-item>
                         <el-form-item label="音频部分" v-if="formData.choice_type === 'audio'">
                             <el-upload
+                                    :file-list="optionDAudioFileList"
                                     ref="optionDAudioUpload"
                                     :show-file-list=showFile
                                     class="upload-demo"
@@ -547,6 +557,8 @@
                 },],
             },
             problem: {},
+            options: {},
+            answer: {},
             search: '',
             searchFlag: false,
             pointTableData: [],
@@ -568,7 +580,17 @@
                 optionBVisible: false,
                 optionCVisible: false,
                 optionDVisible: false,
-            }
+            },
+            stemImageFileList: [],
+            stemAudioFileList: [],
+            optionAImageFileList: [],
+            optionAAudioFileList: [],
+            optionBImageFileList: [],
+            optionBAudioFileList: [],
+            optionCImageFileList: [],
+            optionCAudioFileList: [],
+            optionDImageFileList: [],
+            optionDAudioFileList: [],
         },
 
         methods: {
@@ -630,6 +652,7 @@
                     uploadFiles = this.$refs.optionCImageUpload.uploadFiles;
                 else if(type == 'D')
                     uploadFiles = this.$refs.optionDImageUpload.uploadFiles;
+                consoel.log(uploadFiles)
                 for (var i = 0; i < uploadFiles.length; i++) {
                     if (uploadFiles[i]['url'] == file.url) {
                         uploadFiles.splice(i, 1)
@@ -920,40 +943,72 @@
 
                     var prob_id = $.cookie("prob_id");
                     this.formData["prob_id"] = prob_id;
-                    this.problem = await this.getProblemDetail(prob_id);
+                    let prob = await this.getProblemDetail(prob_id);
+                    this.problem = prob.problem;
+                    this.options = prob.options;
+                    this.answer = prob.answer;
                     console.log(this.problem["prob_attr"])
-                    if (this.problem["prob_attr"] === "Choice")
+                    if (this.problem["prob_attr"] === "Choice") {
                         this.radioType = "Choice";
-                    else if(this.problem["prob_attr"] === "tingyinxuanwen")
-                        this.radioType = "tingyinxuanwen";
-                    else if(this.problem["prob_attr"] === "kantuxuanyin")
-                        this.radioType = "kantuxuanyin";
-                    else if(this.problem["prob_attr"] === "tingyinxuanci")
-                        this.radioType = "tingyinxuanci";
+                        this.formData["prob_type"] = this.problem["prob_type"];
+                        this.formData["choice_type"] = this.problem["choice_type"];
+                    }
                     else if(this.problem["prob_attr"] === "panduanzhengwu")
                         this.radioType = "panduanzhengwu";
                     else{
                         this.radioType = "txt";
-                        this.formData["txt_type"] = this.problem["prob_attr"];
+                        this.formData["txt_type"] = this.problem["prob_type"];
                     }
                     this.formData["prob_diff"] = this.problem["prob_diff"];
                     this.formData["prob_text"] = this.problem["prob_text"];
-                    this.formData["answer"] = this.problem["answer_text"];
-                    this.formData["analysis"] = this.problem["analysis"];
+                    this.formData["answer"] = this.answer["answer_text"];
+                    this.formData["analysis"] = this.answer["analysis_text"];
                     if (this.problem["blank_num"] !== null)
                         this.formData["blank_num"] = this.problem["blank_num"];
                     this.lesson_id = this.problem["lesson_id"];
                     this.level = this.problem["prob_level"];
-
                     this.view_point_text = this.problem["point_text"];
                     this.formData["point_id"] = this.problem["point_id"];
-
-                    this.formData["optionA"] = this.problem["options"].split("【A】")[1].split("【B】")[0];
-                    this.formData["optionB"] = this.problem["options"].split("【B】")[1].split("【C】")[0];
-                    if (this.problem["options"].indexOf("【D】") > 0) {
-                        this.formData["optionC"] = this.problem["options"].split("【C】")[1].split("【D】")[0];
-                        this.formData["optionD"] = this.problem["options"].split("【D】")[1];
-                    } else this.formData["optionC"] = this.problem["options"].split("【C】")[1];
+                    this.formData["choice_type"] = this.options["choice_type"];
+                    this.formData["optionA"] = this.options["option_a"];
+                    this.formData["optionB"] = this.options["option_b"];
+                    this.formData["optionC"] = this.options["option_c"];
+                    this.formData["optionD"] = this.options["option_d"];
+                    if(this.problem["image_url"]&&this.problem["image_url"] != ""){
+                        var tmp_name = this.problem["image_url"].split('/')[this.problem["image_url"].split('/')-1];
+                        this.stemImageFileList.push({name: tmp_name , url: this.problem["image_url"]});
+                    }
+                    if(this.problem["audio_url"]&&this.problem["audio_url"] != ""){
+                        var tmp_name = this.problem["audio_url"].split('/')[this.problem["audio_url"].split('/')-1];
+                        this.stemAudioFileList.push({name: tmp_name , url: this.problem["audio_url"]});
+                    }
+                    if(this.formData["choice_type"] == 'image'){
+                        var tmp_name = this.options["a_image_url"].split('/')[this.options["a_image_url"].split('/')-1];
+                        this.optionAImageFileList.push({name: tmp_name , url: this.options["a_image_url"]});
+                        tmp_name = this.options["b_image_url"].split('/')[this.options["b_image_url"].split('/')-1];
+                        this.optionBImageFileList.push({name: tmp_name , url: this.options["b_image_url"]});
+                        if(this.options["c_image_url"]&&this.options["c_image_url"] != ""){
+                            tmp_name = this.options["c_image_url"].split('/')[this.options["c_image_url"].split('/')-1];
+                            this.optionCImageFileList.push({name: tmp_name , url: this.options["c_image_url"]});
+                        }
+                        if(this.options["d_image_url"]&&this.options["d_image_url"] != ""){
+                            tmp_name = this.options["d_image_url"].split('/')[this.options["d_image_url"].split('/')-1];
+                            this.optionCImageFileList.push({name: tmp_name , url: this.options["d_image_url"]});
+                        }
+                    }else if(this.formData["choice_type"] == 'audio'){
+                        var tmp_name = this.options["a_audio_url"].split('/')[this.options["a_audio_url"].split('/')-1];
+                        this.optionAAudioFileList.push({name: tmp_name , url: this.options["a_audio_url"]});
+                        tmp_name = this.options["b_audio_url"].split('/')[this.options["b_audio_url"].split('/')-1];
+                        this.optionBAudioFileList.push({name: tmp_name , url: this.options["b_audio_url"]});
+                        if(this.options["c_audio_url"]&&this.options["c_audio_url"] != ""){
+                            tmp_name = this.options["c_audio_url"].split('/')[this.options["c_audio_url"].split('/')-1];
+                            this.optionCAudioFileList.push({name: tmp_name , url: this.options["c_audio_url"]});
+                        }
+                        if(this.options["d_audio_url"]&&this.options["d_audio_url"] != ""){
+                            tmp_name = this.options["d_audio_url"].split('/')[this.options["d_audio_url"].split('/')-1];
+                            this.optionDAudioFileList.push({name: tmp_name , url: this.options["d_audio_url"]});
+                        }
+                    }
                 }
             },
 
@@ -1015,8 +1070,6 @@
                 this.originArr = [];
                 await this.getPointList();
             },
-
-
         },
 
         created() {
@@ -1024,7 +1077,6 @@
             this.level = $.cookie("level");
             this.setProblemDetail();
             this.setPointList();
-
         }
     });
     window.app = app;
