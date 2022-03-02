@@ -1,7 +1,6 @@
 package com.cisl.smt.po;
 
 
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -31,9 +30,11 @@ public class Options {
     private String d_audio_url;
 
     private String choice_type;
-    private int resource_flag;
 
-    public Options() {};
+    public Options() {
+    }
+
+    ;
 
     public Options(String option_a, String option_b, String option_c, String option_d) {
         this.option_a = option_a;
@@ -161,15 +162,6 @@ public class Options {
     public void setD_audio_url(String d_audio_url) {
         this.d_audio_url = d_audio_url;
     }
-
-    public int getResource_flag() {
-        return resource_flag;
-    }
-
-    public void setResource_flag(int resource_flag) {
-        this.resource_flag = resource_flag;
-    }
-
 
     public String getChoice_type() {
         return choice_type;

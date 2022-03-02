@@ -88,6 +88,7 @@ public class UploadController {
                                                 @Param("lesson_id") Long lesson_id) {
         ArrayList<ProblemDetail> probDetList = new ArrayList<>();
         List<Problem> problemList = problemRepository.getProblemByLevelAndLesson_id(level, lesson_id);
+        System.out.println("执行了listAllProb，其中problemList为："+problemList);
         for (Problem problem : problemList) {
             try {
                 ProblemDetail problemDetail = getProblemDetail(problem.getProb_id());
@@ -184,16 +185,7 @@ public class UploadController {
             problemDetail.setProb_id(problem.getProb_id());
             Options options = optionsRepository.getOptions(problem.getOptions_id());
             String options_text = "";
-            //之前按照选项是否有文本进行判断，实际上现在的题目很多没有选项文本了（音频或者图片）
-//            if (options.getOption_a() != null && options.getOption_a().length() != 0) {
-//                options_text = "【A】" + options.getOption_a() + "【B】" + options.getOption_b() + "【C】" + options.getOption_c();
-//                if (options.getOption_d() != null && options.getOption_d().length() > 0)
-//                    options_text += "【D】" + options.getOption_d();
-//            } else {
-//                if (problem.getBlank_num() == null)
-//                    problem.setBlank_num((long) 0);
-//                options_text = "空行数量：" + problem.getBlank_num().toString();
-//            }
+
             //组装选项
             if (options.getOption_a() != null && options.getOption_a().length() != 0) {
                 options_text = "【A】" + options.getOption_a();
@@ -540,8 +532,9 @@ public class UploadController {
     @PostMapping("/deleteProb")
     public String deleteProb(@RequestParam("prob_id") Long prob_id) {
         try {
-            String prob_text = problemRepository.getProblemByProb_id(prob_id).getProb_text();
-            problemRepository.markDeleteProblem(prob_id, "【题目已被删除】" + prob_text);
+            Problem problem = problemRepository.findOne(prob_id);
+            problem.setIs_delete(1);
+            problemRepository.save(problem);
         } catch (Exception e) {
             e.printStackTrace();
             return "Fail";

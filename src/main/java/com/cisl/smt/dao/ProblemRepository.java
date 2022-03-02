@@ -16,7 +16,13 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {  //Lon
     @Query(value = "select * from t_problem where prob_id=:num", nativeQuery = true)
     Problem getProblemByProb_id(@Param("num") Long num);
 
-    @Query(value = "select * from t_problem where lesson_id=:lesson_id and prob_level=:prob_level", nativeQuery = true)
+    /**
+     * 根据lesson_id 和 prob_level 查找未被删除的题目
+     * @param prob_level
+     * @param lesson_id
+     * @return
+     */
+    @Query(value = "select * from t_problem where lesson_id=:lesson_id and prob_level=:prob_level and is_delete = 0", nativeQuery = true)
     List<Problem> getProblemByLevelAndLesson_id(@Param("prob_level") String prob_level, @Param("lesson_id") Long lesson_id);
 
     @Query(value = "select * from t_problem where point_id=:point_id", nativeQuery = true)
@@ -50,7 +56,12 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {  //Lon
     @Query(value = "UPDATE t_problem SET prob_text=:prob_text WHERE prob_id=:prob_id", nativeQuery = true)
     void markDeleteProblem(@Param("prob_id") Long prob_id, @Param("prob_text") String prob_text);
 
-
-    @Query(value = "select * from t_problem where prob_level = ?1 and lesson_id = ?2 order by rand() limit ?3",nativeQuery = true)
+    /**
+     * 根据lesson_id 和 prob_level 查找未被删除的题目
+     * @param level
+     * @param lesson_id
+     * @return
+     */
+    @Query(value = "select * from t_problem where prob_level = ?1 and lesson_id = ?2 and is_delete=0 order by rand() limit ?3",nativeQuery = true)
     List<Problem> getByLevelAndLesson(String level, Long lesson_id, int num);
 }

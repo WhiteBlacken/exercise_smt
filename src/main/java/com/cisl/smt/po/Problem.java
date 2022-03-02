@@ -30,9 +30,13 @@ public class Problem {
     //add
     private String image_url;
     private String audio_url;
-    private int resource_flag;  //来确定以什么形式展示资源（image，audio）
 
-    public Problem() {};
+    private int is_delete; //判断是否被删除，默认为0
+
+    public Problem() {
+    }
+
+    ;
 
     public Problem(String prob_text, String prob_attr, String prob_level, String prob_diff, Long lesson_id, Long grammar_id, Long point_id, Long blank_num) {
         this.prob_text = prob_text;
@@ -149,19 +153,28 @@ public class Problem {
         this.audio_url = audio_url;
     }
 
-    public int getResource_flag() {
-        return resource_flag;
-    }
-
-    public void setResource_flag(int resource_flag) {
-        this.resource_flag = resource_flag;
-    }
-
     public String getProb_type() {
         return prob_type;
     }
 
     public void setProb_type(String prob_type) {
         this.prob_type = prob_type;
+    }
+//
+
+
+    public int getIs_delete() {
+        return is_delete;
+    }
+
+    public void setIs_delete(int is_delete) {
+        this.is_delete = is_delete;
+    }
+
+    @Override
+    public String toString() {
+        return "Problem{" +
+                "prob_id=" + prob_id +
+                '}';
     }
 }

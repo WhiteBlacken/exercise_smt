@@ -691,7 +691,6 @@ public class ExerciseController {
             Long lesson_id = Long.valueOf(settingTemp.getSys());
             int num = 15;
 
-
             List<Problem> probs = problemService.getByLevelAndLesson(settingTemp.getLev().toString(),lesson_id,num);
             for (Problem prob : probs) {
                 probList.add(prob.getProb_id());
@@ -761,6 +760,7 @@ public class ExerciseController {
 
             String attr = p.getProb_attr();
             if("Choice".equals(attr)){
+                pt.setShowOrder(1);
                 opt_num++;
                 switch (options.getChoice_type()) {
                     case "text":
@@ -779,22 +779,24 @@ public class ExerciseController {
                         break;
                 }
             }else if("panduanzhengwu".equals(attr)){
+                pt.setShowOrder(2);
                 opt_num++;
             }else if("txt".equals(attr)){
+                pt.setShowOrder(3);
                 txt_num++;
             }
 
             st.addSheet_list(pt);
         }
 //        //确定次序
-//        Collections.sort(st.getSheet_list(), new Comparator<ProblemAnsTemp>() {
-//            @Override
-//            public int compare(ProblemAnsTemp o1, ProblemAnsTemp o2) {
-//                if (o1.getShowOrder() < o2.getShowOrder()) return -1;
-//                else if (o1.getShowOrder() == o2.getShowOrder()) return 0;
-//                else return 1;
-//            }
-//        });
+        Collections.sort(st.getSheet_list(), new Comparator<ProblemAnsTemp>() {
+            @Override
+            public int compare(ProblemAnsTemp o1, ProblemAnsTemp o2) {
+                if (o1.getShowOrder() < o2.getShowOrder()) return -1;
+                else if (o1.getShowOrder() == o2.getShowOrder()) return 0;
+                else return 1;
+            }
+        });
 
 
         st.setExer_level(level.toString());

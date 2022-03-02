@@ -134,7 +134,7 @@
                     }
                     this.tableData = [];
                     for (let i = 0; i < prob_list.length; i++) {
-                        if(prob_list[i]['prob_text'].indexOf('【题目已被删除】') === -1)
+
                             this.tableData.push({
                                 'index': prob_list[i]['prob_id'],
                                 'options': prob_list[i]['options'],
@@ -184,7 +184,6 @@
                     var prob_list = response.data;
                     this.tableData = [];
                     for (let i = 0; i < prob_list.length; i++) {
-                        if(prob_list[i]['prob_text'].indexOf('【题目已被删除】') === -1)
                         this.tableData.push({
                             'index': prob_list[i]['prob_id'],
                             'options': prob_list[i]['options'],
