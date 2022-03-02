@@ -1,0 +1,13 @@
+spring:
+
+  profiles:
+    active: dev
+  mvc:
+    view:
+      prefix: classpath:/templates/
+      suffix: .html
+  http:
+    multipart:
+      max-file-size: 50Mb
+      max-request-size: 500Mb
+
