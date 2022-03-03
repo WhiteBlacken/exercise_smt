@@ -974,10 +974,12 @@
                     this.formData["optionC"] = this.options["option_c"];
                     this.formData["optionD"] = this.options["option_d"];
                     if(this.problem["image_url"]&&this.problem["image_url"] != ""){
+                        this.formData["stem_image"] = this.problem["image_url"];
                         var tmp_name = this.problem["image_url"].split('/')[this.problem["image_url"].split('/')-1];
                         this.stemImageFileList.push({name: tmp_name , url: this.problem["image_url"]});
                     }
                     if(this.problem["audio_url"]&&this.problem["audio_url"] != ""){
+                        this.formData["stem_audio"] = this.problem["audio_url"];
                         var tmp_name = this.problem["audio_url"].split('/')[this.problem["audio_url"].split('/')-1];
                         this.stemAudioFileList.push({name: tmp_name , url: this.problem["audio_url"]});
                         var audio = document.createElement('audio');
@@ -987,19 +989,24 @@
                         $('#stemAudio').append(audio);
                     }
                     if(this.formData["choice_type"] == 'image'){
+                        this.formData["option_a_image"] = this.options["a_image_url"];
                         var tmp_name = this.options["a_image_url"].split('/')[this.options["a_image_url"].split('/')-1];
                         this.optionAImageFileList.push({name: tmp_name , url: this.options["a_image_url"]});
+                        this.formData["option_b_image"] = this.options["b_image_url"];
                         tmp_name = this.options["b_image_url"].split('/')[this.options["b_image_url"].split('/')-1];
                         this.optionBImageFileList.push({name: tmp_name , url: this.options["b_image_url"]});
                         if(this.options["c_image_url"]&&this.options["c_image_url"] != ""){
+                            this.formData["option_c_image"] = this.options["c_image_url"];
                             tmp_name = this.options["c_image_url"].split('/')[this.options["c_image_url"].split('/')-1];
                             this.optionCImageFileList.push({name: tmp_name , url: this.options["c_image_url"]});
                         }
                         if(this.options["d_image_url"]&&this.options["d_image_url"] != ""){
+                            this.formData["option_d_image"] = this.options["d_image_url"];
                             tmp_name = this.options["d_image_url"].split('/')[this.options["d_image_url"].split('/')-1];
                             this.optionDImageFileList.push({name: tmp_name , url: this.options["d_image_url"]});
                         }
                     }else if(this.formData["choice_type"] == 'audio'){
+                        this.formData["option_a_audio"] = this.options["a_audio_url"];
                         var tmp_name = this.options["a_audio_url"].split('/')[this.options["a_audio_url"].split('/')-1];
                         this.optionAAudioFileList.push({name: tmp_name , url: this.options["a_audio_url"]});
                         var audio = document.createElement('audio');
@@ -1007,6 +1014,7 @@
                         audio.controls = true;
                         audio.volume = '0.2';
                         $('#optionAAudio').append(audio);
+                        this.formData["option_b_audio"] = this.options["b_audio_url"];
                         tmp_name = this.options["b_audio_url"].split('/')[this.options["b_audio_url"].split('/')-1];
                         this.optionBAudioFileList.push({name: tmp_name , url: this.options["b_audio_url"]});
                         audio = document.createElement('audio');
@@ -1015,6 +1023,7 @@
                         audio.volume = '0.2';
                         $('#optionBAudio').append(audio);
                         if(this.options["c_audio_url"]&&this.options["c_audio_url"] != ""){
+                            this.formData["option_c_audio"] = this.options["c_audio_url"];
                             tmp_name = this.options["c_audio_url"].split('/')[this.options["c_audio_url"].split('/')-1];
                             this.optionCAudioFileList.push({name: tmp_name , url: this.options["c_audio_url"]});
                             audio = document.createElement('audio');
@@ -1024,6 +1033,7 @@
                             $('#optionCAudio').append(audio);
                         }
                         if(this.options["d_audio_url"]&&this.options["d_audio_url"] != ""){
+                            this.formData["option_d_audio"] = this.options["d_audio_url"];
                             tmp_name = this.options["d_audio_url"].split('/')[this.options["d_audio_url"].split('/')-1];
                             this.optionDAudioFileList.push({name: tmp_name , url: this.options["d_audio_url"]});
                             audio = document.createElement('audio');
