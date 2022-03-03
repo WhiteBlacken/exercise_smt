@@ -10,4 +10,3 @@ spring:
     multipart:
       max-file-size: 50Mb
       max-request-size: 500Mb
-

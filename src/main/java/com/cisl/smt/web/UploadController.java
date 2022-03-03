@@ -15,6 +15,7 @@ import com.cisl.smt.web.Temp.FileInfo;
 import com.cisl.smt.web.Temp.ProblemAllDetail;
 import com.cisl.smt.web.Temp.ProblemDetail;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.repository.query.Param;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -88,7 +89,7 @@ public class UploadController {
                                                 @Param("lesson_id") Long lesson_id) {
         ArrayList<ProblemDetail> probDetList = new ArrayList<>();
         List<Problem> problemList = problemRepository.getProblemByLevelAndLesson_id(level, lesson_id);
-        System.out.println("执行了listAllProb，其中problemList为："+problemList);
+        System.out.println("执行了listAllProb，其中problemList为：" + problemList);
         for (Problem problem : problemList) {
             try {
                 ProblemDetail problemDetail = getProblemDetail(problem.getProb_id());
@@ -605,6 +606,9 @@ public class UploadController {
         return Integer.valueOf(timestamp);
     }
 
+    @Value("${upload.fileDir}")
+    private String path;
+
     /**
      * 文件上传（pic、audio）
      *
@@ -622,7 +626,7 @@ public class UploadController {
                                @RequestParam(value = "option", defaultValue = "A") String option)
             throws FileNotFoundException {  //参数名需与前端文件标签名一样
         // 获取项目classes/static的地址
-        String path = ClassUtils.getDefaultClassLoader().getResource("static").getPath();  //static
+//        String path = ClassUtils.getDefaultClassLoader().getResource("static").getPath();  //static
         //获取文件的后缀
         String fileName = file.getOriginalFilename();
         String suffixName = fileName.substring(fileName.lastIndexOf("."));
@@ -652,8 +656,9 @@ public class UploadController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        url_path = "file/" + url_path;
         FileInfo fileInfo = new FileInfo(info, option, url_path);
+        System.out.println("fileInfo:" + fileInfo);
         //返回文件访问地址
         return fileInfo;
     }

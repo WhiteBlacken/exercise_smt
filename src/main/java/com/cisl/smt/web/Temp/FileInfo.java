@@ -44,4 +44,13 @@ public class FileInfo {
     public void setUrl(String url) {
         this.url = url;
     }
+
+    @Override
+    public String toString() {
+        return "FileInfo{" +
+                "info='" + info + '\'' +
+                ", option='" + option + '\'' +
+                ", url='" + url + '\'' +
+                '}';
+    }
 }
