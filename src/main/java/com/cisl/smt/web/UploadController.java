@@ -89,7 +89,7 @@ public class UploadController {
                                                 @Param("lesson_id") Long lesson_id) {
         ArrayList<ProblemDetail> probDetList = new ArrayList<>();
         List<Problem> problemList = problemRepository.getProblemByLevelAndLesson_id(level, lesson_id);
-        System.out.println("执行了listAllProb，其中problemList为："+problemList);
+        System.out.println("执行了listAllProb，其中problemList为：" + problemList);
         for (Problem problem : problemList) {
             try {
                 ProblemDetail problemDetail = getProblemDetail(problem.getProb_id());
@@ -608,6 +608,7 @@ public class UploadController {
 
     @Value("${upload.fileDir}")
     private String path;
+
     /**
      * 文件上传（pic、audio）
      *
@@ -655,9 +656,9 @@ public class UploadController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        url_path = "file/" + url_path;
         FileInfo fileInfo = new FileInfo(info, option, url_path);
-        System.out.println("fileInfo:"+fileInfo);
+        System.out.println("fileInfo:" + fileInfo);
         //返回文件访问地址
         return fileInfo;
     }
