@@ -11,4 +11,6 @@ spring:
     show-sql: false
 server:
   port: 8881
-
+#  上传的题目图片、音频资源的存储位置
+upload:
+  fileDir: "/home/smtFile/"

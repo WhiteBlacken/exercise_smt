@@ -12,4 +12,5 @@ spring:
 server:
   port: 8080
 
-
+upload:
+  fileDir: "D:/file/"
