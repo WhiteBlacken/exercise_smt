@@ -74,7 +74,7 @@
                                 </div>
                                 <div id="question_text">
 
-                                    <p><span style="line-height: 55px">{{ prob_text }}</span><img v-if="stem_aud && stem_aud != ''" id="stem_audio" src="/image/audio-unchecked.png" @click="playAudio('stem')"><img v-if="stem_aud && stem_aud != ''" src="/image/finger.png" class="finger"></p>
+                                    <p><span style="line-height: 55px">{{ prob_text }}</span><img v-if="stem_aud && stem_aud != ''" id="stem_audio" src="/image/audio-unchecked.png" @click="playAudio('stem')"><img v-if="stem_aud && stem_aud != ''" src="/image/finger.gif" class="finger"></p>
 
                                 </div>
                                 <div id="opt_part">
@@ -115,24 +115,24 @@
                                     <div class="option_2" >
                                         <div class="optionBox" id="option_A2" style="float:left;width: 220px;margin-right: 100px">
                                             <img src="/image/audio-unselected.png" class="option_audio" id="option_a_audio" @click="playAudio('A')">
-                                            <img src="/image/finger.png" class="finger" style="margin-left: 55px !important;">
+                                            <img src="/image/finger.gif" class="finger" style="margin-left: 55px !important;">
                                             <div id="problem_a_text" @click="chooseOption3('a')">A. {{ options.A }}</div>
                                         </div>
                                         <div class="optionBox" id="option_B2" style="float:left;width: 220px;">
                                             <img src="/image/audio-unselected.png" class="option_audio" id="option_b_audio" @click="playAudio('B')">
-                                            <img src="/image/finger.png" class="finger" style="margin-left: 55px !important;">
+                                            <img src="/image/finger.gif" class="finger" style="margin-left: 55px !important;">
                                             <div id="problem_b_text" @click="chooseOption3('b')">B. {{ options.B }}</div>
                                         </div>
                                     </div>
                                     <div class="option_2">
                                         <div class="optionBox" id="option_C2" style="float:left;display: none;margin-right: 100px;width: 220px">
                                             <img  src="/image/audio-unselected.png" id="option_c_audio" class="option_audio" @click="playAudio('C')">
-                                            <img src="/image/finger.png" class="finger" style="margin-left: 55px !important;">
+                                            <img src="/image/finger.gif" class="finger" style="margin-left: 55px !important;">
                                             <div id="problem_c_text" v-if="option_c_aud != ''" @click="chooseOption3('c')">C. {{ options.C }}</div>
                                         </div>
                                         <div class="optionBox" id="option_D2" style="float:left;display: none;width: 220px">
                                             <img  src="/image/audio-unselected.png" id="option_d_audio" class="option_audio" @click="playAudio('D')">
-                                            <img src="/image/finger.png" class="finger" style="margin-left: 55px !important;">
+                                            <img src="/image/finger.gif" class="finger" style="margin-left: 55px !important;">
                                             <div id="problem_d_text" v-if="option_d_aud != ''" @click="chooseOption3('d')">D. {{ options.D }}</div>
                                         </div>
                                     </div>
