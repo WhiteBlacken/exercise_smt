@@ -22,4 +22,12 @@ public interface ProblemService {
 
 
     List<Problem> getByLevelAndLesson(String toString, Long lesson_id, int num);
+
+    List<Problem> getByLevelAndLessonInChallenge(String toString, Long lesson_id, int num);
+
+    List<Problem> getByLevelAndLessonInBoss(String toString, Long lesson_id, int num);
+
+    List<Problem> getByLevelAndLessonInBigBoss(String toString, Long lesson_id, int num);
+
+    List<Problem> getByLevelAndLessonInNormal(String toString, Long lesson_id, int num);
 }

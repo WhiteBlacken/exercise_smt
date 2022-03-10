@@ -45,10 +45,9 @@ public class ProblemAnsTemp {
     private String option_d_image;
 
 
-
     public void setChoice(String choice) {  // 设置选项的时候就判断正误
         this.choice = choice;
-        if (this.type.equals("opt")) {
+        if (!(this.type.equals("txt"))) {
             if (this.choice.equalsIgnoreCase(this.ans))
                 this.setEval_res(1);
             else this.setEval_res(0);
@@ -114,7 +113,7 @@ public class ProblemAnsTemp {
                     System.out.println("117" + Arrays.toString(choiceSplit));
                     int corr = 0;
                     for (int i = 0; i < choiceSplit.length; i++) {
-                        if(judgeTxt(choiceSplit[i], ansSplit[i]))
+                        if (judgeTxt(choiceSplit[i], ansSplit[i]))
                             corr += 1;
                     }
                     if (corr == ansSplit.length)  //每一个分行都是对的
@@ -306,6 +305,8 @@ public class ProblemAnsTemp {
     public void setChoice_type(String choice_type) {
         this.choice_type = choice_type;
     }
+
+
 
     @Override
     public String toString() {

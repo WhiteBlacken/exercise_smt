@@ -64,4 +64,16 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {  //Lon
      */
     @Query(value = "select * from t_problem where prob_level = ?1 and lesson_id = ?2 and is_delete=0 order by rand() limit ?3",nativeQuery = true)
     List<Problem> getByLevelAndLesson(String level, Long lesson_id, int num);
+
+
+    /**
+     * 根据lesson_id和prob_level从一个范围内抽取题目
+     * @param level
+     * @param begin_lesson
+     * @param end_lesson
+     * @param num
+     * @return
+     */
+    @Query(value = "select * from t_problem where prob_level=?1 and lesson_id>=?2 and lesson_id<=?3 and is_delete=0 order by rand() limit ?4",nativeQuery = true)
+    List<Problem> getByLevelAndLessonDomain(String level,Long begin_lesson,Long end_lesson,int num);
 }

@@ -363,7 +363,6 @@ public class ExerciseController {
                 mediumProbList = new ArrayList<>(),
                 probList = new ArrayList<>();
 
-        System.out.println("");
         for (Problem p : tempList) {
             if (p.getProb_diff().equals("Easy") && p.getProb_type().equals("opt")) {
                 easyChoiceProbList.add(p);
@@ -678,24 +677,78 @@ public class ExerciseController {
         SettingTemp settingTemp = SettingTemp.getInstance();
         ArrayList<Long> probList = new ArrayList<>();
         Integer totalNum = settingTemp.getProbNum();  //lesson 默认 totalNum = 20
-        Integer level = settingTemp.getLev();
+//        Integer level = settingTemp.getLev();
+        String level = settingTemp.getLev().toString();
 
         if (settingTemp.getSrc().equals("ai")) {
             //进入 AI 刷题温故知新, 依次接收四个来源. 2.0 版本已废弃
         } else if (settingTemp.getSrc().equals("lesson")) {
-            //进入课课练做题，V2.0版本中，按照 4 个来源组合抽取, 此处 sys 代表lesson_id
 
-            //1. 一个要是根据要求拿到题目
-            //2. 保证不重复
-            //3. 符合一定的顺序
             Long lesson_id = Long.valueOf(settingTemp.getSys());
-            int num = 15;
+            System.out.println("当前是level-" + level + "/lesson-" + lesson_id);
+            /**
+             * 仅修改level-1，其他level保持不变
+             */
+            if ("1".equals(level)) {
+                //1. 一个要是根据要求拿到题目
+                //2. 保证不重复
+                //3. 符合一定的顺序
+                /**
+                 * 分为三种类型 通过lesson进行识别
+                 * 1. 普通：出当前lesson的题目
+                 * 2. 挑战：出几个lesson的题目，从各种难度中抽
+                 * 3. boss：出几个lesson的题目，困难为主
+                 */
+                System.out.println("进行 level-1 出题模式");
+                int[] challenge_lesson = {4, 12, 20, 29, 37};
+                int[] boss_lesson = {8, 16, 24, 33, 41};
+                int[] big_boss_lesson = {25, 42};
 
-            List<Problem> probs = problemService.getByLevelAndLesson(settingTemp.getLev().toString(),lesson_id,num);
-            for (Problem prob : probs) {
-                probList.add(prob.getProb_id());
+                List<Problem> probs = new ArrayList<>();
+                int lesson = lesson_id.intValue();
+                int num = 30;
+                if (exist(challenge_lesson, lesson)) {
+                    //挑战关卡
+                    probs = problemService.getByLevelAndLessonInChallenge(level, lesson_id, num);
+                } else if (exist(boss_lesson, lesson)) {
+                    //boss关卡
+                    probs = problemService.getByLevelAndLessonInBoss(level, lesson_id, num);
+                } else if (exist(big_boss_lesson, lesson)) {
+                    //big boss关卡
+                    probs = problemService.getByLevelAndLessonInBigBoss(level, lesson_id, num);
+                } else {
+                    //普通关卡
+                    num = 20;
+                    probs = problemService.getByLevelAndLessonInNormal(level, lesson_id, num);
+                }
+                List<Problem> probsSorted = sortProblem(probs);
+                for (Problem prob : probsSorted) {
+                    probList.add(prob.getProb_id());
+                }
+
+            } else {
+                /**
+                 * 其他level未进行修改
+                 */
+                System.out.println("进入未修改出题模式");
+                //进入课课练做题，V2.0版本中，按照 4 个来源组合抽取, 此处 sys 代表lesson_id
+                ArrayList<Long> tmpList = new ArrayList<>();
+                //2021.11.03: 厦门海沧地区测试，15+3+2
+                tmpList.addAll(getFromLessonEasyAndMedium(lesson_id, 15));
+                tmpList.addAll(getFromSimilar(3, USER_ID));
+                tmpList.addAll(getFromForgetCurve(2, USER_ID));
+
+                tmpList = uniqueProbList(tmpList);
+                //此处 tmpList 已固定题量g 20，不需要 shuffle
+                HashSet<Long> hashSet = new HashSet<>(tmpList);
+                assert tmpList.size() == hashSet.size(); //保证列表去重
+
+                //保证选择题在文本题前面
+                probList = reorganizeProbList(tmpList);
             }
-            System.out.println("probList:"+probList);
+
+
+            System.out.println("probList:" + probList);
 
         } else if (settingTemp.getSrc().equals("test")) {
             //进入双周测 or 阶段测做题，此处 sys=7-8 表示7-8周
@@ -759,47 +812,40 @@ public class ExerciseController {
             pt.setAns(answerService.getAnswer(probNum).getAnswer_text());
 
             String attr = p.getProb_attr();
-            if("Choice".equals(attr)){
-                pt.setShowOrder(1);
-                opt_num++;
-                switch (options.getChoice_type()) {
-                    case "text":
-                        break;
-                    case "image":
-                        pt.setOption_a_image(options.getA_image_url());
-                        pt.setOption_b_image(options.getB_image_url());
-                        pt.setOption_c_image(options.getC_image_url());
-                        pt.setOption_d_image(options.getD_image_url());
-                        break;
-                    case "audio":
-                        pt.setOption_a_audio(options.getA_audio_url());
-                        pt.setOption_b_audio(options.getB_audio_url());
-                        pt.setOption_c_audio(options.getC_audio_url());
-                        pt.setOption_d_audio(options.getD_audio_url());
-                        break;
+            //只有level-1才如此
+            if ("1".equals(level)) {
+                if ("Choice".equals(attr)) {
+                    opt_num++;
+                    switch (options.getChoice_type()) {
+                        case "text":
+                            break;
+                        case "image":
+                            pt.setOption_a_image(options.getA_image_url());
+                            pt.setOption_b_image(options.getB_image_url());
+                            pt.setOption_c_image(options.getC_image_url());
+                            pt.setOption_d_image(options.getD_image_url());
+                            break;
+                        case "audio":
+                            pt.setOption_a_audio(options.getA_audio_url());
+                            pt.setOption_b_audio(options.getB_audio_url());
+                            pt.setOption_c_audio(options.getC_audio_url());
+                            pt.setOption_d_audio(options.getD_audio_url());
+                            break;
+                    }
+                } else if ("panduanzhengwu".equals(attr)) {
+                    opt_num++;
+                } else if ("txt".equals(attr)) {
+                    txt_num++;
                 }
-            }else if("panduanzhengwu".equals(attr)){
-                pt.setShowOrder(2);
-                opt_num++;
-            }else if("txt".equals(attr)){
-                pt.setShowOrder(3);
-                txt_num++;
             }
+
 
             st.addSheet_list(pt);
+
+
         }
-//        //确定次序
-        Collections.sort(st.getSheet_list(), new Comparator<ProblemAnsTemp>() {
-            @Override
-            public int compare(ProblemAnsTemp o1, ProblemAnsTemp o2) {
-                if (o1.getShowOrder() < o2.getShowOrder()) return -1;
-                else if (o1.getShowOrder() == o2.getShowOrder()) return 0;
-                else return 1;
-            }
-        });
 
-
-        st.setExer_level(level.toString());
+        st.setExer_level(level);
 
         st.setOpt_num(opt_num);
         st.setTxt_num(txt_num);
@@ -813,8 +859,52 @@ public class ExerciseController {
         exercise.setUpdate_time(sdf.format(new Date()));
 
         exerciseService.insertExercise(exercise);
-        System.out.println("st:" + st);
+//        System.out.println("st:" + st);
         return st;
+    }
+
+    private List<Problem> sortProblem(List<Problem> probs) {
+
+        List<Problem> sortedProbs = new ArrayList<>();
+        for(Problem p:probs){
+            if("Easy".equals(p.getProb_diff())&&"Choice".equals(p.getProb_attr()))sortedProbs.add(p);
+        }
+        for(Problem p:probs){
+            if("Easy".equals(p.getProb_diff())&&"panduanzhengwu".equals(p.getProb_attr()))sortedProbs.add(p);
+        }
+        for(Problem p:probs){
+            if("Easy".equals(p.getProb_diff())&&"txt".equals(p.getProb_attr()))sortedProbs.add(p);
+        }
+
+        for(Problem p:probs){
+            if("Medium".equals(p.getProb_diff())&&"Choice".equals(p.getProb_attr()))sortedProbs.add(p);
+        }
+        for(Problem p:probs){
+            if("Medium".equals(p.getProb_diff())&&"panduanzhengwu".equals(p.getProb_attr()))sortedProbs.add(p);
+        }
+        for(Problem p:probs){
+            if("Medium".equals(p.getProb_diff())&&"txt".equals(p.getProb_attr()))sortedProbs.add(p);
+        }
+
+        for(Problem p:probs){
+            if("Hard".equals(p.getProb_diff())&&"Choice".equals(p.getProb_attr()))sortedProbs.add(p);
+        }
+        for(Problem p:probs){
+            if("Hard".equals(p.getProb_diff())&&"panduanzhengwu".equals(p.getProb_attr()))sortedProbs.add(p);
+        }
+        for(Problem p:probs){
+            if("Hard".equals(p.getProb_diff())&&"txt".equals(p.getProb_attr()))sortedProbs.add(p);
+        }
+        return sortedProbs;
+
+    }
+
+    //判断某个数在数组中是否存在
+    private boolean exist(int[] arr, int key) {
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == key) return true;
+        }
+        return false;
     }
 
     @PostMapping(path = "/postSetting")
