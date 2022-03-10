@@ -167,8 +167,8 @@
                 console.log("--执行了start--");
 
                 this.setting.sys = this.chosen_lesson.toString();
-                // this.setting.lev = this.level;
-                this.setting.lev = "1";
+                this.setting.lev = parseInt(this.level);
+                console.log(this.level)
                 axios.post("/postSetting",$.param(this.setting)
                 ).then((response) => {
                     //400-参数不匹配

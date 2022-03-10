@@ -148,8 +148,7 @@ public class AuthController {
                 String infoString = hashMap.get("student_info").toString();
                 HashMap infoMap = JSON.parseObject(infoString, HashMap.class);
                 String level = infoMap.get("level").toString();
-
-                return "OK " + infoMap.toString();
+                return "OK " + level;
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -98,7 +98,7 @@ public class ProblemServiceImpl implements ProblemService {
         List<Problem> hard_probs = new ArrayList<>();
         int cnt = 0;
         for(Problem p:probs){
-            if("Hard".equals(p.getProb_attr())){
+            if("Hard".equals(p.getProb_diff())){
                 cnt++;
                 hard_probs.add(p);
             }
@@ -110,7 +110,7 @@ public class ProblemServiceImpl implements ProblemService {
         }
         //困难数量不足继续补全
         for(Problem p:probs){
-            if(!("Hard".equals(p.getProb_attr()))){
+            if(!("Hard".equals(p.getProb_diff()))){
                 cnt++;
                 hard_probs.add(p);
             }
@@ -148,7 +148,7 @@ public class ProblemServiceImpl implements ProblemService {
         List<Problem> hard_probs = new ArrayList<>();
         int cnt = 0;
         for(Problem p:probs){
-            if("Hard".equals(p.getProb_attr())){
+            if("Hard".equals(p.getProb_diff())){
                 cnt++;
                 hard_probs.add(p);
             }
@@ -160,7 +160,7 @@ public class ProblemServiceImpl implements ProblemService {
         }
         //困难数量不足继续补全
         for(Problem p:probs){
-            if(!("Hard".equals(p.getProb_attr()))){
+            if(!("Hard".equals(p.getProb_diff()))){
                 cnt++;
                 hard_probs.add(p);
             }
@@ -189,11 +189,12 @@ public class ProblemServiceImpl implements ProblemService {
          */
         int capacity = 1000;
         List<Problem> probs = problemRepository.getByLevelAndLesson(level,lesson_id,capacity);
+        System.out.println("1-probs:"+probs);
         List<Problem> exer_probs = new ArrayList<>();
         int cnt = 0;
         //选取easy题目
         for(Problem p:probs){
-            if("Easy".equals(p.getProb_attr())){
+            if("Easy".equals(p.getProb_diff())){
                 cnt++;
                 exer_probs.add(p);
             }
@@ -202,7 +203,7 @@ public class ProblemServiceImpl implements ProblemService {
         //选取中等难度题目
         int medium_num = (int)((num-cnt)*0.7);
         for(Problem p:probs){
-            if("Medium".equals(p.getProb_attr())){
+            if("Medium".equals(p.getProb_diff())){
                 cnt++;
                 medium_num--;
                 exer_probs.add(p);
@@ -211,12 +212,14 @@ public class ProblemServiceImpl implements ProblemService {
         }
         //选取困难难度题目
         for(Problem p:probs){
-            if("Hard".equals(p.getProb_attr())){
+            if("Hard".equals(p.getProb_diff())){
                 cnt++;
                 exer_probs.add(p);
             }
             if(cnt>=num)break;
         }
+        System.out.println();
+        System.out.println("1-exer_probs:"+exer_probs);
         return exer_probs;
     }
 
