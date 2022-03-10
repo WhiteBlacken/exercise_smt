@@ -48,7 +48,7 @@ public class ProblemAnsTemp {
 
     public void setChoice(String choice) {  // 设置选项的时候就判断正误
         this.choice = choice;
-        if (this.type.equals("opt")) {
+        if (!(this.type.equals("txt"))) {
             if (this.choice.equalsIgnoreCase(this.ans))
                 this.setEval_res(1);
             else this.setEval_res(0);

@@ -688,13 +688,39 @@ public class ExerciseController {
             //1. 一个要是根据要求拿到题目
             //2. 保证不重复
             //3. 符合一定的顺序
-            Long lesson_id = Long.valueOf(settingTemp.getSys());
-            int num = 15;
 
-            List<Problem> probs = problemService.getByLevelAndLesson(settingTemp.getLev().toString(),lesson_id,num);
+            /**
+             * 分为三种类型 通过lesson进行识别
+             * 1. 普通：出当前lesson的题目
+             * 2. 挑战：出几个lesson的题目，从各种难度中抽
+             * 3. boss：出几个lesson的题目，困难为主
+             */
+            int [] challenge_lesson = {4,12,20,29,37};
+            int [] boss_lesson = {8,16,24,33,41};
+            int [] big_boss_lesson = {25,42};
+
+            Long lesson_id = Long.valueOf(settingTemp.getSys());
+            List<Problem> probs = new ArrayList<>();
+            int lesson = lesson_id.intValue();
+            int num = 30;
+            if (exist(challenge_lesson,lesson)){
+                //挑战关卡
+                probs = problemService.getByLevelAndLessonInChallenge(settingTemp.getLev().toString(),lesson_id,num);
+            }else if(exist(boss_lesson,lesson)){
+                //boss关卡
+                probs = problemService.getByLevelAndLessonInBoss(settingTemp.getLev().toString(),lesson_id,num);
+            }else if(exist(big_boss_lesson,lesson)){
+                //big boss关卡
+                probs = problemService.getByLevelAndLessonInBigBoss(settingTemp.getLev().toString(),lesson_id,num);
+            }else{
+                //普通关卡
+                num = 20;
+                probs = problemService.getByLevelAndLessonInNormal(settingTemp.getLev().toString(),lesson_id,num);
+            }
             for (Problem prob : probs) {
                 probList.add(prob.getProb_id());
             }
+
             System.out.println("probList:"+probList);
 
         } else if (settingTemp.getSrc().equals("test")) {
@@ -813,8 +839,15 @@ public class ExerciseController {
         exercise.setUpdate_time(sdf.format(new Date()));
 
         exerciseService.insertExercise(exercise);
-        System.out.println("st:" + st);
+//        System.out.println("st:" + st);
         return st;
+    }
+    //判断某个数在数组中是否存在
+    private boolean exist(int[] arr, int  key) {
+        for (int i=0;i<arr.length;i++){
+            if(arr[i]==key)return true;
+        }
+        return false;
     }
 
     @PostMapping(path = "/postSetting")
