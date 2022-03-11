@@ -823,7 +823,7 @@
                     $.cookie("prob_id", null);
                     $.cookie("level", this.formData["prob_level"]);
                     $.cookie("lesson_id", this.formData["lesson_id"]);
-
+                    console.log(this.formData["prob_text"])
                     axios.post("/postProblem1", $.param(this.formData) //引入jQuery的作用
                     ).then((response) => {
                         if (response.data === "OK") {
