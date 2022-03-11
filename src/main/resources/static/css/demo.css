@@ -392,10 +392,18 @@ li > p {
     height: 83%;
 }
 
-#question_info,#question_text {
+#question_info{
     position: relative;
     z-index: 1;
     display: flex;
+    width: 66%;
+}
+
+
+#question_text {
+    position: relative;
+    z-index: 1;
+    display: block;
     width: 66%;
 }
 

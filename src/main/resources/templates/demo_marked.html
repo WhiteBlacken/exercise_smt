@@ -1164,6 +1164,7 @@
                 this.wrong_list = [];
                 this.correct_list = [];
                 for (var i = 0; i < sheet.sheet_list.length; i++) {
+                    console.log(sheet.sheet_list[i])
                     var cur_problem = sheet.sheet_list[i];
                     if(cur_problem.eval_res === 1) {   // 正确
                         this.results_list.push(1);
@@ -1220,6 +1221,7 @@
                     if(this.num !== this.wrong_list[0])
                         document.getElementById("last_button").style.display = "";
                 }
+
             },
 
             getImage: function (str) {

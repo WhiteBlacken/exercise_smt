@@ -74,7 +74,7 @@
                                 </div>
                                 <div id="question_text">
 
-                                    <p><span style="line-height: 55px">{{ prob_text }}</span><img v-if="stem_aud && stem_aud != ''" id="stem_audio" src="/image/audio-unchecked.png" @click="playAudio('stem')"><img v-if="stem_aud && stem_aud != ''" src="/image/finger.gif" class="finger"></p>
+                                    <div id="last_span"><span style="line-height: 55px">{{ last_span_text }}</span><img v-if="stem_aud && stem_aud != ''" id="stem_audio" src="/image/audio-unchecked.png" @click="playAudio('stem')"><img v-if="stem_aud && stem_aud != ''" src="/image/finger.gif" class="finger"></div>
 
                                 </div>
                                 <div id="opt_part">
@@ -380,6 +380,7 @@
             b_play: "/image/audio-unselected.png",
             c_play: "/image/audio-unselected.png",
             d_play: "/image/audio-unselected.png",
+            last_span_text: "",
         },
         methods: {
             musicEnd: function (num) {
@@ -1130,9 +1131,25 @@
                 this.options.B = "";
                 this.options.C = "";
                 this.options.D = "";
+                this.last_span_text  ="";
                 var prob = await axios.get("/getProblem?num=" + this.prob_list[this.num - 1].toString());
-                if(prob.data.prob_text && prob.data.prob_text != "")
+                if(prob.data.prob_text && prob.data.prob_text != "") {
                     this.prob_text = prob.data.prob_text;
+                    this.last_span_text = this.prob_text.split('\n')[this.prob_text.split('\n').length - 1];
+                }
+                console.log(this.prob_text.split('\n'))
+                let stem_text = this.prob_text.split('\n');
+                let parent = document.getElementById('question_text');
+                let child = document.getElementById('last_span');
+                while(parent.children[0] != child)
+                    parent.removeChild(parent.children[0]);
+                for(let i = 0; i < stem_text.length - 1 ; i++){
+                    var p = document.createElement('div');
+                    p.style.lineHeight = "55px";
+                    p.innerHTML = stem_text[i];
+                    parent.insertBefore(p, child);
+                    //p.style.border = "1px solid black";
+                }
                 document.getElementById('question_text').style.width = "94%";
                 document.getElementById('image_container').style.display = "none";
                 switch (prob.data.prob_attr) {
