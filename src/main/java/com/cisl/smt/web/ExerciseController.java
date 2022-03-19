@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 public class ExerciseController {
@@ -863,38 +865,22 @@ public class ExerciseController {
         return st;
     }
 
+    /**
+     * 题目排序
+     * @param probs
+     * @return
+     */
     private List<Problem> sortProblem(List<Problem> probs) {
 
         List<Problem> sortedProbs = new ArrayList<>();
-        for(Problem p:probs){
-            if("Easy".equals(p.getProb_diff())&&"Choice".equals(p.getProb_attr()))sortedProbs.add(p);
-        }
-        for(Problem p:probs){
-            if("Easy".equals(p.getProb_diff())&&"panduanzhengwu".equals(p.getProb_attr()))sortedProbs.add(p);
-        }
-        for(Problem p:probs){
-            if("Easy".equals(p.getProb_diff())&&"txt".equals(p.getProb_attr()))sortedProbs.add(p);
+        String[] diffs = {"Easy", "Medium", "Hard"};
+        String[] types = {"Choice", "panduanzhengwu", "txt"};
+        for (String diff : diffs) {
+            for (String type : types) {
+                sortedProbs.addAll(probs.stream().filter(p -> diff.equals(p.getProb_diff()) && type.equals(p.getProb_attr())).collect(Collectors.toList()));
+            }
         }
 
-        for(Problem p:probs){
-            if("Medium".equals(p.getProb_diff())&&"Choice".equals(p.getProb_attr()))sortedProbs.add(p);
-        }
-        for(Problem p:probs){
-            if("Medium".equals(p.getProb_diff())&&"panduanzhengwu".equals(p.getProb_attr()))sortedProbs.add(p);
-        }
-        for(Problem p:probs){
-            if("Medium".equals(p.getProb_diff())&&"txt".equals(p.getProb_attr()))sortedProbs.add(p);
-        }
-
-        for(Problem p:probs){
-            if("Hard".equals(p.getProb_diff())&&"Choice".equals(p.getProb_attr()))sortedProbs.add(p);
-        }
-        for(Problem p:probs){
-            if("Hard".equals(p.getProb_diff())&&"panduanzhengwu".equals(p.getProb_attr()))sortedProbs.add(p);
-        }
-        for(Problem p:probs){
-            if("Hard".equals(p.getProb_diff())&&"txt".equals(p.getProb_attr()))sortedProbs.add(p);
-        }
         return sortedProbs;
 
     }

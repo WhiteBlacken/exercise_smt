@@ -88,6 +88,7 @@ public class UploadController {
     public ArrayList<ProblemDetail> listAllProb(@Param("level") String level,
                                                 @Param("lesson_id") Long lesson_id) {
         ArrayList<ProblemDetail> probDetList = new ArrayList<>();
+        System.out.println("level:"+level+",lesson_id:"+lesson_id);
         List<Problem> problemList = problemRepository.getProblemByLevelAndLesson_id(level, lesson_id);
         System.out.println("执行了listAllProb，其中problemList为：" + problemList);
         for (Problem problem : problemList) {

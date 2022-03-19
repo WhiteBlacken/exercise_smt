@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProblemServiceImpl implements ProblemService {
@@ -57,11 +58,12 @@ public class ProblemServiceImpl implements ProblemService {
 
     @Override
     public List<Problem> getByLevelAndLesson(String level, Long lesson_id, int num) {
-        return problemRepository.getByLevelAndLesson(level,lesson_id,num);
+        return problemRepository.getByLevelAndLesson(level, lesson_id, num);
     }
 
     /**
      * 根据level、lesson对挑战关卡出题
+     *
      * @param level
      * @param lesson_id
      * @param num
@@ -74,11 +76,13 @@ public class ProblemServiceImpl implements ProblemService {
          * 1. 错、中、困难占比随机
          * 2. 包含前是哪个lesson的内容
          */
-        List<Problem> probs = problemRepository.getByLevelAndLessonDomain(level,lesson_id-3,lesson_id-1,num);
-        return probs;
+        return problemRepository.getByLevelAndLessonDomain(level, lesson_id - 3, lesson_id - 1, num);
+
     }
+
     /**
      * 根据level、lesson对boss关卡出题
+     *
      * @param level
      * @param lesson_id
      * @param num
@@ -92,37 +96,15 @@ public class ProblemServiceImpl implements ProblemService {
          * 2. 包含前是哪个lesson的内容
          */
         int capacity = 1000;
-        List<Problem> probs = problemRepository.getByLevelAndLessonDomain(level,lesson_id-4,lesson_id-1,capacity);
-//       尝试改为java8，看在服务器上是否可以运行
-//        List<Problem> hard_probs = probs.stream().filter(p->p.getProb_attr()=="Hard");
-        List<Problem> hard_probs = new ArrayList<>();
-        int cnt = 0;
-        for(Problem p:probs){
-            if("Hard".equals(p.getProb_diff())){
-                cnt++;
-                hard_probs.add(p);
-            }
-            if(cnt>=num){
-                //如果困难数量足够，直接返回
-                System.out.println("困难题目抽出"+cnt+"道;");
-                return hard_probs;
-            }
-        }
-        //困难数量不足继续补全
-        for(Problem p:probs){
-            if(!("Hard".equals(p.getProb_diff()))){
-                cnt++;
-                hard_probs.add(p);
-            }
-            if(cnt>=num){
-                System.out.println("简单、中等题已经补齐");
-                break;
-            }
-        }
-        return hard_probs;
+        List<Problem> probs = problemRepository.getByLevelAndLessonDomain(level, lesson_id - 4, lesson_id - 1, capacity);
+
+        return hardProbsPrefer(probs, num);
     }
+
+
     /**
      * 根据level、lesson对big boss关卡出题
+     *
      * @param level
      * @param lesson_id
      * @param num
@@ -137,43 +119,18 @@ public class ProblemServiceImpl implements ProblemService {
          */
         int capacity = 1000;
         List<Problem> probs = new ArrayList<>();
-        if(lesson_id==25){
-            probs = problemRepository.getByLevelAndLessonDomain(level,1L,24L,capacity);
-        }else if(lesson_id==42){
-            probs = problemRepository.getByLevelAndLessonDomain(level,26L,41L,capacity);
+        if (lesson_id == 25) {
+            probs = problemRepository.getByLevelAndLessonDomain(level, 1L, 24L, capacity);
+        } else if (lesson_id == 42) {
+            probs = problemRepository.getByLevelAndLessonDomain(level, 26L, 41L, capacity);
         }
 
-//       尝试改为java8，看在服务器上是否可以运行
-//        List<Problem> hard_probs = probs.stream().filter(p->p.getProb_attr()=="Hard");
-        List<Problem> hard_probs = new ArrayList<>();
-        int cnt = 0;
-        for(Problem p:probs){
-            if("Hard".equals(p.getProb_diff())){
-                cnt++;
-                hard_probs.add(p);
-            }
-            if(cnt>=num){
-                //如果困难数量足够，直接返回
-                System.out.println("困难题目抽出"+cnt+"道;");
-                return hard_probs;
-            }
-        }
-        //困难数量不足继续补全
-        for(Problem p:probs){
-            if(!("Hard".equals(p.getProb_diff()))){
-                cnt++;
-                hard_probs.add(p);
-            }
-            if(cnt>=num){
-                System.out.println("简单、中等题已经补齐");
-                break;
-            }
-        }
-        return hard_probs;
+        return hardProbsPrefer(probs, num);
     }
 
     /**
      * 根据level、lesson在普通模式下进行出题
+     *
      * @param level
      * @param lesson_id
      * @param num
@@ -188,40 +145,40 @@ public class ProblemServiceImpl implements ProblemService {
          * 3. Hard难度占到剩余的30%
          */
         int capacity = 1000;
-        List<Problem> probs = problemRepository.getByLevelAndLesson(level,lesson_id,capacity);
-        System.out.println("1-probs:"+probs);
-        List<Problem> exer_probs = new ArrayList<>();
-        int cnt = 0;
-        //选取easy题目
-        for(Problem p:probs){
-            if("Easy".equals(p.getProb_diff())){
-                cnt++;
-                exer_probs.add(p);
-            }
-            if(cnt>=6)break;
-        }
-        //选取中等难度题目
-        int medium_num = (int)((num-cnt)*0.7);
-        for(Problem p:probs){
-            if("Medium".equals(p.getProb_diff())){
-                cnt++;
-                medium_num--;
-                exer_probs.add(p);
-            }
-            if(medium_num<=0)break;
-        }
-        //选取困难难度题目
-        for(Problem p:probs){
-            if("Hard".equals(p.getProb_diff())){
-                cnt++;
-                exer_probs.add(p);
-            }
-            if(cnt>=num)break;
-        }
-        System.out.println();
-        System.out.println("1-exer_probs:"+exer_probs);
-        return exer_probs;
+        List<Problem> probs = problemRepository.getByLevelAndLesson(level, lesson_id, capacity);
+
+        //选取Easy难度
+        List<Problem> targetProbs = probs.stream().filter(p -> "Easy".equals(p.getProb_diff())).limit(6).collect(Collectors.toList());
+        System.out.println("Easy难度的数量:" + targetProbs.size());
+        //选取Medium难度
+        int medium_num = (int) ((num - targetProbs.size()) * 0.7);
+        targetProbs.addAll(probs.stream().filter(p -> "Medium".equals(p.getProb_diff())).limit(medium_num).collect(Collectors.toList()));
+        System.out.println("Easy+Medium难度的数量:" + targetProbs.size());
+        //选取Hard难度
+        int hard_num = num - targetProbs.size();
+        targetProbs.addAll(probs.stream().filter(p -> "Hard".equals(p.getProb_diff())).limit(hard_num).collect(Collectors.toList()));
+        System.out.println("Easy+Medium+Hard难度的数量:" + targetProbs.size());
+
+        return targetProbs;
     }
 
+    /**
+     * 优先筛选Hard难度
+     * @param probs
+     * @param num
+     * @return
+     */
+    private List<Problem> hardProbsPrefer(List<Problem> probs, int num) {
+        //筛选出hard的题目数量
+        List<Problem> targetPros = probs.stream().filter(p -> "Hard".equals(p.getProb_diff())).limit(num).collect(Collectors.toList());
+        int cnt = targetPros.size();
+        if (cnt >= num) {
+            System.out.println("困难题目抽出" + cnt + "道;");
 
+        } else {
+            System.out.println("简单、中等题已经补齐");
+            targetPros.addAll(probs.stream().filter(p -> !("Hard".equals(p.getProb_diff()))).limit(num - cnt).collect(Collectors.toList()));
+        }
+        return targetPros;
+    }
 }
