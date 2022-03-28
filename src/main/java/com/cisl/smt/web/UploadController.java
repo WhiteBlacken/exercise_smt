@@ -227,7 +227,13 @@ public class UploadController {
 
             problemDetail.setOptions(options_text);
             problemDetail.setProb_text(problem.getProb_text());
-            problemDetail.setProb_attr(problem.getProb_attr());
+            //暂时的处理
+            if("txt".equals(problem.getProb_attr())){
+                problemDetail.setProb_attr(problem.getProb_type());
+            }else{
+                problemDetail.setProb_attr(problem.getProb_attr());
+            }
+            //暂时的处理
             problemDetail.setProb_level(problem.getProb_level());
             problemDetail.setProb_diff(problem.getProb_diff());
             problemDetail.setLesson_id(problem.getLesson_id());
