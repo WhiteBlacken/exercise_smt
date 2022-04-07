@@ -366,9 +366,9 @@ public class ExerciseController {
                 probList = new ArrayList<>();
 
         for (Problem p : tempList) {
-            if (p.getProb_diff().equals("Easy") && p.getProb_type().equals("opt")) {
+            if (p.getProb_diff().equals("Easy") && p.getProb_attr().equals("Choice")) {
                 easyChoiceProbList.add(p);
-            } else if (p.getProb_diff().equals("Easy") && p.getProb_type().equals("txt")) {
+            } else if (p.getProb_diff().equals("Easy") && p.getProb_attr().equals("txt")) {
                 easyTextProbList.add(p);
             } else if (p.getProb_diff().equals("Medium")) {
                 mediumProbList.add(p);
@@ -402,7 +402,7 @@ public class ExerciseController {
 
         for (Problem pro : probList)
             probNumList.add(pro.getProb_id());
-
+        System.out.println("ordered probList:"+probNumList);
         return probNumList;
     }
 
@@ -814,31 +814,30 @@ public class ExerciseController {
             pt.setAns(answerService.getAnswer(probNum).getAnswer_text());
 
             String attr = p.getProb_attr();
-            //只有level-1才如此
-            if ("1".equals(level)) {
-                if ("Choice".equals(attr)) {
-                    opt_num++;
-                    switch (options.getChoice_type()) {
-                        case "text":
-                            break;
-                        case "image":
-                            pt.setOption_a_image(options.getA_image_url());
-                            pt.setOption_b_image(options.getB_image_url());
-                            pt.setOption_c_image(options.getC_image_url());
-                            pt.setOption_d_image(options.getD_image_url());
-                            break;
-                        case "audio":
-                            pt.setOption_a_audio(options.getA_audio_url());
-                            pt.setOption_b_audio(options.getB_audio_url());
-                            pt.setOption_c_audio(options.getC_audio_url());
-                            pt.setOption_d_audio(options.getD_audio_url());
-                            break;
-                    }
-                } else if ("panduanzhengwu".equals(attr)) {
-                    opt_num++;
-                } else if ("txt".equals(attr)) {
-                    txt_num++;
+
+
+            if ("Choice".equals(attr)) {
+                opt_num++;
+                switch (options.getChoice_type()) {
+                    case "text":
+                        break;
+                    case "image":
+                        pt.setOption_a_image(options.getA_image_url());
+                        pt.setOption_b_image(options.getB_image_url());
+                        pt.setOption_c_image(options.getC_image_url());
+                        pt.setOption_d_image(options.getD_image_url());
+                        break;
+                    case "audio":
+                        pt.setOption_a_audio(options.getA_audio_url());
+                        pt.setOption_b_audio(options.getB_audio_url());
+                        pt.setOption_c_audio(options.getC_audio_url());
+                        pt.setOption_d_audio(options.getD_audio_url());
+                        break;
                 }
+            } else if ("panduanzhengwu".equals(attr)) {
+                opt_num++;
+            } else if ("txt".equals(attr)) {
+                txt_num++;
             }
 
 
@@ -867,6 +866,7 @@ public class ExerciseController {
 
     /**
      * 题目排序
+     *
      * @param probs
      * @return
      */
@@ -985,8 +985,8 @@ public class ExerciseController {
             try {
 //                System.out.println("problem:"+problemService.getProblemByProb_id(tmpNum));
 //                System.out.println("problem_equals:"+problemService.getProblemByProb_id(tmpNum).getProb_attr().equals("Choice"));
-                String prob_type = problemService.getProblemByProb_id(tmpNum).getProb_type();
-                if ("opt".equals(prob_type))
+                String prob_attr = problemService.getProblemByProb_id(tmpNum).getProb_attr();
+                if ("Choice".equals(prob_attr))
                     orderList.add(tmpNum);
             } catch (Exception e) {
                 System.out.println(tmpNum);
@@ -995,8 +995,8 @@ public class ExerciseController {
             }
 
         for (Long tmpNum : tmpList) {
-            String prob_type = problemService.getProblemByProb_id(tmpNum).getProb_type();
-            if ("txt".equals(prob_type))
+            String prob_attr = problemService.getProblemByProb_id(tmpNum).getProb_attr();
+            if ("txt".equals(prob_attr))
                 orderList.add(tmpNum);
         }
         return orderList;
