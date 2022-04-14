@@ -98,7 +98,8 @@
                     <div v-if="radioType === 'Choice'">
                         <h3>选择题类型：</h3>
                         <el-form-item prop="prob_type">
-                            <el-input label-width="300px" type="textarea" :rows="1" v-model="formData.prob_type"></el-input>
+                            <el-input label-width="300px" type="textarea" :rows="1"
+                                      v-model="formData.prob_type"></el-input>
                         </el-form-item>
                     </div>
 
@@ -125,7 +126,7 @@
 
                     <h3>题干：prob_text</h3>
                     <el-form-item label="" prop="prob_text">
-                    <h4>文字部分</h4>
+                        <h4>文字部分</h4>
                         <el-input label-width="800px" type="textarea" :rows="3" v-model="formData.prob_text"></el-input>
                     </el-form-item>
 
@@ -140,15 +141,17 @@
                                 :on-success="uploadImgAfter"
                                 accept=".jpg,.jpeg,.png,.gif"
                                 :data="{fileType:'image',info:'stem'}"
-                                >
+                        >
                             <i slot="default" class="el-icon-plus"></i>
                             <div slot="file" slot-scope="{file}">
                                 <img class="el-upload-list__item-thumbnail" :src="file.url" alt="">
                                 <span class="el-upload-list__item-actions">
-                                    <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file,'stem')">
+                                    <span class="el-upload-list__item-preview"
+                                          @click="handlePictureCardPreview(file,'stem')">
                                         <i class="el-icon-zoom-in"></i>
                                     </span>
-                                    <span v-if="!disabled[0]" class="el-upload-list__item-delete" @click="handleRemove(file,'stem')">
+                                    <span v-if="!disabled[0]" class="el-upload-list__item-delete"
+                                          @click="handleRemove(file,'stem')">
                                         <i class="el-icon-delete"></i>
                                     </span>
                                 </span>
@@ -160,27 +163,27 @@
                     </el-form-item>
 
                     <el-form-item label="">
-                    <h4>音频部分</h4>
-                    <el-upload
-                            :file-list="stemAudioFileList"
-                            ref="stemAudioUpload"
-                            :show-file-list="false"
-                            class="upload-demo"
-                            action="fileUpload1"
-                            :on-success="uploadAudioAfter"
-                            :before-upload="showStemAudio"
-                            accept=".mp3,.m4a,.flac,.wma,.wav"
-                            :data="{fileType:'audio',info:'stem'}"
-                            >
-                        <el-button size="small" type="primary">点击上传</el-button>
-                    </el-upload>
+                        <h4>音频部分</h4>
+                        <el-upload
+                                :file-list="stemAudioFileList"
+                                ref="stemAudioUpload"
+                                :show-file-list="false"
+                                class="upload-demo"
+                                action="fileUpload1"
+                                :on-success="uploadAudioAfter"
+                                :before-upload="showStemAudio"
+                                accept=".mp3,.m4a,.flac,.wma,.wav"
+                                :data="{fileType:'audio',info:'stem'}"
+                        >
+                            <el-button size="small" type="primary">点击上传</el-button>
+                        </el-upload>
                         <div id="stemAudio"></div>
                     </el-form-item>
 
 
                     <div style="width: 650px">
-                        <h3  v-if="radioType === 'Choice'">选项类型：choice_type</h3>
-                        <el-form-item prop="choice_type"  v-if="radioType === 'Choice'">
+                        <h3 v-if="radioType === 'Choice'">选项类型：choice_type</h3>
+                        <el-form-item prop="choice_type" v-if="radioType === 'Choice'">
                             <el-select v-model="formData.choice_type" placeholder="选项类型" @change="clearChoice">
                                 <el-option label="纯文本" value="text"></el-option>
                                 <el-option label="图文" value="image"></el-option>
@@ -188,9 +191,9 @@
                             </el-select>
                         </el-form-item>
 
-                        <h3  v-if="radioType === 'Choice'">选项：options</h3>
-                        <h4  v-if="radioType === 'Choice'">A.</h4>
-                        <el-form-item label="文字部分"  v-if="radioType === 'Choice'">
+                        <h3 v-if="radioType === 'Choice'">选项：options</h3>
+                        <h4 v-if="radioType === 'Choice'">A.</h4>
+                        <el-form-item label="文字部分" v-if="radioType === 'Choice'">
                             <el-input v-model="formData.optionA"></el-input>
                         </el-form-item>
 
@@ -209,16 +212,18 @@
                                 <div slot="file" slot-scope="{file}">
                                     <img class="el-upload-list__item-thumbnail" :src="file.url" alt="">
                                     <span class="el-upload-list__item-actions">
-                                    <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file,'A')">
+                                    <span class="el-upload-list__item-preview"
+                                          @click="handlePictureCardPreview(file,'A')">
                                         <i class="el-icon-zoom-in"></i>
                                     </span>
-                                    <span v-if="!disabled[1]" class="el-upload-list__item-delete" @click="handleRemove(file,'A')">
+                                    <span v-if="!disabled[1]" class="el-upload-list__item-delete"
+                                          @click="handleRemove(file,'A')">
                                         <i class="el-icon-delete"></i>
                                     </span>
                                 </span>
                                 </div>
                             </el-upload>
-                            <el-dialog :visible.sync="visibleData.optionAVisible" >
+                            <el-dialog :visible.sync="visibleData.optionAVisible">
                                 <img width="100%" :src="formData.option_a_image" alt="">
                             </el-dialog>
                         </el-form-item>
@@ -259,10 +264,12 @@
                                 <div slot="file" slot-scope="{file}">
                                     <img class="el-upload-list__item-thumbnail" :src="file.url" alt="">
                                     <span class="el-upload-list__item-actions">
-                                    <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file,'B')">
+                                    <span class="el-upload-list__item-preview"
+                                          @click="handlePictureCardPreview(file,'B')">
                                         <i class="el-icon-zoom-in"></i>
                                     </span>
-                                    <span v-if="!disabled[2]" class="el-upload-list__item-delete" @click="handleRemove(file,'B')">
+                                    <span v-if="!disabled[2]" class="el-upload-list__item-delete"
+                                          @click="handleRemove(file,'B')">
                                         <i class="el-icon-delete"></i>
                                     </span>
                                 </span>
@@ -309,10 +316,12 @@
                                 <div slot="file" slot-scope="{file}">
                                     <img class="el-upload-list__item-thumbnail" :src="file.url" alt="">
                                     <span class="el-upload-list__item-actions">
-                                    <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file,'C')">
+                                    <span class="el-upload-list__item-preview"
+                                          @click="handlePictureCardPreview(file,'C')">
                                         <i class="el-icon-zoom-in"></i>
                                     </span>
-                                    <span v-if="!disabled[3]" class="el-upload-list__item-delete" @click="handleRemove(file,'C')">
+                                    <span v-if="!disabled[3]" class="el-upload-list__item-delete"
+                                          @click="handleRemove(file,'C')">
                                         <i class="el-icon-delete"></i>
                                     </span>
                                 </span>
@@ -358,10 +367,12 @@
                                 <div slot="file" slot-scope="{file}">
                                     <img class="el-upload-list__item-thumbnail" :src="file.url" alt="">
                                     <span class="el-upload-list__item-actions">
-                                    <span class="el-upload-list__item-preview" @click="handlePictureCardPreview(file,'D')">
+                                    <span class="el-upload-list__item-preview"
+                                          @click="handlePictureCardPreview(file,'D')">
                                         <i class="el-icon-zoom-in"></i>
                                     </span>
-                                    <span v-if="!disabled[4]" class="el-upload-list__item-delete" @click="handleRemove(file,'D')">
+                                    <span v-if="!disabled[4]" class="el-upload-list__item-delete"
+                                          @click="handleRemove(file,'D')">
                                         <i class="el-icon-delete"></i>
                                     </span>
                                 </span>
@@ -391,15 +402,15 @@
                     </div>
 
                     <div v-if="radioType === 'Choice'" style="width: 650px">
-                    <h4>正确答案</h4>
-                    <el-form-item label="" prop="answer">
-                        <el-select v-model="formData.answer" placeholder="选择选项">
-                            <el-option label="A" value="A"></el-option>
-                            <el-option label="B" value="B"></el-option>
-                            <el-option label="C" value="C"></el-option>
-                            <el-option label="D" value="D"></el-option>
-                        </el-select>
-                    </el-form-item>
+                        <h4>正确答案</h4>
+                        <el-form-item label="" prop="answer">
+                            <el-select v-model="formData.answer" placeholder="选择选项">
+                                <el-option label="A" value="A"></el-option>
+                                <el-option label="B" value="B"></el-option>
+                                <el-option label="C" value="C"></el-option>
+                                <el-option label="D" value="D"></el-option>
+                            </el-select>
+                        </el-form-item>
                     </div>
 
                     <div v-if="radioType === 'panduanzhengwu'" style="width: 650px">
@@ -443,10 +454,10 @@
                                     max-height="290"
                                     @selection-change="handleSelectionChange">
 
-<!--                                <el-table-column-->
-<!--                                        type="selection"-->
-<!--                                        width="55">-->
-<!--                                </el-table-column>-->
+                                <!--                                <el-table-column-->
+                                <!--                                        type="selection"-->
+                                <!--                                        width="55">-->
+                                <!--                                </el-table-column>-->
                                 <el-table-column
                                         prop="point_text"
                                         label="考点内容"
@@ -512,7 +523,7 @@
             showFile: false,
             radioType: 'Choice',
             levels: ['1', '2', '3', '4', '5', '6'],
-            lessons: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+            lessons: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42],
             upload: [],
             formData: {
                 optionA: '',
@@ -547,7 +558,7 @@
             level: '0',
             lesson_id: 0,
             grammar: 'Example: is/am/are',
-            disabled: [false,false,false,false,false],
+            disabled: [false, false, false, false, false],
             rules: {
                 answer: [{
                     required: true,
@@ -615,7 +626,7 @@
                 this.clearChoice();
             },
 
-            clearChoice:function () {
+            clearChoice: function () {
                 this.formData.optionA = '';
                 this.formData.optionB = '';
                 this.formData.optionC = '';
@@ -628,84 +639,87 @@
                 this.formData.option_b_audio = '';
                 this.formData.option_c_audio = '';
                 this.formData.option_d_audio = '';
-                if($('#optionAAudio').children().length > 0)
+                if ($('#optionAAudio').children().length > 0)
                     $('#optionAAudio').empty();
-                if($('#optionBAudio').children().length > 0)
+                if ($('#optionBAudio').children().length > 0)
                     $('#optionBAudio').empty();
-                if($('#optionCAudio').children().length > 0)
+                if ($('#optionCAudio').children().length > 0)
                     $('#optionCAudio').empty();
-                if($('#optionDAudio').children().length > 0)
+                if ($('#optionDAudio').children().length > 0)
                     $('#optionDAudio').empty();
             },
 
-            handleRemove(file,type) {
+            handleRemove(file, type) {
                 let uploadFiles;
-                if(type == 'stem')
+                if (type == 'stem')
                     uploadFiles = this.$refs.stemImageUpload.clearFiles();
-                else if(type == 'A')
+                else if (type == 'A')
                     uploadFiles = this.$refs.optionAImageUpload.clearFiles();
-                else if(type == 'B')
+                else if (type == 'B')
                     uploadFiles = this.$refs.optionBImageUpload.clearFiles();
-                else if(type == 'C')
+                else if (type == 'C')
                     uploadFiles = this.$refs.optionCImageUpload.clearFiles();
-                else if(type == 'D')
+                else if (type == 'D')
                     uploadFiles = this.$refs.optionDImageUpload.clearFiles();
                 // for (var i = 0; i < uploadFiles.length; i++) {
                 //     if (uploadFiles[i]['url'] == file.url) {
                 //         uploadFiles.splice(i, 1)
                 //     }
                 // }
-                if(type == 'stem')
+                if (type == 'stem')
                     this.formData.stem_image = "";
-                else if(type == 'A')
+                else if (type == 'A')
                     this.formData.option_a_image = "";
-                else if(type == 'B')
+                else if (type == 'B')
                     this.formData.option_b_image = "";
-                else if(type == 'C')
+                else if (type == 'C')
                     this.formData.option_c_image = "";
-                else if(type == 'D')
+                else if (type == 'D')
                     this.formData.option_d_image = "";
             },
 
-            handlePictureCardPreview(file,type) {
-                if(type == 'stem') {
+            handlePictureCardPreview(file, type) {
+                if (type == 'stem') {
                     this.formData.stem_image = file.url;
                     this.visibleData.stemVisible = true;
-                }
-                else if(type == 'A') {
+                } else if (type == 'A') {
                     this.formData.option_a_image = file.url;
                     this.visibleData.optionAVisible = true;
-                }
-                else if(type == 'B') {
+                } else if (type == 'B') {
                     this.formData.option_b_image = file.url;
                     this.visibleData.optionBVisible = true;
-                }
-                else if(type == 'C') {
+                } else if (type == 'C') {
                     this.formData.option_c_image = file.url;
                     this.visibleData.optionCVisible = true;
-                }
-                else if(type == 'D') {
-                        this.formData.option_d_image = file.url;
-                        this.visibleData.optionDVisible = true;
+                } else if (type == 'D') {
+                    this.formData.option_d_image = file.url;
+                    this.visibleData.optionDVisible = true;
                 }
             },
 
-            uploadImgAfter(res,file){
-                if(res['info'] == 'stem'){
+            uploadImgAfter(res, file) {
+                if (res['info'] == 'stem') {
                     this.formData.stem_image = res['url'];
-                }
-                else if(res['info'] == 'option'){
-                    switch(res['option']){
-                        case 'A': this.formData.option_a_image = res['url'];break;
-                        case 'B': this.formData.option_b_image = res['url'];break;
-                        case 'C': this.formData.option_c_image = res['url'];break;
-                        case 'D': this.formData.option_d_image = res['url'];break;
+                } else if (res['info'] == 'option') {
+                    switch (res['option']) {
+                        case 'A':
+                            this.formData.option_a_image = res['url'];
+                            break;
+                        case 'B':
+                            this.formData.option_b_image = res['url'];
+                            break;
+                        case 'C':
+                            this.formData.option_c_image = res['url'];
+                            break;
+                        case 'D':
+                            this.formData.option_d_image = res['url'];
+                            break;
                     }
                 }
             },
 
-            showStemAudio(fi){
-                if($('#stemAudio').children().length > 0)
+            showStemAudio(fi) {
+                if ($('#stemAudio').children().length > 0)
                     $('#stemAudio').empty();
                 var path = URL.createObjectURL(fi);
                 var audio = document.createElement('audio');
@@ -715,8 +729,8 @@
                 $('#stemAudio').append(audio);
             },
 
-            showOptionAAudio(fi){
-                if($('#optionAAudio').children().length > 0)
+            showOptionAAudio(fi) {
+                if ($('#optionAAudio').children().length > 0)
                     $('#optionAAudio').empty();
                 var path = URL.createObjectURL(fi);
                 var audio = document.createElement('audio');
@@ -726,8 +740,8 @@
                 $('#optionAAudio').append(audio);
             },
 
-            showOptionBAudio(fi){
-                if($('#optionBAudio').children().length > 0)
+            showOptionBAudio(fi) {
+                if ($('#optionBAudio').children().length > 0)
                     $('#optionBAudio').empty();
                 var path = URL.createObjectURL(fi);
                 var audio = document.createElement('audio');
@@ -737,8 +751,8 @@
                 $('#optionBAudio').append(audio);
             },
 
-            showOptionCAudio(fi){
-                if($('#optionCAudio').children().length > 0)
+            showOptionCAudio(fi) {
+                if ($('#optionCAudio').children().length > 0)
                     $('#optionCAudio').empty();
                 var path = URL.createObjectURL(fi);
                 var audio = document.createElement('audio');
@@ -748,8 +762,8 @@
                 $('#optionCAudio').append(audio);
             },
 
-            showOptionDAudio(fi){
-                if($('#optionDAudio').children().length > 0)
+            showOptionDAudio(fi) {
+                if ($('#optionDAudio').children().length > 0)
                     $('#optionDAudio').empty();
                 var path = URL.createObjectURL(fi);
                 var audio = document.createElement('audio');
@@ -759,13 +773,12 @@
                 $('#optionDAudio').append(audio);
             },
 
-            uploadAudioAfter(res){
-                if(res['info'] == 'stem'){
+            uploadAudioAfter(res) {
+                if (res['info'] == 'stem') {
                     this.formData.stem_audio = res['url'];
                     this.$refs.stemAudioUpload.clearFiles();
-                }
-                else if(res['info'] == 'option'){
-                    switch(res['option']){
+                } else if (res['info'] == 'option') {
+                    switch (res['option']) {
                         case 'A': {
                             this.formData.option_a_audio = res['url'];
                             this.$refs.optionAAudioUpload.clearFiles();
@@ -865,7 +878,7 @@
                 this.$prompt('请输入考点内容', '新增考点', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消'
-                }).then(({ value }) => {
+                }).then(({value}) => {
                     axios.post("/addPoint", $.param({'grammar_id': grammar_id, 'point_text': value}) //引入jQuery的作用
                     ).then((response) => {
                         if (response.data === "OK") {
@@ -895,7 +908,7 @@
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     inputValue: point_text
-                }).then(({ value }) => {
+                }).then(({value}) => {
                     axios.post("/editPoint", $.param({'point_id': point_id, 'point_text': value}) //引入jQuery的作用
                     ).then((response) => {
                         if (response.data === "OK") {
@@ -921,7 +934,7 @@
 
             selectPoint: function (point_id, point_text) {
                 this.formData["point_id"] = point_id;
-                document.getElementById("point").innerText =  "考点: " + point_text;
+                document.getElementById("point").innerText = "考点: " + point_text;
             },
 
             getProblemDetail: function (prob_id) {
@@ -951,10 +964,9 @@
                         this.radioType = "Choice";
                         this.formData["prob_type"] = this.problem["prob_type"];
                         this.formData["choice_type"] = this.problem["choice_type"];
-                    }
-                    else if(this.problem["prob_attr"] === "panduanzhengwu")
+                    } else if (this.problem["prob_attr"] === "panduanzhengwu")
                         this.radioType = "panduanzhengwu";
-                    else{
+                    else {
                         this.radioType = "txt";
                         this.formData["txt_type"] = this.problem["prob_type"];
                     }
@@ -973,69 +985,69 @@
                     this.formData["optionB"] = this.options["option_b"];
                     this.formData["optionC"] = this.options["option_c"];
                     this.formData["optionD"] = this.options["option_d"];
-                    if(this.problem["image_url"]&&this.problem["image_url"] != ""){
+                    if (this.problem["image_url"] && this.problem["image_url"] != "") {
                         this.formData["stem_image"] = this.problem["image_url"];
-                        var tmp_name = this.problem["image_url"].split('/')[this.problem["image_url"].split('/')-1];
-                        this.stemImageFileList.push({name: tmp_name , url: this.problem["image_url"]});
+                        var tmp_name = this.problem["image_url"].split('/')[this.problem["image_url"].split('/') - 1];
+                        this.stemImageFileList.push({name: tmp_name, url: this.problem["image_url"]});
                     }
-                    if(this.problem["audio_url"]&&this.problem["audio_url"] != ""){
+                    if (this.problem["audio_url"] && this.problem["audio_url"] != "") {
                         this.formData["stem_audio"] = this.problem["audio_url"];
-                        var tmp_name = this.problem["audio_url"].split('/')[this.problem["audio_url"].split('/')-1];
-                        this.stemAudioFileList.push({name: tmp_name , url: this.problem["audio_url"]});
+                        var tmp_name = this.problem["audio_url"].split('/')[this.problem["audio_url"].split('/') - 1];
+                        this.stemAudioFileList.push({name: tmp_name, url: this.problem["audio_url"]});
                         var audio = document.createElement('audio');
                         audio.src = this.problem["audio_url"];
                         audio.controls = true;
                         audio.volume = '0.2';
                         $('#stemAudio').append(audio);
                     }
-                    if(this.formData["choice_type"] == 'image'){
+                    if (this.formData["choice_type"] == 'image') {
                         this.formData["option_a_image"] = this.options["a_image_url"];
-                        var tmp_name = this.options["a_image_url"].split('/')[this.options["a_image_url"].split('/')-1];
-                        this.optionAImageFileList.push({name: tmp_name , url: this.options["a_image_url"]});
+                        var tmp_name = this.options["a_image_url"].split('/')[this.options["a_image_url"].split('/') - 1];
+                        this.optionAImageFileList.push({name: tmp_name, url: this.options["a_image_url"]});
                         this.formData["option_b_image"] = this.options["b_image_url"];
-                        tmp_name = this.options["b_image_url"].split('/')[this.options["b_image_url"].split('/')-1];
-                        this.optionBImageFileList.push({name: tmp_name , url: this.options["b_image_url"]});
-                        if(this.options["c_image_url"]&&this.options["c_image_url"] != ""){
+                        tmp_name = this.options["b_image_url"].split('/')[this.options["b_image_url"].split('/') - 1];
+                        this.optionBImageFileList.push({name: tmp_name, url: this.options["b_image_url"]});
+                        if (this.options["c_image_url"] && this.options["c_image_url"] != "") {
                             this.formData["option_c_image"] = this.options["c_image_url"];
-                            tmp_name = this.options["c_image_url"].split('/')[this.options["c_image_url"].split('/')-1];
-                            this.optionCImageFileList.push({name: tmp_name , url: this.options["c_image_url"]});
+                            tmp_name = this.options["c_image_url"].split('/')[this.options["c_image_url"].split('/') - 1];
+                            this.optionCImageFileList.push({name: tmp_name, url: this.options["c_image_url"]});
                         }
-                        if(this.options["d_image_url"]&&this.options["d_image_url"] != ""){
+                        if (this.options["d_image_url"] && this.options["d_image_url"] != "") {
                             this.formData["option_d_image"] = this.options["d_image_url"];
-                            tmp_name = this.options["d_image_url"].split('/')[this.options["d_image_url"].split('/')-1];
-                            this.optionDImageFileList.push({name: tmp_name , url: this.options["d_image_url"]});
+                            tmp_name = this.options["d_image_url"].split('/')[this.options["d_image_url"].split('/') - 1];
+                            this.optionDImageFileList.push({name: tmp_name, url: this.options["d_image_url"]});
                         }
-                    }else if(this.formData["choice_type"] == 'audio'){
+                    } else if (this.formData["choice_type"] == 'audio') {
                         this.formData["option_a_audio"] = this.options["a_audio_url"];
-                        var tmp_name = this.options["a_audio_url"].split('/')[this.options["a_audio_url"].split('/')-1];
-                        this.optionAAudioFileList.push({name: tmp_name , url: this.options["a_audio_url"]});
+                        var tmp_name = this.options["a_audio_url"].split('/')[this.options["a_audio_url"].split('/') - 1];
+                        this.optionAAudioFileList.push({name: tmp_name, url: this.options["a_audio_url"]});
                         var audio = document.createElement('audio');
                         audio.src = this.options["a_audio_url"];
                         audio.controls = true;
                         audio.volume = '0.2';
                         $('#optionAAudio').append(audio);
                         this.formData["option_b_audio"] = this.options["b_audio_url"];
-                        tmp_name = this.options["b_audio_url"].split('/')[this.options["b_audio_url"].split('/')-1];
-                        this.optionBAudioFileList.push({name: tmp_name , url: this.options["b_audio_url"]});
+                        tmp_name = this.options["b_audio_url"].split('/')[this.options["b_audio_url"].split('/') - 1];
+                        this.optionBAudioFileList.push({name: tmp_name, url: this.options["b_audio_url"]});
                         audio = document.createElement('audio');
                         audio.src = this.options["b_audio_url"];
                         audio.controls = true;
                         audio.volume = '0.2';
                         $('#optionBAudio').append(audio);
-                        if(this.options["c_audio_url"]&&this.options["c_audio_url"] != ""){
+                        if (this.options["c_audio_url"] && this.options["c_audio_url"] != "") {
                             this.formData["option_c_audio"] = this.options["c_audio_url"];
-                            tmp_name = this.options["c_audio_url"].split('/')[this.options["c_audio_url"].split('/')-1];
-                            this.optionCAudioFileList.push({name: tmp_name , url: this.options["c_audio_url"]});
+                            tmp_name = this.options["c_audio_url"].split('/')[this.options["c_audio_url"].split('/') - 1];
+                            this.optionCAudioFileList.push({name: tmp_name, url: this.options["c_audio_url"]});
                             audio = document.createElement('audio');
                             audio.src = this.options["c_audio_url"];
                             audio.controls = true;
                             audio.volume = '0.2';
                             $('#optionCAudio').append(audio);
                         }
-                        if(this.options["d_audio_url"]&&this.options["d_audio_url"] != ""){
+                        if (this.options["d_audio_url"] && this.options["d_audio_url"] != "") {
                             this.formData["option_d_audio"] = this.options["d_audio_url"];
-                            tmp_name = this.options["d_audio_url"].split('/')[this.options["d_audio_url"].split('/')-1];
-                            this.optionDAudioFileList.push({name: tmp_name , url: this.options["d_audio_url"]});
+                            tmp_name = this.options["d_audio_url"].split('/')[this.options["d_audio_url"].split('/') - 1];
+                            this.optionDAudioFileList.push({name: tmp_name, url: this.options["d_audio_url"]});
                             audio = document.createElement('audio');
                             audio.src = this.options["d_audio_url"];
                             audio.controls = true;
@@ -1048,7 +1060,7 @@
 
             handleSelectionChange(val) {
                 console.log('改变：', this.searchFlag)
-                if(val.length > 0){
+                if (val.length > 0) {
                     val.reverse();
                     val = val.slice(0, 1);
                 }
@@ -1065,7 +1077,7 @@
             },
 
             searchChange() {
-                if(this.search.length === 0){
+                if (this.search.length === 0) {
                     this.setPointList();
                     return;
                 }
@@ -1083,23 +1095,29 @@
                 })
             },
 
-            getPointList: function() {
+            getPointList: function () {
                 return new Promise(resolve => {
                     axios.get("/listAllPoint"
                     ).then((response) => {
                         var point_list = response.data;
                         point_list.reverse();
                         for (let i = 0; i < point_list.length; i++) {
-                            if(i < 100)
-                                this.pointTableData.push({point_text: point_list[i]["point_text"], point_id: point_list[i]["point_id"]});
-                            this.originArr.push({point_text: point_list[i]["point_text"], point_id: point_list[i]["point_id"]});
+                            if (i < 100)
+                                this.pointTableData.push({
+                                    point_text: point_list[i]["point_text"],
+                                    point_id: point_list[i]["point_id"]
+                                });
+                            this.originArr.push({
+                                point_text: point_list[i]["point_text"],
+                                point_id: point_list[i]["point_id"]
+                            });
                         }
                         resolve(response.data);
                     });
                 })
             },
 
-            setPointList: async function() {
+            setPointList: async function () {
                 this.pointTableData = [];
                 this.originArr = [];
                 await this.getPointList();
