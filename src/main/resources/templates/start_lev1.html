@@ -20,7 +20,11 @@
             integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
             crossorigin="anonymous"></script>
     <style>
-        body{width: 100%;height: 100%;background-color: #86f2dd}
+        body {
+            width: 100%;
+            height: 100%;
+            background-color: #86f2dd
+        }
     </style>
 </head>
 <body>
@@ -36,33 +40,73 @@
             <div class="col-md-8">
                 <div v-for="lesson in lessons">
                     <div class="col-xs-2 col-md-2">
-                        <div v-if="lesson.lesson_num<=max_lesson_num" style="margin-top: 10px">
-                            <img style="width: 130px;height: 145px"
-                                 :src="`/image/new/lesson/${lesson.type}_finished.png`" alt="..."
-                                 @click="start(lesson.lesson_num)">
-                            <span class="lesson_text_finished">{{lesson.lesson_num}}</span>
+                        <div v-if="lesson.lesson_num<=9">
+                            <!--单位数和双位数的区分-->
+                            <div v-if="lesson.lesson_num<=max_lesson_num" style="margin-top: 10px">
+                                <img style="width: 130px;height: 145px"
+                                     :src="`/image/new/lesson/${lesson.type}_finished.png`" alt="..."
+                                     @click="start(lesson.lesson_num)">
+                                <a style="left: 42%" class="lesson_text_finished" @click="start(lesson.lesson_num)">{{lesson.lesson_num}}</a>
+                            </div>
+                            <div v-if="lesson.lesson_num==max_lesson_num+1" style="margin-top: 10px">
+                                <img style="width: 130px;height: 145px"
+                                     :src="`/image/new/lesson/${lesson.type}_next.png`" alt="..."
+                                     @click="start(lesson.lesson_num)">
+                                <a style="left: 42%" class="lesson_text" @click="start(lesson.lesson_num)">{{lesson.lesson_num}}</a>
+                            </div>
+
+                            <div v-if="lesson.lesson_num>max_lesson_num+1" style="margin-top: 10px">
+                                <div v-if="lesson.type!='normal'">
+                                    <img style="width: 130px;height: 145px"
+                                         :src="`/image/new/lesson/${lesson.type}_unfinished.png`" alt="..."
+                                         disabled="disabled">
+                                    <span style="left: 42%;" class="lesson_text_unnormal_unfinished">{{lesson.lesson_num}}</span>
+                                </div>
+                                <div v-if="lesson.type=='normal'">
+                                    <img style="width: 130px;height: 145px"
+                                         :src="`/image/new/lesson/${lesson.type}_unfinished.png`" alt="..."
+                                         disabled="disabled">
+                                    <span style="left: 42%" class="lesson_text">{{lesson.lesson_num}}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div v-if="lesson.lesson_num==max_lesson_num+1" style="margin-top: 10px">
-                            <img style="width: 130px;height: 145px"
-                                 :src="`/image/new/lesson/${lesson.type}_next.png`" alt="..."
-                                 @click="start(lesson.lesson_num)">
-                            <span class="lesson_text">{{lesson.lesson_num}}</span>
-                        </div>
-                        <div  v-if="lesson.lesson_num>max_lesson_num+1" style="margin-top: 10px">
-                            <img style="width: 130px;height: 145px"
-                                 :src="`/image/new/lesson/${lesson.type}_unfinished.png`" alt="..."
-                                 disabled="disabled">
-                            <span class="lesson_text">{{lesson.lesson_num}}</span>
-                        </div>
+                        <div v-if="lesson.lesson_num>9">
+                            <div v-if="lesson.lesson_num<=max_lesson_num" style="margin-top: 10px">
+                                <img style="width: 130px;height: 145px"
+                                     :src="`/image/new/lesson/${lesson.type}_finished.png`" alt="..."
+                                     @click="start(lesson.lesson_num)">
+                                <a style="left: 36%" class="lesson_text_finished" @click="start(lesson.lesson_num)">{{lesson.lesson_num}}</a>
+                            </div>
+                            <div v-if="lesson.lesson_num==max_lesson_num+1" style="margin-top: 10px">
+                                <img style="width: 130px;height: 145px"
+                                     :src="`/image/new/lesson/${lesson.type}_next.png`" alt="..."
+                                     @click="start(lesson.lesson_num)">
+                                <a style="left: 36%" class="lesson_text" @click="start(lesson.lesson_num)">{{lesson.lesson_num}}</a>
+                            </div>
+                            <div v-if="lesson.lesson_num>max_lesson_num+1" style="margin-top: 10px">
+                                <div v-if="lesson.type!='normal'">
+                                    <img style="width: 130px;height: 145px"
+                                         :src="`/image/new/lesson/${lesson.type}_unfinished.png`" alt="..."
+                                         disabled="disabled">
+                                    <span style="left: 36%;" class="lesson_text_unnormal_unfinished">{{lesson.lesson_num}}</span>
+                                </div>
+                                <div v-if="lesson.type=='normal'">
+                                    <img style="width: 130px;height: 145px"
+                                         :src="`/image/new/lesson/${lesson.type}_unfinished.png`" alt="..."
+                                         disabled="disabled">
+                                    <span style="left: 36%" class="lesson_text">{{lesson.lesson_num}}</span>
+                                </div>
+                            </div>
                     </div>
                 </div>
             </div>
             <div class="col-md-2"></div>
         </div>
     </div>
-
-    <img v-if="pre_btn" id="pre_page_bt" src="/image/new/pre_page.png" @click="getLessons(2)"/>
-    <img v-if="next_btn" id="next_page_bt" src="/image/new/next_page.png" @click="getLessons(1)"/>
+    <div class="row">
+        <img v-if="pre_btn" id="pre_page_bt" src="/image/new/pre_page.png" @click="getLessons(2)"/>
+        <img v-if="next_btn" id="next_page_bt" src="/image/new/next_page.png" @click="getLessons(1)"/>
+    </div>
 </div>
 
 
