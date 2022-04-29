@@ -1009,6 +1009,7 @@
                 } else {
                     //var url = sessionStorage.getItem('lastUrl');
                     //history.replaceState(null,null,url);
+                    axios.get("/recordExercise?level="+this.level+"&lesson="+this.lesson);
                     sessionStorage.clear();
                     window.location.replace("/demo_marked?src=" + this.src + "&mode=finish&id=" + this.id);
                 }

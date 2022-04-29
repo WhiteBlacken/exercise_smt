@@ -4,19 +4,17 @@ import com.cisl.smt.po.*;
 import com.cisl.smt.service.*;
 import com.cisl.smt.web.Temp.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @RestController
 public class ExerciseController {
@@ -51,11 +49,31 @@ public class ExerciseController {
 
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-
     @GetMapping("/start")
-    public ModelAndView start() {
+    public ModelAndView start(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        String level = (String) session.getAttribute("login_lev");
         ModelAndView mav;
-        mav = new ModelAndView("start");
+        if (null == level || "1".equals(level)) {
+            mav = new ModelAndView("start_lev1");
+        } else {
+            mav = new ModelAndView("start_other_lev");
+        }
+
+        return mav;
+    }
+
+    @GetMapping("/start/{level}")
+    public ModelAndView startWithLev(@PathVariable String level, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        session.setAttribute("login_lev", level);
+        ModelAndView mav;
+        if ("1".equals(level)) {
+            mav = new ModelAndView("start_lev1");
+        } else {
+            mav = new ModelAndView("start_other_lev");
+        }
+
         return mav;
     }
 
@@ -402,7 +420,7 @@ public class ExerciseController {
 
         for (Problem pro : probList)
             probNumList.add(pro.getProb_id());
-        System.out.println("ordered probList:"+probNumList);
+        System.out.println("ordered probList:" + probNumList);
         return probNumList;
     }
 
@@ -1071,5 +1089,76 @@ public class ExerciseController {
         return outputList;
     }
 
+    @Autowired
+    private LessonService lessonService;
 
+    @GetMapping("/getLessonsInfo")
+    public LessonInfo getLessonInfo(HttpServletRequest request,
+                                    @RequestParam("maxLesson") String maxLesson,
+                                    @RequestParam("type") String type) {
+        //获取user信息
+        Long user_id = getUserFromCookies(request);
+        //获取level 1下的所有lesson
+        int level_num = 1;
+        List<Lesson> lessons = lessonService.getByLevelNum(level_num);
+
+        //获取学生当前进度
+        int max_lesson_id = lessonService.getFinishedMaxNumByUserId(user_id);
+        int max_lesson_num = lessonService.getById(max_lesson_id);
+        System.out.println("maxLesson:" + maxLesson);
+        System.out.println("type:" + type);
+        boolean pre_btn = true;
+        boolean next_btn = true;
+        int max_lesson_this_page = 18;
+        if ("0".equals(type)) {
+            //初始化
+            lessons = lessons.stream().filter(l -> l.getLesson_num() >= 1 && l.getLesson_num() <= 18).collect(Collectors.toList());
+            pre_btn = false;
+            System.out.println("1");
+
+        }
+        if ("0".equals(maxLesson) && "1".equals(type)) {
+            lessons = lessons.stream().filter(l -> l.getLesson_num() >= 1 && l.getLesson_num() <= 18).collect(Collectors.toList());
+            pre_btn = false;
+            System.out.println("2");
+        }
+        if ("18".equals(maxLesson) && "1".equals(type)) {
+            lessons = lessons.stream().filter(l -> l.getLesson_num() >= 19 && l.getLesson_num() <= 36).collect(Collectors.toList());
+            max_lesson_this_page = 36;
+            System.out.println("3");
+        }
+        if ("36".equals(maxLesson) && "1".equals(type)) {
+            lessons = lessons.stream().filter(l -> l.getLesson_num() >= 37 && l.getLesson_num() <= 42).collect(Collectors.toList());
+            next_btn = false;
+            max_lesson_this_page = 42;
+            System.out.println("4");
+        }
+
+        if ("36".equals(maxLesson) && "2".equals(type)) {
+            lessons = lessons.stream().filter(l -> l.getLesson_num() >= 1 && l.getLesson_num() <= 18).collect(Collectors.toList());
+            pre_btn = false;
+            System.out.println("5");
+        }
+        if ("42".equals(maxLesson) && "2".equals(type)) {
+            lessons = lessons.stream().filter(l -> l.getLesson_num() >= 19 && l.getLesson_num() <= 36).collect(Collectors.toList());
+            max_lesson_this_page = 36;
+            System.out.println("6");
+        }
+        System.out.println("next_btn:" + next_btn);
+        LessonInfo lessonInfo = new LessonInfo(pre_btn, next_btn, max_lesson_num, lessons, max_lesson_this_page);
+//        System.out.println("lessons:"+lessons);
+        System.out.println("lessons.size:" + lessons.size());
+        System.out.println("---------------");
+        return lessonInfo;
+    }
+
+    @GetMapping("/recordExercise")
+    public void recordExercise(HttpServletRequest request,
+                               @RequestParam("level") int level,
+                               @RequestParam("lesson") int lesson) {
+        //获取user信息
+        Long user_id = getUserFromCookies(request);
+        lessonService.recordExercise(user_id,level,lesson);
+
+    }
 }

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <title>初始界面</title>
+    <meta http-equiv="content-type" content="text/html charset=utf-8"/>
+    <meta name="viewport" content="width=device-width">
+    <link href="/css/start.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <link href="/css/index.css" type="text/css" rel="stylesheet" charset="utf-8">
+    <script src="/js/vue@2.6.10.js"></script>
+    <script src="/js/axios@0.18.0.min.js"></script>
+    <script src="/js/index.js"></script>
+    <script src="/js/jquery.min.js"></script>
+    <script src="http://mockjs.com/dist/mock.js"></script>
+    <!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
+          integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"
+            integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd"
+            crossorigin="anonymous"></script>
+    <style>
+        body{width: 100%;height: 100%;background-color: #86f2dd}
+    </style>
+</head>
+<body>
+<div id="app">
+    <img id="background" src="/image/new/start_bg.png">
+
+
+    <img id="border" src="/image/new/border.png">
+    <p id="level1">Level 1</p>
+    <div id="lesson_block" class="container">
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8">
+                <div v-for="lesson in lessons">
+                    <div class="col-xs-2 col-md-2">
+                        <div v-if="lesson.lesson_num<=max_lesson_num" style="margin-top: 10px">
+                            <img style="width: 130px;height: 145px"
+                                 :src="`/image/new/lesson/${lesson.type}_finished.png`" alt="..."
+                                 @click="start(lesson.lesson_num)">
+                            <span class="lesson_text_finished">{{lesson.lesson_num}}</span>
+                        </div>
+                        <div v-if="lesson.lesson_num==max_lesson_num+1" style="margin-top: 10px">
+                            <img style="width: 130px;height: 145px"
+                                 :src="`/image/new/lesson/${lesson.type}_next.png`" alt="..."
+                                 @click="start(lesson.lesson_num)">
+                            <span class="lesson_text">{{lesson.lesson_num}}</span>
+                        </div>
+                        <div  v-if="lesson.lesson_num>max_lesson_num+1" style="margin-top: 10px">
+                            <img style="width: 130px;height: 145px"
+                                 :src="`/image/new/lesson/${lesson.type}_unfinished.png`" alt="..."
+                                 disabled="disabled">
+                            <span class="lesson_text">{{lesson.lesson_num}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
+    </div>
+
+    <img v-if="pre_btn" id="pre_page_bt" src="/image/new/pre_page.png" @click="getLessons(2)"/>
+    <img v-if="next_btn" id="next_page_bt" src="/image/new/next_page.png" @click="getLessons(1)"/>
+</div>
+
+
+</body>
+<script>
+    function setCookie(cname, cvalue) {
+        document.cookie = cname + "=" + cvalue + "; ";
+    }
+
+    function showData() {
+        var deviceWidth = document.documentElement.clientWidth;
+        var deviceHeight = document.documentElement.clientHeight;
+        var availWidth = window.screen.availWidth;
+        var availHeight = window.screen.availHeight;
+        var screenHeight = window.screen.height;
+        var screenWidth = window.screen.width;
+        alert('deviceWidth:' + deviceWidth + ' deviceHeight: ' + deviceHeight + ' availWidth:' + availWidth +
+            ' availHeight:' + availHeight + ' screenWidth:' + screenWidth + ' screenHeight:' + screenHeight)
+    }
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i].trim();
+            if (c.indexOf(name) === 0)
+                return c.substring(name.length, c.length);
+        }
+        return "";
+    }
+
+    window.addEventListener('resize', () => {
+        var deviceWidth = document.documentElement.clientWidth;
+        document.getElementById("app").style.transformOrigin = "left top";
+        document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+    }, false);
+
+    window.addEventListener("orientationchange", () => {
+        if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+            var deviceWidth = document.documentElement.clientWidth;
+            var deviceHeight = document.documentElement.clientHeight;
+            if (window.orientation == 0 || window.orientation == 180) {
+                deviceWidth = (deviceWidth < deviceHeight) ? deviceWidth : deviceHeight;
+                document.getElementById("app").style.transformOrigin = "left top";
+                document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+            }
+            if (window.orientation == 90 || window.orientation == -90) {
+                deviceWidth = (deviceWidth > deviceHeight) ? deviceWidth : deviceHeight;
+                document.getElementById("app").style.transformOrigin = "left top";
+                document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+            }
+        }
+    });
+    /*if(/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+        window.addEventListener("orientationchange",function(){
+            var deviceWidth = window.screen.width;
+            var deviceHeight = window.screen.height;
+            if(window.orientation == 0 || window.orientation == 180) {
+                if(deviceWidth >= deviceHeight) {
+                    document.getElementById("app").style.transformOrigin = "center top";
+                    document.getElementById("app").style.transform = "scale(" + (deviceHeight / 1533) + ")";
+                }else {
+                    document.getElementById("app").style.transformOrigin = "center top";
+                    document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                }
+            }
+            if(window.orientation == 90 || window.orientation == -90) {
+                if(deviceWidth < deviceHeight) {
+                    document.getElementById("app").style.transformOrigin = "center top";
+                    document.getElementById("app").style.transform = "scale(" + (deviceHeight / 1533) + ")";
+                }else {
+                    document.getElementById("app").style.transformOrigin = "center top";
+                    document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                }
+            }
+        });
+    }*/
+
+    var app = new Vue({
+        el: "#app",
+        data: {
+            level: 1,
+            chosen_lesson: 1,
+            setting: {
+                src: "lesson",
+                sys: '1',
+                lev: 1,
+                probNum: 20,
+            },
+            lessons: [],
+            pre_btn: false,
+            next_btn: true,
+            max_lesson_this_page: 18,
+            max_lesson_num: 0
+        },
+
+        methods: {
+            goBack: function () {
+                window.location.href = "https://www.smartreelearners.com/#/home";
+            },
+
+            goHome: function () {
+                window.location.href = "https://www.smartreelearners.com/#/home";
+            },
+
+            choose: function (option) {
+                console.log("--执行了choose--");
+                if (this.chosen_lesson != 0) {
+                    document.getElementById("star" + this.chosen_lesson.toString()).style.height = "90%";
+                    document.getElementById("star" + this.chosen_lesson.toString()).style.width = "90%";
+                }
+                this.chosen_lesson = option;
+                document.getElementById("star" + this.chosen_lesson.toString()).style.height = "100%";
+                document.getElementById("star" + this.chosen_lesson.toString()).style.width = "100%";
+            },
+
+            start: function (option) {
+                console.log("--执行了start--");
+
+                this.setting.sys = option.toString();
+                this.setting.lev = parseInt(this.level);
+                console.log(this.level)
+                axios.post("/postSetting", $.param(this.setting)
+                ).then((response) => {
+                    //400-参数不匹配
+                    console.log("已设置参数: ", response.data);
+                });
+                sessionStorage.setItem("level", this.setting.lev.toString());
+                sessionStorage.setItem("lesson", this.setting.sys);
+                sessionStorage.setItem('lastUrl', window.location.href);
+                window.location.href = "/demo?src=lesson";
+            },
+            getLessons: function (type) {
+                //type-1:next type-2:pre
+                axios.get("/getLessonsInfo?maxLesson=" + this.max_lesson_this_page.toString() + "&type=" + type).then((response) => {
+                    // this.lessons = response.data;
+                    this.pre_btn = response.data.pre_btn;
+                    this.next_btn = response.data.next_btn;
+                    this.lessons = response.data.lessons;
+                    this.max_lesson_this_page = response.data.max_lesson_this_page;
+                    console.log(response.data.lessons)
+                });
+
+            }
+        },
+
+        created: function () {
+            if (getCookie('user_id') !== null) {
+                if (getCookie('user_id') === "") {
+                    localStorage.clear();
+                    window.location.href = '/login';
+                }
+            } else {
+                window.location.href = '/login';
+            }
+            if (getCookie('level') !== null && getCookie('level').length > 0) {
+                this.level = parseInt(getCookie('level'));
+            }
+            sessionStorage.clear();
+            if (/(iPhone|iPad|iPod|iOS|Android)/i.test(navigator.userAgent)) {
+                var deviceWidth = document.documentElement.clientWidth;
+                var deviceHeight = document.documentElement.clientHeight;
+
+                if (window.orientation == 0 || window.orientation == 180) {
+                    deviceWidth = (deviceWidth < deviceHeight) ? deviceWidth : deviceHeight;
+                    document.getElementById("app").style.transformOrigin = "left top";
+                    document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                }
+                if (window.orientation == 90 || window.orientation == -90) {
+                    deviceWidth = (deviceWidth > deviceHeight) ? deviceWidth : deviceHeight;
+                    document.getElementById("app").style.transformOrigin = "left top";
+                    document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+                }
+
+            } else {
+                var deviceWidth = document.documentElement.clientWidth;
+
+                document.getElementById("app").style.transformOrigin = "left top";
+                document.getElementById("app").style.transform = "scale(" + (deviceWidth / 1533) + ")";
+
+            }
+
+            axios.get("/getLessonsInfo?maxLesson=0" + "&type=0").then((response) => {
+                // this.lessons = response.data;
+                this.pre_btn = response.data.pre_btn;
+                this.next_btn = response.data.next_btn;
+                this.lessons = response.data.lessons;
+                this.max_lesson_num = response.data.max_lesson_num;
+                console.log(response.data);
+                console.log(response.data.max_lesson_num);
+                console.log(response.data.lessons)
+            });
+        }
+    })
+</script>

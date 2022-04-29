@@ -105,11 +105,17 @@
                         localStorage.setItem('SMTusername',this.form.user_id);
                         //localStorage.setItem('SMTpassword',this.form.passwd);
                         setCookie("user_id", this.form.user_id);
-                        if(response.data !== "OK")  //返回 OK 3  表示 level=3, 没有信息则默认 level=1
+                        if(response.data !== "OK") {
+                            //返回 OK 3  表示 level=3, 没有信息则默认 level=1
                             setCookie("level", response.data.split(" ")[1]);
-                        else setCookie("level", "1");
+                        } else {
+                            setCookie("level", "1");
+                        }
+                        let url = "/start/"+ getCookie('level');
+                        window.location.href = url;
+                        // setTimeout("window.location.href = url", 1000);
 
-                        setTimeout("window.location.href = '/start'", 1000);
+
                     }
                     else {
                         this.$message({
